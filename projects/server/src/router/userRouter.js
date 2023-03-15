@@ -10,5 +10,16 @@ route.post("/signin/keep-login", tokenVerify, userController.keepLogin);
 route.post("/verify", tokenVerify, userController.verifyAcc);
 route.post("/sendotp", tokenVerify, userController.sendOtp);
 route.patch("/user/change-password", checkUser, userController.changePass);
+route.post(
+  "/user/reset-password",
+  checkUser,
+  userController.verifyResetPassword
+);
+route.patch(
+  "/user/reset-password",
+  checkUser,
+  tokenVerify,
+  userController.resetPassword
+);
 
 module.exports = route;

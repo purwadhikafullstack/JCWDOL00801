@@ -32,7 +32,8 @@ module.exports = {
       } else {
         if (req.body.provider === "google.com") {
           let length = 21,
-            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
+            charset =
+              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
             randomString = "";
           for (let i = 0, n = charset.length; i < length; ++i) {
             randomString += charset.charAt(Math.floor(Math.random() * n));
@@ -55,7 +56,8 @@ module.exports = {
           });
         } else {
           let length = 21,
-            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
+            charset =
+              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
             randomString = "";
           for (let i = 0, n = charset.length; i < length; ++i) {
             randomString += charset.charAt(Math.floor(Math.random() * n));
@@ -148,7 +150,10 @@ module.exports = {
             token,
           });
         } else if (req.body.login == "common") {
-          const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
+          const checkPass = bcrypt.compareSync(
+            req.body.password,
+            data[0].password
+          );
           if (checkPass) {
             res.status(200).send({
               success: true,
@@ -301,7 +306,8 @@ module.exports = {
       } else {
         return res.status(400).send({
           success: false,
-          message: "You have reached the maximum number of OTP attempts for today.",
+          message:
+            "You have reached the maximum number of OTP attempts for today.",
         });
       }
     } catch (error) {
@@ -356,6 +362,79 @@ module.exports = {
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
+    }
+  },
+  verifyResetPassword: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await userModel.findOne({ where: { email } });
+
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "Email not found.",
+        });
+      }
+
+      if (user.provider !== "common") {
+        return res.status(403).send({
+          success: false,
+          message: `You are registering with ${user.provider}, you cannot change your password.`,
+        });
+      }
+
+      let token = createToken({ ...user });
+      let resetUrl = `http://localhost:3000/user/reset-password?t=${token}`;
+      transport.sendMail(
+        {
+          from: "Renthaven Admin",
+          to: email,
+          subject: "Reset Password",
+          html: `Click <a href="${resetUrl}">here</a> to reset your password.`,
+        },
+        (error, info) => {
+          if (error) {
+            return res.status(401).send(error);
+          }
+        }
+      );
+
+      return res.status(200).send({
+        success: true,
+        message: "Reset password email sent",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "An error occurred while resetting password.",
+        error,
+      });
+    }
+  },
+  resetPassword: async (req, res) => {
+    const { password, confirmPassword } = req.body;
+    const { email } = req.decrypt;
+    try {
+      if (password !== confirmPassword) {
+        return res.status(401).send({
+          success: false,
+          message: "Your password does not match",
+        });
+      }
+
+      const pass = encryptPassword(password);
+      let user = userModel.update({ password: pass }, { where: { email } });
+      return res.status(200).send({
+        success: true,
+        message: "Password has been successfully changed. ",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "An error occurred while changing password.",
+      });
     }
   },
 };
