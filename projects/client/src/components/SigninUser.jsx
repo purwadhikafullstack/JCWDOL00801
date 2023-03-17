@@ -134,17 +134,20 @@ const SigninUserPage = (props) => {
         }
         setLoginLoading(false);
       })
-      .catch((e) => {console.log(e)
-        setLoginLoading(false)});
+      .catch((e) => {
+        console.log(e);
+        setLoginLoading(false);
+      });
   };
-  const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validationSchema: loginSchema,
-    onSubmit: handleEmailLogin,
-  });
+  const { errors, values, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: loginSchema,
+      onSubmit: handleEmailLogin,
+    });
   useEffect(() => {
     document.title = "RentHaven || Signin";
   }, [alerts]);
@@ -188,7 +191,9 @@ const SigninUserPage = (props) => {
                 onBlur={handleBlur}
               />
               {errors.email && touched.email ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>{errors.email}</p>
+                <p style={{ color: "red", marginBottom: "5px" }}>
+                  {errors.email}
+                </p>
               ) : (
                 ""
               )}
@@ -211,7 +216,9 @@ const SigninUserPage = (props) => {
                 </InputRightElement>
               </InputGroup>
               {errors.password && touched.password ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
+                <p style={{ color: "red", marginBottom: "5px" }}>
+                  {errors.password}
+                </p>
               ) : (
                 ""
               )}
@@ -222,6 +229,7 @@ const SigninUserPage = (props) => {
                     marginTop: "4px",
                     fontWeight: "600",
                   }}
+                  to={"/user/reset-password"}
                 >
                   Forgot password?
                 </Link>
@@ -277,7 +285,11 @@ const SigninUserPage = (props) => {
             >
               <p style={{ marginTop: "10px" }}>
                 Don't have an account yet?{" "}
-                <Link className="link" style={{ fontWeight: "600" }} to="/signup">
+                <Link
+                  className="link"
+                  style={{ fontWeight: "600" }}
+                  to="/signup"
+                >
                   Sign up
                 </Link>
               </p>

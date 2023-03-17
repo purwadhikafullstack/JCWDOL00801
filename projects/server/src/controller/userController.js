@@ -367,16 +367,16 @@ module.exports = {
   verifyResetPassword: async (req, res) => {
     const { email } = req.body;
     try {
-      const user = await userModel.findOne({ where: { email } });
+      const user = await userModel.findAll({ where: { email } });
 
-      if (!user) {
+      if (!user[0]) {
         return res.status(404).send({
           success: false,
           message: "Email not found.",
         });
       }
 
-      if (user.provider !== "common") {
+      if (user[0].provider !== "common") {
         return res.status(403).send({
           success: false,
           message: `You are registering with ${user.provider}, you cannot change your password.`,
@@ -384,7 +384,7 @@ module.exports = {
       }
 
       let token = createToken({ ...user });
-      let resetUrl = `http://localhost:3000/user/reset-password?t=${token}`;
+      let resetUrl = `http://localhost:3000/user/reset-password/new?t=${token}`;
       transport.sendMail(
         {
           from: "Renthaven Admin",

@@ -14,18 +14,22 @@ import Footer from "./components/Footer";
 import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
 import VerifyPage from "./pages/VerifyPage";
 import { Route, Routes } from "react-router-dom";
+import ResetPassword from "./pages/ResetPassword";
+import InputResetPassword from "./pages/InputResetPassword";
 
 function App() {
   const [message, setMessage] = useState("");
-  const { email, provider, isVerified, isDeleted, check } = useSelector((state) => {
-    return {
-      email: state.userReducer.email,
-      provider: state.userReducer.provider,
-      isVerify: state.userReducer.isVerified,
-      isDeleted: state.userReducer.isDeleted,
-      check: state.userReducer.check,
-    };
-  });
+  const { email, provider, isVerified, isDeleted, check } = useSelector(
+    (state) => {
+      return {
+        email: state.userReducer.email,
+        provider: state.userReducer.provider,
+        isVerify: state.userReducer.isVerified,
+        isDeleted: state.userReducer.isDeleted,
+        check: state.userReducer.check,
+      };
+    }
+  );
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const keepLogin = async () => {
@@ -79,6 +83,11 @@ function App() {
         <Route path="/signin" element={<SigninPanelPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/user/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/user/reset-password/new"
+          element={<InputResetPassword />}
+        />
         <Route path="/*" />
       </Routes>
       <Footer />

@@ -23,10 +23,11 @@ app.use(express.json());
 
 // ===========================
 // NOTE : Add your routes here
-const { userRouter, categoryRouter } = require("./router");
+const { userRouter, categoryRouter, propertiesRouter } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
+app.use("/api", propertiesRouter);
 
 // ===========================
 
