@@ -46,3 +46,34 @@
   border-radius: 2%;
   z-index: 999;
 }
+
+.gallery-img {
+  height: 500px;
+}
+
+.gallery-img img {
+  object-fit: cover;
+}
+
+.gallery-img-tn {
+  height: 70px;
+}
+
+.gallery-img-tn img {
+  object-fit: cover;
+}
+
+@media only screen and (max-width: 640px) {
+  .gallery-img {
+    height: 200px;
+  }
+  .gallery-img-tn {
+    height: 30px;
+  }
+  .gallery-img-tn img {
+    object-fit: cover;
+  }
+  .gallery-img img {
+    object-fit: cover;
+  }
+}

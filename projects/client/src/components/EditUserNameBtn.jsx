@@ -31,13 +31,11 @@ function EditUserNameBtn(props) {
 
   const onInputChange = (e) => {
     const { value } = e.target;
-    console.log("Input value: ", value);
 
-    const re = /^[A-Za-z]+$/;
+    const re = /^[A-Za-z ]+$/;
     if (value === "" || re.test(value)) {
       setFieldValue(value);
       handleChange(e);
-      console.log("Input value setelah regex: ", value);
     }
   };
 
@@ -76,8 +74,13 @@ function EditUserNameBtn(props) {
     }
   };
 
+  const resetField = () => {
+    onClose();
+    setFieldValue("name", props.name);
+  };
+
   //Formik configuration
-  const formEmail = useFormik({
+  const formName = useFormik({
     initialValues: {
       name: "" || props.name,
     },
@@ -87,7 +90,7 @@ function EditUserNameBtn(props) {
   });
 
   const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
-    formEmail;
+    formName;
 
   return (
     <>
@@ -95,7 +98,7 @@ function EditUserNameBtn(props) {
         Edit
       </Button>
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={resetField} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Change Name</ModalHeader>
@@ -119,7 +122,7 @@ function EditUserNameBtn(props) {
             </form>
           </ModalBody>
           <ModalFooter gap={4}>
-            <Button variant="link" onClick={onClose}>
+            <Button variant="link" onClick={resetField}>
               Close
             </Button>
             <Button

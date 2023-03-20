@@ -7,7 +7,6 @@ import { IoLocationSharp } from "react-icons/io5";
 function PropertyCard(props) {
   return (
     <Card
-      maxW="sm"
       _hover={{
         transform: "scale(1.05)",
         transitionTimingFunction: "ease-in-out",

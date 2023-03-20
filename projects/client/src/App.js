@@ -16,20 +16,29 @@ import VerifyPage from "./pages/VerifyPage";
 import { Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import TenantDashboardPage from "./pages/TenantDashboard";
-import { Flexboard, FlexboardProvider, FlexboardFrame, ResizerType, Position } from '@dorbus/flexboard';
+import {
+  Flexboard,
+  FlexboardProvider,
+  FlexboardFrame,
+  ResizerType,
+  Position,
+} from "@dorbus/flexboard";
+import Property from "./pages/Property";
+import PropertyDetail from "./pages/PropertyDetail";
 
 function App() {
   const [message, setMessage] = useState("");
 
-  const {email, provider, isVerified, isDeleted, check} = useSelector( state => {
-    return{
-    email: state.userReducer.email,
-    provider: state.userReducer.provider,
-    isVerify: state.userReducer.isVerified,
-    isDeleted: state.userReducer.isDeleted,
-    check: state.userReducer.check
-  }})
-  const [loading, setLoading] = useState(true)
+  const { email, provider, isVerified, isDeleted, check } = useSelector((state) => {
+    return {
+      email: state.userReducer.email,
+      provider: state.userReducer.provider,
+      isVerify: state.userReducer.isVerified,
+      isDeleted: state.userReducer.isDeleted,
+      check: state.userReducer.check,
+    };
+  });
+  const [loading, setLoading] = useState(true);
   const currentPath = window.location.pathname;
   const dispatch = useDispatch();
 
@@ -64,16 +73,15 @@ function App() {
   useEffect(() => {
     keepLogin();
     {
-      console.log(window.innerWidth)
+      console.log(window.innerWidth);
       console.log(isVerified, provider, isDeleted, email);
     }
   }, [window.innerWidth]);
 
   return (
     <div>
-      
       <Header loading={loading} />
-      
+
       {/* <FlexboardProvider>
             <Flexboard
             direction={Position.left}
@@ -96,17 +104,46 @@ function App() {
             </VerifyChecker>
           }
         />
-        <Route path="/signup" element={<VerifyChecker loading = {loading}><SignupPanelPage /></VerifyChecker>} />
-        <Route path="/signin" element={<VerifyChecker loading = {loading}><SigninPanelPage /></VerifyChecker>} />
-        <Route path="/profile" element={<VerifyChecker loading = {loading}><Profile /></VerifyChecker>} />
-        <Route path="/verify" element={<VerifyChecker loading = {loading}><VerifyPage /></VerifyChecker>} />
+        <Route
+          path="/signup"
+          element={
+            <VerifyChecker loading={loading}>
+              <SignupPanelPage />
+            </VerifyChecker>
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            <VerifyChecker loading={loading}>
+              <SigninPanelPage />
+            </VerifyChecker>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <VerifyChecker loading={loading}>
+              <Profile />
+            </VerifyChecker>
+          }
+        />
+        <Route
+          path="/verify"
+          element={
+            <VerifyChecker loading={loading}>
+              <VerifyPage />
+            </VerifyChecker>
+          }
+        />
         <Route path="/tenant-dashboard" element={<TenantDashboardPage />} />
+        <Route path="/property" element={<Property />} />
         <Route path="/*" />
       </Routes>
       {/* </FlexboardProvider> */}
       <Footer />
     </div>
-  )
+  );
 }
 
 export default App;

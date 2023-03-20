@@ -9,11 +9,11 @@ import "../styles/swiperKita.css";
 
 function MainContent(props) {
   return (
-    <Container maxW={{ base: "container.lg", md: "container.xl", lg: "container.xl" }}>
+    <Container maxW={{ base: "container", md: "container.xl" }}>
       <Heading mb="6">Recommended places for you</Heading>
       <Swiper
         slidesPerView={1}
-        spaceBetween={10}
+        spaceBetween={0}
         grabCursor={true}
         breakpoints={{
           640: {

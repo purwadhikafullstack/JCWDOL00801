@@ -1,19 +1,19 @@
-.link:hover{
-    color: blue;
-    cursor: pointer;
-    text-decoration: underline;
+.link:hover {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-@media only screen and (min-width: 0px){
-    .mobile{
-        height: auto;
-        width: 100vw;
-        margin: 0 auto;
-    }
+@media only screen and (min-width: 0px) {
+  .mobile {
+    height: auto;
+    width: 100vw;
+    margin: 0 auto;
+  }
 }
-@media only screen and (min-width: 760px){
-    .mobile{
-        margin: 30px auto 30px;
-        width: 50%;
-    }
+@media only screen and (min-width: 760px) {
+  .mobile {
+    margin: 30px auto 30px;
+    width: 50%;
+  }
 }

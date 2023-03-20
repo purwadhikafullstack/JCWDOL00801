@@ -5,13 +5,9 @@ import { Container, Flex, Image, Skeleton } from "@chakra-ui/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "../styles/swiperKita.css";
-import banner1 from "../assets/landingBanner/banner-1.jpg";
-import banner2 from "../assets/landingBanner/banner-2.jpg";
-import banner3 from "../assets/landingBanner/banner-3.jpg";
-import banner4 from "../assets/landingBanner/banner-4.jpg";
+import bannerImage from "../assets/landingBanner";
 
 function LandingBanner(props) {
-  const [banner, setBanner] = React.useState([banner1, banner2, banner3, banner4]);
   return (
     <Container px={0} maxW={{ base: "container", md: "100%" }}>
       <Swiper
@@ -27,12 +23,12 @@ function LandingBanner(props) {
         }}
         className="landing-banner"
       >
-        {banner.map((banner, idx) => {
+        {bannerImage.map((banner, idx) => {
           return (
             <SwiperSlide key={idx}>
               <Skeleton isLoaded>
                 <Image
-                  height="450px"
+                  height={{ base: "200px", md: "450px" }}
                   width="100%"
                   src={banner}
                   objectFit="cover"

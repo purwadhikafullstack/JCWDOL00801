@@ -61,7 +61,7 @@ function Header(props) {
   };
   return (
     <Box shadow="sm">
-      <Container maxW="container.xl">
+      <Container p={0} maxW={{ md: "container.xl" }}>
         <Box px={4}>
           <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
             <HStack spacing={8} alignItems={"center"}>
