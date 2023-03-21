@@ -3,6 +3,6 @@ const { checkUser } = require("../config/validator");
 const { userController, propertiesController } = require("../controller");
 const route = require("express").Router();
 
-route.get("/property", propertiesController.getProperties);
+route.get("/property/:id", propertiesController.getProperties);
 
 module.exports = route;

@@ -16,6 +16,7 @@ import VerifyPage from "./pages/VerifyPage";
 import { Route, Routes } from "react-router-dom";
 import ResetPassword from "./pages/ResetPassword";
 import InputResetPassword from "./pages/InputResetPassword";
+import PropertyDetail from "./pages/PropertyDetail";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -88,6 +89,8 @@ function App() {
           path="/user/reset-password/new"
           element={<InputResetPassword />}
         />
+        <Route path="/property" element={<PropertyDetail />} />
+
         <Route path="/*" />
       </Routes>
       <Footer />
