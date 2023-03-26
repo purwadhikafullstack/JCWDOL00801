@@ -29,6 +29,7 @@
     "react-date-range": "^1.4.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
+    "react-image-gallery": "^1.2.11",
     "react-redux": "^8.0.5",
     "react-resizable-layout": "^0.5.0",
     "react-resize-layout": "^0.2.3",

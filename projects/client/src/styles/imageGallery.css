@@ -1,0 +1,21 @@
+.image-gallery-slide img {
+    width: auto;
+    height: 350px;
+    object-fit: fill;
+}
+
+.image-gallery-image {
+    width: 100%;
+    
+} 
+.image-gallery{
+    width: '100%';
+}
+.image-gallery-thumbnail {
+    width: 120px
+  }
+  
+  .image-gallery-thumbnail img {
+    width: auto;
+    height: 70px;
+  }

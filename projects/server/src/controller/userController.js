@@ -31,7 +31,7 @@ module.exports = {
         },
       });
       if (data.length > 0) {
-        res.status(200).send({
+        res.status(403).send({
           success: false,
           message: "The email has been registered",
         });

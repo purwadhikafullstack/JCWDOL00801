@@ -1,6 +1,9 @@
+import { addDays } from "date-fns";
+import format from "date-fns/format";
+
 const INITIAL_STATE = {
-  startDate: "",
-  endDate: "",
+  startDate: new Date(format(new Date(), "MM/dd/yyyy")).getTime(),
+  endDate: new Date(format(addDays(new Date, 1), "MM/dd/yyyy")).getTime(),
   dob: "",
 };
 

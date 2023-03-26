@@ -73,8 +73,8 @@ function TenantHeader(props) {
   const logoutHandler = () => {
     dispatch(logoutAction());
     localStorage.removeItem("renthaven1");
-    window.location.reload();
     navigate("/signin", { replace: true });
+    window.location.reload();
   };
   useEffect(() => {}, [email]);
   return (

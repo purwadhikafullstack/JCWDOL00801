@@ -7,7 +7,7 @@ import Profile from "./pages/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
 import { loginAction } from "./actions/userAction";
-import { Box, Container, Flex, Spinner, useMediaQuery } from "@chakra-ui/react";
+import { Flex, Spinner, useMediaQuery } from "@chakra-ui/react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
@@ -17,6 +17,13 @@ import Sidebar from "./components/Sidebar";
 import TenantDashboardPage from "./pages/TenantDashboard";
 import TenantHeader from "./components/TenantHeader";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import NotFoundPage from "./pages/NotFound";
+import BookingDetail from "./components/BookingDetail";
+import GuestBookingForm from "./components/GuestBookingForm";
+import SpecialReq from "./components/SpecialReqForm";
+import PaymentMethod from "./components/PaymentMethod";
+import PaymentDetail from "./components/PaymentDetail";
+import PropertyDetail from "./pages/PropertyDetail";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -192,12 +199,18 @@ function App() {
                   </VerifyChecker>
                 }
               />
-              <Route path="/*" />
+              <Route path="/*" element={<NotFoundPage />} />
             </Routes>
           </div>
         </>
       ) : (
         //USER
+        loading ? (
+          <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
+            {" "}
+            <Spinner />{" "}
+          </Flex>
+        ) :
         <>
           <Header loading={loading} />
           <Routes>
@@ -249,7 +262,9 @@ function App() {
                 </VerifyChecker>
               }
             />
-            <Route path="/*" />
+            <Route path="/*" element={<NotFoundPage />} />
+            <Route path="/detail" element={<PropertyDetail />} />
+            <Route path="/payment" element={<PaymentDetail />} />
           </Routes>
           <Footer />
         </>

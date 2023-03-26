@@ -40,7 +40,7 @@ const SigninTenantPage = (props) => {
         if (res.data.success == true) {
           localStorage.setItem("renthaven1", res.data.token);
           loginAction(res.data.result);
-          window.location.reload();
+          navigate(0)
           setLoginLoading(false);
           navigate("/tenant-dashboard", { replace: true });
         } else if (res.data.success == false) {

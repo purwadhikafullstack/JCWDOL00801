@@ -52,10 +52,11 @@ function CalendarDateRange() {
     console.log(`start:`, format(item.selection.startDate, "mm/dd/yyyy"));
     console.log(`end:`, format(item.selection.endDate, "mm/dd/yyyy"));
     setCalendar([item.selection]);
+    console.log("startDate",calendar)
     dispatch(
       setDateAction({
-        startDate: format(item.selection.startDate, "mm/dd/yyyy"),
-        endDate: format(item.selection.endDate, "mm/dd/yyyy"),
+        startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
+        endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
       })
     );
   };

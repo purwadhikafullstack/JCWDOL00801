@@ -38,7 +38,6 @@ const Sidebar = ({ propW, setAppWidth }) => {
   return (
     <Box
       w={propW}
-      h="100vh"
       shadow="md"
       position="fixed"
       mt="62px"
@@ -48,6 +47,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
       overflowX="hidden"
       overFlowY="scroll"
       transition="ease-in-out width .2s"
+      style={{top: 0, bottom: 0}}
     >
       <Container mt={4} display="flex" alignItems="center" flexDirection="column">
         {/* <Button variant="ghost" colorScheme="green" w="100%" leftIcon={<IoCloseOutline />} onClick={setAppWidth}>Close Sidebar</Button> */}
