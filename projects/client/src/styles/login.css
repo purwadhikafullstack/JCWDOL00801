@@ -3,7 +3,12 @@
     cursor: pointer;
     text-decoration: underline;
 }
-
+.order-1{
+    order: 1;
+}
+.order-2{
+    order: 2;
+}
 .menu-list{
     color: gray;
     -webkit-user-select: none; /* Safari */

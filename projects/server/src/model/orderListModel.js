@@ -22,7 +22,7 @@ const orderListModel = dbSequelize.define("orderLists", {
     //fk
     guestId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     price: {
         type: DataTypes.DECIMAL(10, 2),

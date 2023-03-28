@@ -5,13 +5,14 @@ import { IoLocationSharp } from "react-icons/io5";
 import PropertyGallery from "../components/PropertyGallery";
 import RoomCard from "../components/RoomCard";
 import "../styles/imageGallery.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import CalendarDateRange from "../components/CalendarDateRange";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function PropertyDetail(props) {
   const location = useLocation();
-  
+  const [searchQuery, setSearchQuery] = useSearchParams();
+  const dispatch = useDispatch();
   const [notAvailableRoom , setNotAvailableRoom] = useState([]);
   const [types, setTypes] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -28,7 +29,7 @@ function PropertyDetail(props) {
   })
   const getData = async () =>{
     try {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/property/${location.state.id}`, {
+      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/property/${searchQuery.get('id')}`, {
         startDate: startDate,
         endDate: endDate
       })
@@ -39,7 +40,6 @@ function PropertyDetail(props) {
       let roomAvail = res.data.room.filter(val =>{
         return !roomNotAvail.includes(val)
       })
-      setNotAvailableRoom(res.data.roomAvail);
       console.log(roomAvail)
       console.log(res.data.type)
       console.log(res.data.message)
@@ -49,17 +49,29 @@ function PropertyDetail(props) {
       setCategories(res.data.category)
       setTenant(res.data.tenant)
       setUserTenant(res.data.userTenant)
+      if(res.data.notAvailRooms.length > 0 && res.data.notAvailRooms != undefined){
+        console.log("SAMPE")
+        setNotAvailableRoom(res.data.notAvailRooms);
+      }else if(res.data.notAvailRooms == undefined){
+        console.log("Hello")
+      }
     } catch (error) {
       console.log(error)
     }
   }
   const renderRoom = () =>{
       return types.map((val, idx )=>{
-        return <RoomCard key={idx} data={val} id={location.state.id} startDate={startDate} endDate={endDate} />
+        return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={startDate} endDate={endDate} isAvailable = {true} />
       })
+  }
+  const renderNotAvailRoom = () =>{
+    return notAvailableRoom.map((val, idx) =>{
+      return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={startDate} endDate={endDate} isAvailable = {false} />
+    })
   }
   useEffect(() =>{
     getData();
+    
   },[])
   return (
     <Container maxW={{ base: "container", md: "container.lg" }}>
@@ -90,6 +102,7 @@ function PropertyDetail(props) {
       <Flex direction="column" gap={4} mb="20px">
         <Heading size="sm">Available Rooms at "Hotel Name"</Heading>
         {renderRoom()}
+        {notAvailableRoom.length > 0 ? renderNotAvailRoom() : ""}
       </Flex>
     </Container>
   );

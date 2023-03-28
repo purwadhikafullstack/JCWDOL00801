@@ -24,6 +24,7 @@ import SpecialReq from "./components/SpecialReqForm";
 import PaymentMethod from "./components/PaymentMethod";
 import PaymentDetail from "./components/PaymentDetail";
 import PropertyDetail from "./pages/PropertyDetail";
+import { clearAllDate } from "./actions/dateAction";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -71,6 +72,10 @@ function App() {
   useEffect(() => {
     keepLogin();
     console.log(isOpen);
+    if(window.location.pathname != "/payment"){
+      console.log("Jalan")
+      dispatch(clearAllDate())
+    }
   }, [isOpen]);
 
   return (

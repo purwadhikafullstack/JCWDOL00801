@@ -28,7 +28,7 @@ const GuestBookingForm = ({setTotalGuestHandler, name, email, gender, phone, dat
           </Box>
           <Box w="50%" ml="10px">
             <Text>Gender</Text>
-            <Text>{gender}</Text>
+            <Text>{gender != null && gender != "" ? `${gender}`: "Not set yet"}</Text>
           </Box>
         </Flex>
         <Flex mt="10px" mb="10px">

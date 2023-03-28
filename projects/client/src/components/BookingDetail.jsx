@@ -2,9 +2,22 @@ import { Box, CardHeader, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import image1 from "../assets/landingBanner/banner-1.jpg";
 import { BsDot, BsFillPersonFill } from "react-icons/bs";
 import format from "date-fns/format";
+import { useEffect, useState } from "react";
 
 const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
-  console.log(startDate)
+  const [diffDays, setdiffDays] = useState(0)
+  const howManyNight =() =>{
+    const date1 = new Date(startDate);
+    const date2 = new Date(endDate);
+    const diffTime = Math.abs(date2 - date1);
+    const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    setdiffDays(diffDay);
+  }
+  console.log(startDate, "typeof", typeof startDate)
+  console.log(endDate, "typeof", typeof startDate)
+  useEffect(() =>{
+    howManyNight()
+  },[])
   return (
     <Box w="70%"  shadow="lg" rounded="md" ml="30px" mt="50px" pos="sticky" top="16px" alignSelf={"flex-start"} background={"white"}>
       <Flex direction={"column"} m="20px" >
@@ -20,7 +33,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
               </Text>
               <Text fontSize="14px">{data.typeName}</Text>
               <Flex alignItems={"center"}>
-                <Text fontSize="12px">How many night</Text>
+                <Text fontSize="12px">{diffDays < 2 ? diffDays + " Night" : diffDays + " Nights"}</Text>
                 <BsDot />
                 <BsFillPersonFill fontSize={"12px"} />
                 <Text fontSize="12px" ml={1}>{totalGuest} {totalGuest < 2 ? "Guest" : "Guests"} </Text>
@@ -31,11 +44,11 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
         <Flex direction="column" mt="20px" mb="30px">
           <Flex justifyContent="space-between">
             <Text>Check in</Text>
-            <Text>{format(new Date(startDate), "E MMM, dd yyyy")}</Text>
+            <Text>{startDate == "" || startDate == null? "" : format(new Date(startDate), "E MMM, dd yyyy")}</Text>
           </Flex>
           <Flex justifyContent="space-between">
             <Text>Check out</Text>
-            <Text>{format(new Date(endDate), "E MMM, dd yyyy")}</Text>
+            <Text>{startDate == "" || startDate == null ? "": format(new Date(endDate), "E MMM, dd yyyy") }</Text>
           </Flex>
           <Flex justifyContent="space-between" mt="20px">
             <Text>TOTAL</Text>
