@@ -24,6 +24,7 @@ app.use(express.static("src/public"));
 // NOTE : Add your routes here
 const { userRouter, categoryRouter, tenantRouter, propertyRouter, transactionRouter } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
+const { transactionController } = require("./controller");
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
 app.use("/api", tenantRouter);
@@ -71,6 +72,6 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
-
+transactionController.changeStatus()
 //dbSequelize.sync();
 dbCheckConnection();

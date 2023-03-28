@@ -1,14 +1,15 @@
-import { Box, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react";
+import { Box, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea, useMediaQuery } from "@chakra-ui/react";
 import { useState } from "react";
 
 const SpecialReq = ({handleChange, othercheckHandle}) => {
   const [isOther, setIsOther] = useState(false);
   const [values , setValues] = useState("");
+  const [isMobile] = useMediaQuery("(max-width: 760px)");
   const onCheckedHandler = () =>{
     isOther ? setIsOther(false) : setIsOther(true)
   }
   return (
-    <Box  rounded="md" shadow={"lg"} ml="20px" mt="30px" mb="30px"  background={"white"}>
+    <Box  rounded="md" shadow={isMobile ? "none":"lg"} ml={isMobile? "0px": "20px"} mt={isMobile? "0px":"30px"} mb="30px"  background={"white"}>
       <Flex direction={"column"} m="20px">
         <Text fontWeight="600" fontSize="24px" mt="20px" mb="20px">
           Special Request

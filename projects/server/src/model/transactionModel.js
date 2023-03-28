@@ -45,6 +45,10 @@ const transactionModel = dbSequelize.define("transactions", {
     specialReq: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    transactionExpired: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
 })
 

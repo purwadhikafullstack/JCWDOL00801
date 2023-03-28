@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { Box, Button, Flex, useUnmountEffect } from "@chakra-ui/react";
+import { Box, Button, Flex, useMediaQuery, useUnmountEffect } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -9,12 +9,13 @@ import PaymentMethod from "./PaymentMethod";
 import SpecialReq from "./SpecialReqForm";
 import { clearAllDate, clearDobAction } from "../actions/dateAction";
 import Swal from "sweetalert2";
+import {format, addHours, addDays} from "date-fns"
 
-const PaymentDetail = () => {
+const PaymentDetail = (props) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+  const [isMobile] = useMediaQuery("(max-width: 760px)");
   const [totalGuest, setTotalGuest] = useState(1);
   const [bankAccountNum, setAccountNum] = useState("");
   const [bankId, setBankId] = useState(0);
@@ -109,6 +110,7 @@ const PaymentDetail = () => {
                 bankId,
                 bankAccountNum,
                 propertyId: searchQuery.get("id"),
+                transactionExpired: format(addDays(new Date(), 2), "yyyy-MM-dd HH:mm:ss")
               },
               {
                 headers: {
@@ -170,9 +172,9 @@ const PaymentDetail = () => {
     };
   }, []);
   return (
-    <Box style={{ padding: "0px 0px 0px 160px" }} backgroundColor="#F0FFF4">
-      <Flex direction="row" justifyContent={"flex-start"}>
-        <Flex direction={"column"} w="50%">
+    <Box style={{ padding: isMobile ? "0px" : "0px 0px 0px 160px" }} backgroundColor="#F0FFF4">
+      <Flex direction={isMobile ? "column" :"row"} justifyContent={"flex-start"}>
+        <Flex direction={"column"} w={isMobile? "100%":"50%"} order={isMobile ? 2 : 1}>
           <GuestBookingForm
             setTotalGuestHandler={setTotalGuestHandler}
             name={name}
@@ -184,7 +186,7 @@ const PaymentDetail = () => {
           <PaymentMethod data={data} setBankIdHandler={setBankIdHandler} />
           <SpecialReq handleChange={handleChange} othercheckHandle={othercheckHandle} />
         </Flex>
-        <Flex direction={"column"} w="50%" ml="40px">
+        <Flex direction={"column"} w={isMobile? "100%" : "50%"} ml={isMobile? "0px":"40px"} order={isMobile? 1: 2}>
           <BookingDetail
             totalGuest={totalGuest}
             data={data}
@@ -193,7 +195,7 @@ const PaymentDetail = () => {
           />
         </Flex>
       </Flex>
-      <Box display="flex" w="50%" justifyContent={"flex-end"}>
+      <Box display="flex" w={isMobile? "100%" : "50%"} justifyContent={"flex-end"}>
         <Button
           colorScheme={"green"}
           variant="solid"

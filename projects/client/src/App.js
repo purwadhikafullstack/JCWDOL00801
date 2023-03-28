@@ -25,6 +25,7 @@ import PaymentMethod from "./components/PaymentMethod";
 import PaymentDetail from "./components/PaymentDetail";
 import PropertyDetail from "./pages/PropertyDetail";
 import { clearAllDate } from "./actions/dateAction";
+import PaymentProofPage from "./pages/PaymentProof";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -54,7 +55,6 @@ function App() {
             },
           }
         );
-        console.log(res.data.result);
         dispatch(loginAction(res.data.result));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
@@ -67,13 +67,19 @@ function App() {
       localStorage.removeItem("renthaven1");
     }
   };
-  // const [message, setMessage] = useState("");
+  const updateStatusAuto = async () =>{
+    try {
+      let res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/reload-status-transaction")
+      console.log(res)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     keepLogin();
     console.log(isOpen);
     if(window.location.pathname != "/payment"){
-      console.log("Jalan")
       dispatch(clearAllDate())
     }
   }, [isOpen]);
@@ -268,8 +274,9 @@ function App() {
               }
             />
             <Route path="/*" element={<NotFoundPage />} />
-            <Route path="/detail" element={<PropertyDetail />} />
-            <Route path="/payment" element={<PaymentDetail />} />
+            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
+            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>
+            <Route path="/payment-proof" element={<PaymentProofPage/>} isMobile={isMobile}/>
           </Routes>
           <Footer />
         </>
@@ -279,3 +286,4 @@ function App() {
 }
 
 export default App;
+

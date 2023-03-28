@@ -15,12 +15,18 @@ const {
   QueryTypes,
   Op
 } = require("sequelize");
+const {format, addHours, addDays} = require("date-fns")
 
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
-      let newStartDate = req.body.startDate.toString().slice(0, -1).slice(0, 19).replace('T', ' ')
-      let newEndDate = req.body.endDate.toString().slice(0, -1).slice(0, 19).replace('T', ' ')
+      console.log("currentDate", new Date());
+      const date1 = new Date(req.body.startDate);
+      const date2 = new Date(req.body.endDate);
+      const diffTime = Math.abs(date2 - date1);
+      const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const newStartDate = format(new Date(), "yyyy-MM-dd HH:mm:ss")
+      const newEndDate = format(addDays(new Date(), diffDay), "yyyy-MM-dd HH:mm:ss")
       const data = await dbSequelize.query(`SELECT 
       MIN(t.price) AS price, 
       p.name, 
@@ -90,8 +96,12 @@ module.exports = {
     const {
       id
     } = req.params;
-    let newStartDate = req.body.startDate.toString().slice(0, -1).slice(0, 19).replace('T', ' ')
-    let newEndDate = req.body.endDate.toString().slice(0, -1).slice(0, 19).replace('T', ' ')
+    const date1 = new Date(req.body.startDate);
+      const date2 = new Date(req.body.endDate);
+      const diffTime = Math.abs(date2 - date1);
+      const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const newStartDate = format(new Date(), "yyyy-MM-dd HH:mm:ss")
+      const newEndDate = format(addDays(new Date(), diffDay), "yyyy-MM-dd HH:mm:ss")
     try {
       let property = await propertyModel.findOne({
         where: {
@@ -186,26 +196,22 @@ module.exports = {
 `, {
         type: QueryTypes.SELECT
       })
-      console.log("ROOM NOT AVAIL =>", roomNotAvail)
       if (roomAvail.length > 0) {
         let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
         let bookedRooms = roomAvail.map((val) => ({
           typeId: val.typeId
         }))
-        console.log("BOOKED", bookedRooms)
         let type = await typeModel.findAll({
           where: {
             [Op.or]: bookedRooms
           },
           order: ["price"],
         });
-        console.log(type)
         if (notAvail.length > 0) {
           let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
           where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
             type: QueryTypes.SELECT
           })
-          console.log("CURRENT", notAvailRooms)
           return res.status(200).send({
             success: true,
             message: "roomAvail.length > 0",
@@ -219,8 +225,6 @@ module.exports = {
             userTenant
           });
         }
-
-        // console.log("bookedRooms ->", bookedRooms);
         return res.status(200).send({
           success: true,
           message: "roomAvail.length > 0",
@@ -237,7 +241,6 @@ module.exports = {
       let bookedRooms = roomAvail.map((val) => ({
         typeId: val.typeId
       }))
-      console.log("BOOKED", bookedRooms)
       let type = await typeModel.findAll({
         where: {
           [Op.or]: bookedRooms
@@ -248,7 +251,6 @@ module.exports = {
           where p.propertyId = ${property.propertyId} ${notAvail.length > 0 ? " AND " : ""} ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
         type: QueryTypes.SELECT
       })
-      console.log("CURRENT", notAvailRooms)
       return res.status(200).send({
         success: true,
         message: "roomAvail.length > 0",
