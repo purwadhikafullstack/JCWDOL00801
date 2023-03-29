@@ -114,4 +114,5 @@
 }
 
 .pagination-link-disabled {
+  cursor: not-allowed;
 }

@@ -24,6 +24,7 @@ import AddProperty from "./pages/AddProperty";
 import AddPropertyRoom from "./pages/AddPropertyRoom";
 import PropertyFormEdit from "./components/PropertyFormEdit";
 import ManageCategories from "./pages/ManageCategories";
+import OrderHistory from "./pages/OrderHistory";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -53,7 +54,6 @@ function App() {
             },
           }
         );
-        console.log(res.data.result);
         if (res.data.tenant !== undefined) {
           dispatch(setTenantAction(res.data.tenant));
           dispatch(setTenantAction(res.data.tenant.bank));
@@ -244,6 +244,7 @@ function App() {
                 }
               />
               <Route path="/manage-categories" element={<ManageCategories />} />
+              <Route path="/orderlist" element={<OrderHistory />} />
               <Route path="/*" />
             </Routes>
           </div>

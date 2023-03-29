@@ -204,7 +204,6 @@ module.exports = {
         ],
         where: { userId: data[0].userId },
       });
-      console.log(data[0].isVerified);
       let token = createToken({
         ...data,
       });
@@ -370,7 +369,6 @@ module.exports = {
       }
 
       const check = bcrypt.compareSync(oldPass, data[0].password);
-      console.log(check);
 
       if (check != false) {
         const pass = encryptPassword(password);
@@ -384,7 +382,6 @@ module.exports = {
             },
           }
         );
-        console.log(`update`, update);
         if (update) {
           return res.status(200).send({
             success: true,
@@ -443,17 +440,11 @@ module.exports = {
       const dobField = dob || dob != "" ? dob : data[0].dob;
       const emailField = newEmail || newEmail != "" ? newEmail : data[0].email;
 
-      console.log(`name`, nameField);
-      console.log(`gender`, genderField);
-      console.log(`dob`, dobField);
-      console.log(`email`, emailField);
-
       let update = await userModel.update(
         { name: nameField, gender: genderField, dob: dobField, email: emailField },
         { where: { email } }
       );
 
-      console.log(update);
       const message = newEmail
         ? `Data Updated Successfully, Please re-login to your account`
         : `Data Updated Successfully`;

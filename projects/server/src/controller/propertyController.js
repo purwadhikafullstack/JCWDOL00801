@@ -82,7 +82,6 @@ module.exports = {
   },
   create: async (req, res) => {
     try {
-      console.log(req.body);
       const pathName = req.files[0].destination.split("/");
       const propertyImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
 
@@ -112,32 +111,32 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      const check = await orderListModel.findAll({
-        include: [
-          {
-            model: transactionModel,
-            as: "transaction",
-            required: true,
-            where: {
-              [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
-            },
-          },
-          {
-            model: roomModel,
-            as: "room",
-            required: true,
-            include: {
-              model: propertyModel,
-              as: "property",
-              required: true,
-              where: {
-                propertyId: req.params.propertyId,
-              },
-            },
-          },
-        ],
-      });
-      console.log(`check:`, check);
+      // akan ditambahkan ketika fitur transaksi sudah di merge
+      // const check = await orderListModel.findAll({
+      //   include: [
+      //     {
+      //       model: transactionModel,
+      //       as: "transaction",
+      //       required: true,
+      //       where: {
+      //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+      //       },
+      //     },
+      //     {
+      //       model: roomModel,
+      //       as: "room",
+      //       required: true,
+      //       include: {
+      //         model: propertyModel,
+      //         as: "property",
+      //         required: true,
+      //         where: {
+      //           propertyId: req.params.propertyId,
+      //         },
+      //       },
+      //     },
+      //   ],
+      // });
       let update = await propertyModel.update(req.body, {
         where: {
           propertyId: req.params.propertyId,

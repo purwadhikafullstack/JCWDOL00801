@@ -68,7 +68,6 @@ function PropertyList(props) {
     if (filterAddress !== "") {
       reqQuery.push(`address=${filterAddress}`);
     }
-    console.log(endpoint + reqQuery.join("&"));
     try {
       let response = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
@@ -79,7 +78,6 @@ function PropertyList(props) {
       setRows(response.data.totalRows);
     } catch (error) {
       console.log(error);
-      setPropertyData([]);
     }
   };
 
@@ -89,7 +87,6 @@ function PropertyList(props) {
       setCity(response.data);
     } catch (error) {
       console.log(error);
-      setCity([]);
     }
   };
 

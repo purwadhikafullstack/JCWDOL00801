@@ -14,6 +14,14 @@ import {
   Select,
   Text,
   IconButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import Axios from "axios";
@@ -21,7 +29,8 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
 
-function ManageCategories(props) {
+function OrderHistory(props) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { tenantId } = useSelector((state) => {
     return {
       tenantId: state.tenantReducer.tenantId,
@@ -40,9 +49,9 @@ function ManageCategories(props) {
 
   const [province, setProvince] = React.useState([]);
   const [city, setCity] = React.useState([]);
-  const [isOpen, setIsOpen] = React.useState(false);
   const [selectedProvince, setSelectedProvince] = React.useState("");
   const [selectedCity, setSelectedCity] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = React.useState(null);
 
   const getCategoryData = async () => {
     let endpoint = [`/category?tenant=${tenantId}&limit=${limit}&page=${page}&`];
@@ -57,6 +66,7 @@ function ManageCategories(props) {
     if (queryData !== "") {
       reqQuery.push(`search=${queryData}`);
     }
+    console.log(endpoint + reqQuery.join("&"));
     try {
       let response = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
@@ -114,6 +124,21 @@ function ManageCategories(props) {
             <Text>{province}</Text>
           </Td>
           <Td>{city}</Td>
+          <Td>{city}</Td>
+          <Td>{city}</Td>
+          <Td>{city}</Td>
+          <Td>
+            <Select>
+              <option value="option1" hidden>
+                Action
+              </option>
+              <option value="option2">Confirm</option>
+              <option value="option3">Reject</option>
+              <option value="option4" onClick={onOpen}>
+                Details
+              </option>
+            </Select>
+          </Td>
         </Tr>
       );
     });
@@ -123,45 +148,6 @@ function ManageCategories(props) {
     e.preventDefault();
     setPage(0);
     setQueryData(searchData);
-  };
-
-  const handleSort = (data) => {
-    setSortData(data);
-    setDesc(!desc);
-  };
-
-  const onBtnAdd = async () => {
-    const provinceName = province.filter((province) => {
-      return province.id === selectedProvince;
-    });
-    try {
-      let response = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/category/regis", {
-        province: provinceName[0].name,
-        city: selectedCity,
-        tenantId: tenantId,
-      });
-      if (response.data.success) {
-        Swal.fire({
-          icon: "success",
-          title: response.data.message,
-          confirmButtonText: "OK",
-          confirmButtonColor: "#48BB78",
-        }).then(() => {
-          setIsOpen(false);
-          setSelectedProvince("");
-          setSelectedCity("");
-          getCategoryData();
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: error.response.data.message,
-        confirmButtonText: "OK",
-        confirmButtonColor: "#48BB78",
-      });
-    }
   };
 
   const onBtnReset = () => {
@@ -192,76 +178,22 @@ function ManageCategories(props) {
 
   useEffect(() => {
     getCategoryData();
-  }, [page, queryData, desc]);
+  }, [page, queryData, selectedStatus]);
 
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>
-      <Heading mb={6}>Manage Categories</Heading>
+      <Heading mb={6}>Order History</Heading>
       <Flex direction="column">
         <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
           <Flex direction="column" gap={6}>
-            {!isOpen ? (
-              <Button
-                colorScheme="green"
-                variant="outline"
-                onClick={() => {
-                  setIsOpen(true);
-                }}
-              >
-                <AddIcon boxSize={3} mr={2} />
-                Add New Category
-              </Button>
-            ) : null}
-            {isOpen ? (
-              <Stack gap={3}>
-                <Heading size="md">Add Category</Heading>
-                <Flex direction="column" gap={3}>
-                  <FormControl>
-                    <FormLabel>Province</FormLabel>
-                    <Select
-                      value={selectedProvince}
-                      placeholder="Select province"
-                      onChange={(e) => setSelectedProvince(e.target.value)}
-                    >
-                      {province.map((val, idx) => {
-                        return (
-                          <option value={val.id} key={idx}>
-                            {val.name}
-                          </option>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                  {city.length !== 0 ? (
-                    <FormControl>
-                      <FormLabel>City</FormLabel>
-                      <Select
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        placeholder="Select city"
-                      >
-                        {city.map((val, idx) => {
-                          return <option key={idx}>{val.name}</option>;
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : null}
-                </Flex>
-                <Flex justify="space-between" gap={3}>
-                  <Button onClick={() => setIsOpen(false)} colorScheme="green" variant="ghost">
-                    Cancel
-                  </Button>
-                  <Button isDisabled={selectedCity === ""} onClick={onBtnAdd} colorScheme="green">
-                    Add
-                  </Button>
-                </Flex>
-                <Divider />
-              </Stack>
-            ) : null}
             <Heading size="md">Search by</Heading>
             <Flex direction="column" gap={3}>
               <FormControl>
-                <FormLabel>Province or City</FormLabel>
+                <FormLabel>Booking Number</FormLabel>
+                <Input value={searchData} onChange={(e) => setSearchData(e.target.value)} />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Property</FormLabel>
                 <Input value={searchData} onChange={(e) => setSearchData(e.target.value)} />
               </FormControl>
             </Flex>
@@ -278,32 +210,66 @@ function ManageCategories(props) {
             <Divider orientation="vertical" />
           </Center>
           <TableContainer width="100%">
-            <Flex mb={4} gap={3}>
-              Sort By:
+            <Flex mb={4} gap={3} align="center">
+              Status:
               <Button
-                colorScheme="green"
-                variant="link"
+                colorScheme="yellow"
+                variant="outline"
                 onClick={() => {
-                  handleSort("province");
+                  selectedStatus === "Waiting for payment"
+                    ? setSelectedStatus(null)
+                    : setSelectedStatus("Waiting for payment");
                 }}
+                isActive={selectedStatus === "Waiting for payment"}
               >
-                Province
+                Waiting for payment
+              </Button>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                onClick={() => {
+                  selectedStatus === "Waiting for confirmation"
+                    ? setSelectedStatus(null)
+                    : setSelectedStatus("Waiting for confirmation");
+                }}
+                isActive={selectedStatus === "Waiting for confirmation"}
+              >
+                Waiting for confirmation
               </Button>
               <Button
                 colorScheme="green"
-                variant="link"
+                variant="outline"
                 onClick={() => {
-                  handleSort("city");
+                  selectedStatus === "Confirmed"
+                    ? setSelectedStatus(null)
+                    : setSelectedStatus("Confirmed");
                 }}
+                isActive={selectedStatus === "Confirmed"}
               >
-                City
+                Confirmed
+              </Button>
+              <Button
+                colorScheme="red"
+                variant="outline"
+                onClick={() => {
+                  selectedStatus === "Cancelled"
+                    ? setSelectedStatus(null)
+                    : setSelectedStatus("Cancelled");
+                }}
+                isActive={selectedStatus === "Cancelled"}
+              >
+                Cancelled
               </Button>
             </Flex>
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th>Province</Th>
-                  <Th>City</Th>
+                  <Th>Booking Number</Th>
+                  <Th>Property Name</Th>
+                  <Th>Room Type</Th>
+                  <Th>Price</Th>
+                  <Th>Status</Th>
+                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>{renderCategoryData()}</Tbody>
@@ -349,8 +315,21 @@ function ManageCategories(props) {
           </nav>
         </Flex>
       </Flex>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Order Details</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Heading size="md">Booking No: </Heading>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }
 
-export default ManageCategories;
+export default OrderHistory;

@@ -74,7 +74,6 @@ function EditBankNameBtn(props) {
       setBanks(response.data);
     } catch (error) {
       console.log(error);
-      setBanks([]);
     }
   };
 

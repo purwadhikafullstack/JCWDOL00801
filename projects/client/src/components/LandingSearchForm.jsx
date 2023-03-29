@@ -18,7 +18,6 @@ function LandingSearchForm(props) {
       setProvince(response.data);
     } catch (error) {
       console.log(error);
-      setProvince([]);
     }
   };
 
@@ -31,7 +30,6 @@ function LandingSearchForm(props) {
         setCity(response.data);
       } catch (error) {
         console.log(error);
-        setCity([]);
       }
     }
   };

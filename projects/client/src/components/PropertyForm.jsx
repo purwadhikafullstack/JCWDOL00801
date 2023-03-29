@@ -39,7 +39,6 @@ function PropertyForm(props) {
       setCity(response.data);
     } catch (error) {
       console.log(error);
-      setCity([]);
     }
   };
 
@@ -54,7 +53,6 @@ function PropertyForm(props) {
       formData.append("address", values.address);
       formData.append("desc", values.description);
       formData.append("images", values.image);
-      console.log(formData);
       let response = await Axios.post(
         process.env.REACT_APP_API_BASE_URL + "/property/new",
         formData

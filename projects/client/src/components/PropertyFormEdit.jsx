@@ -43,7 +43,6 @@ function PropertyFormEdit(props) {
       setEditData(response.data);
     } catch (error) {
       console.log(error);
-      setEditData([]);
     }
   };
 
@@ -53,7 +52,6 @@ function PropertyFormEdit(props) {
       setCity(response.data);
     } catch (error) {
       console.log(error);
-      setCity([]);
     }
   };
 
@@ -77,7 +75,6 @@ function PropertyFormEdit(props) {
         process.env.REACT_APP_API_BASE_URL + "/property/edit",
         formData
       );
-      console.log(response);
       if (response.data.success) {
         Swal.fire({
           icon: "success",

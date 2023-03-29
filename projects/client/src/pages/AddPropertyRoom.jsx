@@ -42,7 +42,6 @@ function AddPropertyRoom() {
       setCity(response.data);
     } catch (error) {
       console.log(error);
-      setCity([]);
     }
   };
 

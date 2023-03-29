@@ -1,4 +1,4 @@
-import { Box, Container, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import React from "react";
 import PropertyList from "../components/PropertyList";
 

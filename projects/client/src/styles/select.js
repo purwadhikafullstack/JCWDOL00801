@@ -14,6 +14,9 @@ const baseStyle = definePartsStyle({
       ring: "2px",
       borderColor: "green.400",
     },
+    _hover: {
+      cursor: "pointer",
+    },
   },
 });
 
