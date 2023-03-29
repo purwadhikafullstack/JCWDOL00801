@@ -50,7 +50,6 @@ module.exports = {
   },
   createTransaction: async (req, res) => {
     try {
-
       const {
         specialReq,
         totalGuest,
@@ -73,7 +72,7 @@ module.exports = {
       const newCheckoutDate = format(addDays(new Date(), diffDay), "yyyy-MM-dd HH:mm:ss")
       console.log("NEW CHECKIN AND CHECKOUT", newCheckinDate, newCheckoutDate)
       const data = await dbSequelize.query(`
-        SELECT * from rooms as r WHERE r.roomId NOT IN (
+        SELECT * from rooms as r WHERE r.propertyId = ${propertyId} AND r.roomId NOT IN (
           SELECT ra.roomId 
               FROM roomavailabilities AS ra
               WHERE 
@@ -187,7 +186,7 @@ module.exports = {
       })
       if (user.length > 0) {
         const data = await transactionModel.update({
-          payProofImg: `/transactionProofImg/${req.files[0].filename}`,
+          payProofImg: `/ProofImg/${req.files[0].filename}`,
           status: "Waiting for confirmation"
         }, {
           where: {

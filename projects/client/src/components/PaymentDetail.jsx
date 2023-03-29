@@ -197,6 +197,7 @@ const PaymentDetail = (props) => {
       </Flex>
       <Box display="flex" w={isMobile? "100%" : "50%"} justifyContent={"flex-end"}>
         <Button
+        isDisabled={bankId === 0 ? true : false}
           colorScheme={"green"}
           variant="solid"
           size="lg"

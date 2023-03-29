@@ -3,7 +3,7 @@ import * as yup from "yup";
 const FILE_SIZE = 1000000;
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
 
-export const profilePictureSchema = yup.object().shape({
+export const ktpAndProofVal = yup.object().shape({
   image: yup
     .mixed()
     .required("A file is required")

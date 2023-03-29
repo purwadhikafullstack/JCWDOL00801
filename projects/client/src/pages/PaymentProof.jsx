@@ -6,6 +6,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { format, addHours } from "date-fns";
 import { MdCancel } from "react-icons/md";
+import { useFormik } from "formik";
+import { ktpAndProofVal } from "../schemas/ktpAndProofVal";
 
 const {
   Box,
@@ -16,6 +18,16 @@ const {
   AlertIcon,
   useMediaQuery,
   Alert,
+  FormControl,
+  FormErrorMessage,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
 } = require("@chakra-ui/react");
 
 const PaymentProofPage = (props) => {
@@ -26,40 +38,15 @@ const PaymentProofPage = (props) => {
   const [searchQuery, setSearchQuery] = useSearchParams();
   const navigate = useNavigate();
   const [isMobile] = useMediaQuery("(max-width: 760px)");
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const pictureChangeHandler = (e) => {
+    setFieldValue("image", e.target.files[0]);
     setFile(e.target.files[0]);
     setImage(URL.createObjectURL(e.target.files[0]));
   };
   const removePreview = () => {
     setFile(null);
     setImage(null);
-  };
-  const uploadProofHandler = async () => {
-    try {
-      let data1 = new FormData();
-      data1.append("transactionId", searchQuery.get("id"));
-      data1.append("images", selectedFile);
-      const getLocalStorage = localStorage.getItem("renthaven1");
-      if (getLocalStorage) {
-        const res = await Axios.post(
-          process.env.REACT_APP_API_BASE_URL + "/transaction/upload-proof",data1,
-          {
-            headers: {
-              Authorization: `Bearer ${getLocalStorage}`,
-            },
-          }
-        );
-        console.log(res.data)
-        Swal.fire({
-          title: "Payment proof uploaded",
-          icon: "success",
-          confirmButtonText: "Confirm",
-          confirmButtonColor: "#48BB78",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
   const getData = async () => {
     try {
@@ -95,6 +82,60 @@ const PaymentProofPage = (props) => {
       console.log(error);
     }
   };
+  const uploadProofHandler = async () => {
+    try {
+      let data1 = new FormData();
+      data1.append("transactionId", searchQuery.get("id"));
+      data1.append("images", selectedFile);
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const response = await Swal.fire({
+          title: "Are you sure you want to upload?",
+          icon: "info",
+          showDenyButton: true,
+          denyButtonColor: "red",
+          denyButtonText: "Cancel",
+          confirmButtonText: "Confirm",
+          confirmButtonColor: "#48BB78",
+          customClass: {
+            confirmButton: "order-2",
+            denyButton: "order-1",
+          },
+        });
+        if (response.isConfirmed) {
+          const res = await Axios.post(
+            process.env.REACT_APP_API_BASE_URL + "/transaction/upload-proof",
+            data1,
+            {
+              headers: {
+                Authorization: `Bearer ${getLocalStorage}`,
+              },
+            }
+          );
+          console.log(res.data);
+          Swal.fire({
+            title: "Payment proof uploaded",
+            icon: "success",
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#48BB78",
+          }).then((res) => {
+            getData()
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+ 
+  //Formik configuration
+  const { values, errors, touched, handleBlur, setFieldValue, handleSubmit } = useFormik({
+    initialValues: {
+      image: undefined,
+    },
+    validationSchema: ktpAndProofVal,
+    onSubmit: uploadProofHandler,
+  });
   useEffect(() => {
     getData();
   }, []);
@@ -125,82 +166,113 @@ const PaymentProofPage = (props) => {
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "Sorry, it seems that you have exceeded payment time limit"
-              : "Thank you for booking our room"}
+              : data.payProofImg != null ? "Thank you!":"Thank you for booking our room"}
           </Text>
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "or the hotel has cancelled your booking ID"
-              : "Please kindly finish your payment to the following bank account"}
+              : data.payProofImg != null ? "You have uploaded the payment proof" : "Please kindly finish your payment to the following bank account"}
           </Text>
 
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" : data.bankAccountNum}
+            {isExpired ? "" : data.payProofImg != null ? "Please kindly wait for the hotel to confirm your transaction" : data.bankAccountNum}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" : data.bankName}
+            {isExpired ? "" : data.payProofImg != null ? "" : data.bankName}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
             {isExpired
               ? ""
-              : parseInt(data.price).toLocaleString("id", { style: "currency", currency: "IDR" })}
+              : data.payProofImg != null ? "" : parseInt(data.price).toLocaleString("id", { style: "currency", currency: "IDR" })}
           </Text>
           <Text mb={isExpired ? "20px" : ""}>
             {isExpired
               ? ""
-              : `Please upload the payment before ${new Date(
+              : data.payProofImg != null ? <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> : `Please upload the payment before ${new Date(
                   data.transactionExpired
                 ).toLocaleTimeString("EN")}`}
           </Text>
+          {data.payProofImg != null ? <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <Image src={`http://localhost:8000${data.payProofImg}`}/>
+          </ModalBody> </ModalContent> </Modal> : ""}
           {isExpired ? (
             ""
           ) : (
-            <>
-              <Input
-                type="file"
-                _hover={{
-                  cursor: "pointer",
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <FormControl
+                isInvalid={errors.image && touched.image ? true : false}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-                p="0"
-                sx={{
-                  "::file-selector-button": {
+              >
+                <Input
+                  required
+                  type="file"
+                  _hover={{
                     cursor: "pointer",
-                    height: 10,
-                    padding: 2,
-                    mr: 4,
-                    border: "none",
-                    background: "gray.100",
-                    fontSize: "md",
-                    fontFamily: "Inter, sans-serif",
-                    color: "gray.700",
-                  },
-                }}
-                onChange={pictureChangeHandler}
-                name="image"
-                w="50%"
-                mt={3.5}
-                mb={3.5}
-                accept={"image/*"}
-              />
-              {selectedImage == null ? (
-                ""
-              ) : (
-                <Box w="60%">
-                  <Flex direction="column">
-                    <Flex justifyContent="flex-end">
-                      <p onClick={removePreview} style={{ cursor: "pointer" }}>
-                        ❌
-                      </p>
+                  }}
+                  p="0"
+                  sx={{
+                    "::file-selector-button": {
+                      cursor: "pointer",
+                      height: 10,
+                      padding: 2,
+                      mr: 4,
+                      border: "none",
+                      background: "gray.100",
+                      fontSize: "md",
+                      fontFamily: "Inter, sans-serif",
+                      color: "gray.700",
+                    },
+                  }}
+                  onBlur={handleBlur}
+                  onChange={pictureChangeHandler}
+                  name="image"
+                  w="50%"
+                  mt={3.5}
+                  mb={3}
+                  accept={"image/*"}
+                />
+                {selectedImage == null ? (
+                  ""
+                ) : (
+                  <Box w="60%">
+                    <Flex direction="column">
+                      <Flex justifyContent="flex-end">
+                        <p onClick={removePreview} style={{ cursor: "pointer" }}>
+                          ❌
+                        </p>
+                      </Flex>
+                      <Flex direction="column" justifyContent="center" alignItems="center" mb={6}>
+                        <img src={selectedImage} alt="Thumb" width="200px" height="100px" />
+                      </Flex>
                     </Flex>
-                    <Flex direction="column" justifyContent="center" alignItems="center" mb={6}>
-                      <img src={selectedImage} alt="Thumb" width="200px" height="100px" />
-                    </Flex>
-                  </Flex>
+                  </Box>
+                )}
+                <FormErrorMessage fontSize="sm" mb={"20px"}>
+                  {errors.image}
+                </FormErrorMessage>
+                <Box>
+                  <Button
+                    isDisabled={errors.image && touched.image ? true : false}
+                    variant="solid"
+                    colorScheme={"green"}
+                    mb="20px"
+                    onClick={uploadProofHandler}
+                  >
+                    Upload
+                  </Button>
                 </Box>
-              )}
-              <Button variant="solid" colorScheme={"green"} mb="20px" onClick={uploadProofHandler}>
-                Upload
-              </Button>
-            </>
+              </FormControl>
+            </form>
           )}
         </Box>
       </Flex>
