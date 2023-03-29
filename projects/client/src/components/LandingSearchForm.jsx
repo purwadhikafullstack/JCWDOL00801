@@ -1,25 +1,48 @@
 import { Box, Button, Container, FormLabel, Heading, Stack, VStack } from "@chakra-ui/react";
-import { FormControl, Select } from "@chakra-ui/react";
+import { FormControl, Select, Flex } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import CalendarDateRange from "./CalendarDateRange";
 import { SearchIcon } from "@chakra-ui/icons";
 import Axios from "axios";
 
 function LandingSearchForm(props) {
+  const [province, setProvince] = React.useState([]);
+  const [selectedProvince, setSelectedProvince] = React.useState("");
   const [city, setCity] = React.useState([]);
 
-  const getCityData = async () => {
+  const getProvinceData = async () => {
     try {
-      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/category");
-      setCity(response.data);
+      let response = await Axios.get(
+        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+      );
+      setProvince(response.data);
     } catch (error) {
       console.log(error);
-      setCity([]);
+      setProvince([]);
     }
   };
+
+  const getCityData = async () => {
+    if (province.length !== 0) {
+      try {
+        let response = await Axios.get(
+          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+        );
+        setCity(response.data);
+      } catch (error) {
+        console.log(error);
+        setCity([]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getProvinceData();
+  }, []);
+
   useEffect(() => {
     getCityData();
-  }, []);
+  }, [selectedProvince]);
 
   return (
     <Container maxW="container.lg">
@@ -28,16 +51,34 @@ function LandingSearchForm(props) {
           Search for a place to stay
         </Heading>
         <VStack alignItems="start" spacing={7}>
-          <Box minW="100%">
+          <Flex direction="column" gap={6} minW="100%">
             <FormControl>
-              <FormLabel>City</FormLabel>
-              <Select placeholder="Select city">
-                {city.map((val, idx) => {
-                  return <option key={idx}>{`${val.province}, ${val.city}`}</option>;
+              <FormLabel>Province</FormLabel>
+              <Select
+                value={selectedProvince}
+                placeholder="Select province"
+                onChange={(e) => setSelectedProvince(e.target.value)}
+              >
+                {province.map((val, idx) => {
+                  return (
+                    <option value={val.id} key={idx}>
+                      {val.name}
+                    </option>
+                  );
                 })}
               </Select>
             </FormControl>
-          </Box>
+            {city.length !== 0 ? (
+              <FormControl>
+                <FormLabel>City</FormLabel>
+                <Select placeholder="Select city">
+                  {city.map((val, idx) => {
+                    return <option key={idx}>{val.name}</option>;
+                  })}
+                </Select>
+              </FormControl>
+            ) : null}
+          </Flex>
           <Stack
             direction={{ base: "column", md: "row" }}
             spacing={5}

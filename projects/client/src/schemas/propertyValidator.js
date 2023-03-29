@@ -20,4 +20,5 @@ export const propertySchema = yup.object().shape({
     .matches(/^[\d +]+$/, { message: "Please input the valid phone number" })
     .required("Please input your phone number"),
   description: yup.string(),
+  city: yup.string().required("Required"),
 });

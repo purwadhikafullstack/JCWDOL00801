@@ -1,14 +1,13 @@
-import { Container } from "@chakra-ui/react";
+import { Box, Container, Heading, Text } from "@chakra-ui/react";
 import React from "react";
-import CreateProperty from "../components/CreateProperty";
 import PropertyList from "../components/PropertyList";
 
 function Property(props) {
   return (
-    <Container maxW={{ base: "container", md: "container.xl" }}>
-      <CreateProperty />
+    <Box pb="5" px={{ base: "5", md: "20" }}>
+      <Heading mb={6}>Manage Properties</Heading>
       <PropertyList />
-    </Container>
+    </Box>
   );
 }
 

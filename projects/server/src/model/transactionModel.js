@@ -22,6 +22,10 @@ const transactionModel = dbSequelize.define("transactions", {
         type: DataTypes.DATE,
         allowNull: false
     },
+    payProofImg: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     status: {
         type: DataTypes.STRING,
         defaultValue: "Waiting for payment"

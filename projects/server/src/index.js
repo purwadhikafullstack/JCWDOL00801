@@ -16,17 +16,24 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.static("src/public"));
 
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
-const { userRouter, categoryRouter, tenantRouter } = require("./router");
+const {
+  userRouter,
+  categoryRouter,
+  tenantRouter,
+  propertyRouter,
+  paymentMethodRouter,
+} = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
 app.use("/api", tenantRouter);
+app.use("/api", propertyRouter);
+app.use("/api", paymentMethodRouter);
 
 // ===========================
 

@@ -24,6 +24,7 @@ import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
+import { tenantLogout } from "../actions/tenantAction";
 
 const Links = ["Home", "Contact"];
 
@@ -55,6 +56,7 @@ function Header(props) {
   });
   const logoutHandler = () => {
     dispatch(logoutAction());
+    dispatch(tenantLogout());
     localStorage.removeItem("renthaven1");
     navigate("/signin", { replace: true });
     window.location.reload();
@@ -63,7 +65,7 @@ function Header(props) {
     <Box shadow="sm">
       <Container p={0} maxW={{ md: "container.xl" }}>
         <Box px={4}>
-          <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+          <Flex h={16} alignItems={"center"} justifyContent="space-between">
             <HStack spacing={8} alignItems={"center"}>
               <HStack
                 _hover={{
@@ -89,6 +91,7 @@ function Header(props) {
                 <Menu>
                   <MenuButton
                     as={Button}
+                    display={{ base: "none", md: "inline-flex" }}
                     rounded={"full"}
                     variant={"link"}
                     cursor={"pointer"}
@@ -114,6 +117,13 @@ function Header(props) {
                     <MenuItem onClick={logoutHandler}>Logout</MenuItem>
                   </MenuList>
                 </Menu>{" "}
+                <IconButton
+                  size={"md"}
+                  icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+                  aria-label={"Open Menu"}
+                  display={{ md: "none" }}
+                  onClick={isOpen ? onClose : onOpen}
+                />
               </Flex>
             ) : (
               <>
@@ -149,7 +159,7 @@ function Header(props) {
             )}
           </Flex>
 
-          {isOpen ? (
+          {isOpen && !email ? (
             <Box pb={4} display={{ md: "none" }}>
               <Stack as={"nav"} spacing={4}>
                 {Links.map((link) => (
@@ -171,6 +181,35 @@ function Header(props) {
                     onClick={() => navigate("/signup", { replace: true })}
                   >
                     Register
+                  </Button>
+                </Flex>
+              </Stack>
+            </Box>
+          ) : null}
+          {isOpen && email ? (
+            <Box pb={4} display={{ md: "none" }}>
+              <Stack as={"nav"} spacing={4}>
+                <HStack
+                  spacing={7}
+                  _hover={{ cursor: "pointer" }}
+                  onClick={() => navigate("/profile", { replace: true })}
+                >
+                  <Avatar
+                    size={"lg"}
+                    src={
+                      "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                    }
+                  />
+                  <Heading size="md" textTransform="capitalize">
+                    {name.split(" ")[0]}
+                  </Heading>
+                </HStack>
+                {Links.map((link) => (
+                  <NavLink key={link}>{link}</NavLink>
+                ))}
+                <Flex justify="space-between" gap={3}>
+                  <Button minW="100%" variant="outline" colorScheme="green" onClick={logoutHandler}>
+                    Logout
                   </Button>
                 </Flex>
               </Stack>

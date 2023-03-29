@@ -99,6 +99,13 @@ const SignupUserPage = (props) => {
         setGoogleLoading(false);
       });
   };
+  const onInputChange = e => {
+    const { value } = e.target;
+    const re = /^[A-Za-z]+$/;
+    if (value === "" || re.test(value)) {
+      handleChange(e)
+    }
+  }
   const handleSignupFacebook = () => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
@@ -123,9 +130,9 @@ const SignupUserPage = (props) => {
                 confirmButtonColor: "#48BB78",
               })
                 .then((res) => {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", result.data.token);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 })
                 .catch((e) => {
                   console.log(e);
@@ -175,10 +182,10 @@ const SignupUserPage = (props) => {
                 password: values.password,
               }).then((res) => {
                 if (res.data.success == true) {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 }
               });
             });
@@ -254,7 +261,7 @@ const SignupUserPage = (props) => {
                   id="name"
                   style={{ marginTop: "5px" }}
                   value={values.name}
-                  onChange={handleChange}
+                  onChange={onInputChange}
                   onBlur={handleBlur}
                 />
               </FormControl>

@@ -68,11 +68,11 @@ reviewModel.belongsTo(transactionModel, {
   foreignKey: "transactionId",
 });
 
-orderListModel.hasMany(guestModel, {
+guestModel.hasMany(orderListModel, {
   foreignKey: "guestId",
 });
 
-guestModel.belongsTo(orderListModel, {
+orderListModel.belongsTo(guestModel, {
   as: "guest",
   foreignKey: "guestId",
 });
@@ -95,13 +95,13 @@ orderListModel.belongsTo(roomModel, {
   foreignKey: "roomId",
 });
 
-roomModel.hasMany(typeModel, {
-  foreignKey: "roomId",
+typeModel.hasMany(roomModel, {
+  foreignKey: "typeId",
 });
 
 typeModel.belongsTo(roomModel, {
-  as: "room",
-  foreignKey: "roomId",
+  as: "type",
+  foreignKey: "typeId",
 });
 
 propertyModel.hasMany(roomModel, {

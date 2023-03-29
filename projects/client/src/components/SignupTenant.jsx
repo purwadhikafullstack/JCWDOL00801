@@ -108,7 +108,13 @@ const SignupTenantPage = (props) => {
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
     }
   };
-
+  const onInputChange = e => {
+    const { value } = e.target;
+    const re = /^[A-Za-z]+$/;
+    if (value === "" || re.test(value)) {
+      handleChange(e)
+    }
+  }
   const registerHandler = () => {
     setSignupLoading(true);
     let data = new FormData();
@@ -133,10 +139,10 @@ const SignupTenantPage = (props) => {
                 password: values.password,
               }).then((res) => {
                 if (res.data.success == true) {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 }
               });
             });
@@ -148,12 +154,9 @@ const SignupTenantPage = (props) => {
           setSignupLoading(false);
         })
         .catch((e) => {
-          if (e.response.status == 403) {
-            setAlert(`${e.response.data.message}`);
-            onToggle();
-            setSignupLoading(false);
-          }
           console.log(e);
+          alert(e.response.data.message)
+          setAlert(`${e.response.data.message}`)
           setSignupLoading(false);
         });
   };
@@ -181,6 +184,14 @@ const SignupTenantPage = (props) => {
       .matches(/^[\d]+$/, { message: "Only number allowed" })
       .required("Please upload and input your ID number"),
   });
+
+  // const formName = useFormik({
+  //   initialValues: {
+  //     name: '' || props.name,
+  //   },
+  // });
+  
+  // const { values, setFieldValue, onSubmit } = formName;
 
   //Formik configuration
   const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
@@ -220,7 +231,7 @@ const SignupTenantPage = (props) => {
             {alerts == "" ? (
               ""
             ) : (
-              <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
+              <Alert status={"error"} style={{ marginBottom: "20px" }}>
                 <AlertIcon />
                 {alerts}
               </Alert>
@@ -235,7 +246,7 @@ const SignupTenantPage = (props) => {
                   id="name"
                   style={{ marginTop: "5px" }}
                   value={values.name}
-                  onChange={handleChange}
+                  onChange={onInputChange}
                   onBlur={handleBlur}
                 />
               </FormControl>
@@ -305,6 +316,7 @@ const SignupTenantPage = (props) => {
                   onChange={onFileChange}
                   mt={3.5}
                   mb={3.5}
+                  accept={"image/*"}
                 />
 
                 {selectedFile != null && done ? (

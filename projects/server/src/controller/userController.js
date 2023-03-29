@@ -1,5 +1,5 @@
 const { encryptPassword, createToken } = require("../config/encrypt");
-const { userModel } = require("../model");
+const { userModel, tenantModel, paymentMethodModel } = require("../model");
 const bcrypt = require("bcrypt");
 const { transport } = require("../config/nodemailer");
 
@@ -23,7 +23,6 @@ module.exports = {
           email: req.body.email,
         },
       });
-
       if (data.length > 0) {
         res.status(200).send({
           success: false,
@@ -140,14 +139,14 @@ module.exports = {
         ...data,
       });
       if (data.length > 0) {
-        if (req.body.login != "common") {
+        if (req.body.login != "common" && data[0].role == "user") {
           res.status(200).send({
             success: true,
             message: "Login successfull",
             result: data[0],
             token,
           });
-        } else if (req.body.login == "common") {
+        } else if (req.body.login == "common" && data[0].role == "user") {
           const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
           if (checkPass) {
             res.status(200).send({
@@ -157,15 +156,15 @@ module.exports = {
               token,
             });
           } else {
-            res.status(200).send({
+            res.status(401).send({
               success: false,
               message: "Username or password invalid",
             });
           }
-        } else {
-          res.status(200).send({
+        } else if (data[0].role === "tenant") {
+          res.status(401).send({
             success: false,
-            message: "Username or password invalid",
+            message: "The account is registered as a tenant, please use another account",
           });
         }
       } else {
@@ -190,15 +189,30 @@ module.exports = {
           email: req.decrypt.email,
         },
       });
+      const tenantData = await tenantModel.findAll({
+        include: [
+          {
+            model: paymentMethodModel,
+            as: "bank",
+            required: true,
+          },
+          {
+            model: userModel,
+            as: "user",
+            required: true,
+          },
+        ],
+        where: { userId: data[0].userId },
+      });
       console.log(data[0].isVerified);
       let token = createToken({
         ...data,
       });
-      console.log(req.decrypt);
       if (data.length > 0) {
         return res.status(200).send({
           success: true,
           result: data[0],
+          tenant: tenantData[0],
           token,
         });
       }
@@ -215,7 +229,9 @@ module.exports = {
       const { otp, phone } = req.body;
       console.log(req.decrypt);
       let user = await userModel.findOne({
-        where: { email: req.decrypt.email },
+        where: {
+          email: req.decrypt.email,
+        },
       });
       console.log(user);
 
@@ -224,19 +240,30 @@ module.exports = {
           success: false,
           message: "OTP is not correct.",
         });
+      } else if (Date.now() > user.expiredOtp) {
+        return res.status(401).send({
+          success: false,
+          message: "OTP expired, please request send OTP to update your OTP code",
+        });
+      } else {
+        const phoneNum = user.provider == "common" ? user.phone : phone;
+        let userUpdate = await userModel.update(
+          {
+            isVerified: 1,
+            phone: phoneNum,
+          },
+          {
+            where: {
+              email: req.decrypt.email,
+            },
+          }
+        );
+        return res.status(200).send({
+          success: true,
+          message: "Your account is verified",
+          userUpdate,
+        });
       }
-      const phoneNum = user.provider == "common" ? user.phone : phone;
-      let userUpdate = await userModel.update(
-        { isVerified: 1, phone: phoneNum },
-        {
-          where: { email: req.decrypt.email },
-        }
-      );
-      res.status(200).send({
-        success: true,
-        message: "Your account is verified",
-        userUpdate,
-      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -251,18 +278,30 @@ module.exports = {
     const { email } = req.decrypt;
 
     try {
-      let user = await userModel.findOne({ where: { email } });
+      let user = await userModel.findOne({
+        where: {
+          email,
+        },
+      });
 
       if (Date.now() > user.expiredOtp) {
         let updateUser = await userModel.update(
           {
             countOtp: 0,
           },
-          { where: { email } }
+          {
+            where: {
+              email,
+            },
+          }
         );
       }
 
-      let updatedUser = await userModel.findOne({ where: { email } });
+      let updatedUser = await userModel.findOne({
+        where: {
+          email,
+        },
+      });
 
       if (updatedUser.countOtp < 5) {
         let otp = generateOTP();
@@ -290,7 +329,11 @@ module.exports = {
             countOtp: updatedUser.countOtp + 1,
             expiredOtp: tomorrow,
           },
-          { where: { email } }
+          {
+            where: {
+              email,
+            },
+          }
         );
 
         return res.status(200).send({
@@ -332,7 +375,9 @@ module.exports = {
       if (check != false) {
         const pass = encryptPassword(password);
         const update = await userModel.update(
-          { password: pass },
+          {
+            password: pass,
+          },
           {
             where: {
               email: email,

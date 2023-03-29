@@ -4,6 +4,20 @@
   text-decoration: underline;
 }
 
+.menu-list {
+  color: gray;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none;
+  transition: all ease-in-out 0.25s;
+}
+.menu-list:hover {
+  background-color: #f0fff4;
+  cursor: pointer;
+}
+.menu-list:active {
+  background-color: #c6f6d5;
+}
 @media only screen and (min-width: 0px) {
   .mobile {
     height: auto;
@@ -11,6 +25,7 @@
     margin: 0 auto;
   }
 }
+
 @media only screen and (min-width: 760px) {
   .mobile {
     margin: 30px auto 30px;

@@ -98,7 +98,12 @@ function EditUserGenBtn(props) {
             <Button variant="link" onClick={onClose}>
               Close
             </Button>
-            <Button colorScheme="green" variant="solid" onClick={onBtnUpdate}>
+            <Button
+              isDisabled={editGender === ""}
+              colorScheme="green"
+              variant="solid"
+              onClick={onBtnUpdate}
+            >
               Update
             </Button>
           </ModalFooter>
