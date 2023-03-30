@@ -29,7 +29,7 @@ function PropertyDetail(props) {
   })
   const getData = async () =>{
     try {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/property/${searchQuery.get('id')}`, {
+      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/property/find/${searchQuery.get('id')}`, {
         startDate: startDate,
         endDate: endDate
       })

@@ -19,13 +19,20 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.static("src/public"));
 
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
-const { userRouter, categoryRouter, tenantRouter, propertyRouter, transactionRouter, roomRouter } = require("./router");
+const {
+  userRouter,
+  categoryRouter,
+  tenantRouter, 
+  transactionRouter,
+  roomRouter,
+  propertyRouter,
+  paymentMethodRouter,
+} = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 const { transactionController } = require("./controller");
 app.use("/api", userRouter);
@@ -33,7 +40,9 @@ app.use("/api", categoryRouter);
 app.use("/api", tenantRouter);
 app.use("/api", propertyRouter);
 app.use("/api", transactionRouter);
-app.use("/api", roomRouter)
+app.use("/api", roomRouter);
+app.use("/api", paymentMethodRouter);
+
 // ===========================
 
 // not found

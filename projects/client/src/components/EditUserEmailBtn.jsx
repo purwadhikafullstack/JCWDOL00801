@@ -21,6 +21,7 @@ import {
 import { useFormik } from "formik";
 import { profileSchema } from "../schemas/profileValidator";
 import { useNavigate } from "react-router-dom";
+import { tenantLogout } from "../actions/tenantAction";
 
 function EditUserEmailBtn(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -96,7 +97,7 @@ function EditUserEmailBtn(props) {
   const onBtnVerifyNewEmail = async () => {
     onClose();
     Swal.fire({
-      title: "Make sure if your email is correct and click Continue",
+      title: "Make sure that your email is correct and click Continue",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#38A169",
@@ -148,6 +149,7 @@ function EditUserEmailBtn(props) {
       }).then(async () => {
         resetField();
         dispatch(logoutAction());
+        dispatch(tenantLogout());
         localStorage.removeItem("renthaven1");
         navigate("/signin", { replace: true });
         window.location.reload();

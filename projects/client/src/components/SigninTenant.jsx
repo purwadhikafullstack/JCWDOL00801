@@ -18,6 +18,7 @@ import { loginSchema } from "../schemas/signinValidator";
 import Axios from "axios";
 import { loginAction } from "../actions/userAction";
 import { useDispatch } from "react-redux";
+import { setTenantAction } from "../actions/tenantAction";
 
 const SigninTenantPage = (props) => {
   const navigate = useNavigate();
@@ -38,9 +39,11 @@ const SigninTenantPage = (props) => {
     })
       .then((res) => {
         if (res.data.success == true) {
+          console.log(`res data result:`, res.data.result.bank);
           localStorage.setItem("renthaven1", res.data.token);
-          loginAction(res.data.result);
-          navigate(0)
+          loginAction(res.data.result.user);
+          setTenantAction(res.data.result.bank);
+          window.location.reload();
           setLoginLoading(false);
           navigate("/tenant-dashboard", { replace: true });
         } else if (res.data.success == false) {
@@ -93,10 +96,10 @@ const SigninTenantPage = (props) => {
             {alerts == "" ? (
               ""
             ) : (
-                <Alert status="error" style={{ marginBottom: "20px" }}>
-                  <AlertIcon />
-                  {alerts}
-                </Alert>
+              <Alert status="error" style={{ marginBottom: "20px" }}>
+                <AlertIcon />
+                {alerts}
+              </Alert>
             )}
             <form onSubmit={handleSubmit}>
               <p>

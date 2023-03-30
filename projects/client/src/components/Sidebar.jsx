@@ -58,7 +58,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
         </Text>
         <Divider mt={4} />
         <Button
-        fontSize={"17px"}
+          fontSize={"17px"}
           variant="ghost"
           color={"gray"}
           colorScheme="green"
@@ -75,7 +75,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
             {propertyIsOpen ? (
               <ChevronDownIcon w="20px" h="20px" ml={3} />
             ) : (
-              <ChevronRightIcon w="20px" h="20px" ml ={3} />
+              <ChevronRightIcon w="20px" h="20px" ml={3} />
             )}{" "}
           </Text>
         </Box>
@@ -89,6 +89,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 display={"flex"}
                 flexDirection="row"
                 alignItems={"center"}
+                onClick={() => navigate("/property", { replace: true })}
               >
                 <VscCircleFilled style={{ marginRight: "10px" }} />
                 Manage Properties
@@ -115,6 +116,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 display={"flex"}
                 flexDirection="row"
                 alignItems={"center"}
+                onClick={() => navigate("/manage-categories", { replace: true })}
               >
                 <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                 Manage Categories
@@ -130,7 +132,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
             {orderIsOpen ? (
               <ChevronDownIcon w="20px" h="20px" ml={1} />
             ) : (
-              <ChevronRightIcon w="20px" h="20px" ml ={1} />
+              <ChevronRightIcon w="20px" h="20px" ml={1} />
             )}{" "}
           </Text>
         </Box>
@@ -161,13 +163,16 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 <VscCircleFilled style={{ marginRight: "10px" }} />
                 Manage Booked
               </Text>
-              <Text fontSize={"13px"}
+              <Text
+                fontSize={"13px"}
                 fontWeight={"600"}
                 color="gray"
                 display={"flex"}
                 flexDirection="row"
-                alignItems={"center"} ml="23px">
-              Room
+                alignItems={"center"}
+                ml="23px"
+              >
+                Room
               </Text>
             </Box>
             <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"30px"} className="menu-list">
@@ -178,6 +183,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 display={"flex"}
                 flexDirection="row"
                 alignItems={"center"}
+                onClick={() => navigate("/orderlist", { replace: true })}
               >
                 <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                 History & Status
@@ -193,7 +199,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
             {reportIsOpen ? (
               <ChevronDownIcon w="20px" h="20px" ml={6} />
             ) : (
-              <ChevronRightIcon w="20px" h="20px" ml ={6} />
+              <ChevronRightIcon w="20px" h="20px" ml={6} />
             )}{" "}
           </Text>
         </Box>

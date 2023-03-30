@@ -5,6 +5,7 @@ import { Box, Image, Flex, Divider } from "@chakra-ui/react";
 import Testimonials from "../components/Testimonials";
 import MainContent from "../components/MainContent";
 import LandingBanner from "../components/LandingBanner";
+import PropertyDetail from "./PropertyDetail";
 
 function Landing(props) {
   return (

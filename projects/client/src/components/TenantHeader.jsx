@@ -28,6 +28,7 @@ import { logoutAction } from "../actions/userAction";
 import { useEffect, useState } from "react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { VscCircleFilled } from "react-icons/vsc";
+import { tenantLogout } from "../actions/tenantAction";
 
 const Links = ["Home", "Contact"];
 
@@ -72,6 +73,7 @@ function TenantHeader(props) {
   });
   const logoutHandler = () => {
     dispatch(logoutAction());
+    dispatch(tenantLogout());
     localStorage.removeItem("renthaven1");
     navigate("/signin", { replace: true });
     window.location.reload();
@@ -210,18 +212,18 @@ function TenantHeader(props) {
           ) : null}
           {isOpen && email ? (
             <Box pb={4} display={{ md: "none" }}>
-              <Stack  >
+              <Stack>
                 <HStack
-                w="100%"
-                display={"flex"}
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
+                  w="100%"
+                  display={"flex"}
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
                   _hover={{ cursor: "pointer" }}
                   onClick={() => navigate("/profile", { replace: true })}
                 >
                   <Avatar bg="green.500" size={"xl"} src={`http://localhost:8000/${profileImg}`} />
-                  <Heading size="md" textTransform="capitalize" style={{marginLeft: "0px"}}>
+                  <Heading size="md" textTransform="capitalize" style={{ marginLeft: "0px" }}>
                     {name.split(" ")[0]}
                   </Heading>
                 </HStack>

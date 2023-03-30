@@ -9,6 +9,11 @@ const categoryModel = dbSequelize.define("categories", {
     autoIncrement: true,
     allowNull: false,
   },
+  //fk
+  tenantId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   province: {
     type: DataTypes.STRING,
     allowNull: false,

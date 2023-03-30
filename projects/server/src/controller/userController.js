@@ -1,14 +1,7 @@
-const {
-  encryptPassword,
-  createToken
-} = require("../config/encrypt");
-const {
-  userModel
-} = require("../model");
+const { encryptPassword, createToken } = require("../config/encrypt");
+const { userModel, tenantModel, paymentMethodModel } = require("../model");
 const bcrypt = require("bcrypt");
-const {
-  transport
-} = require("../config/nodemailer");
+const { transport } = require("../config/nodemailer");
 
 function generateOTP() {
   let length = 4,
@@ -45,9 +38,9 @@ module.exports = {
           }
 
           const encryptedPassword =
-            req.body.provider !== "common" ?
-            encryptPassword(randomString) :
-            encryptPassword(req.body.password);
+            req.body.provider !== "common"
+              ? encryptPassword(randomString)
+              : encryptPassword(req.body.password);
           let data1 = await userModel.create({
             name: req.body.name,
             email: req.body.email,
@@ -68,9 +61,9 @@ module.exports = {
           }
 
           const encryptedPassword =
-            req.body.provider !== "common" ?
-            encryptPassword(randomString) :
-            encryptPassword(req.body.password);
+            req.body.provider !== "common"
+              ? encryptPassword(randomString)
+              : encryptPassword(req.body.password);
           let data1 = await userModel.create({
             name: req.body.name,
             email: req.body.email,
@@ -82,7 +75,8 @@ module.exports = {
             provider: req.body.provider,
           });
           //nodemailer di sini
-          transport.sendMail({
+          transport.sendMail(
+            {
               from: "Renthaven Admin",
               to: req.body.email,
               subject: "Account verification",
@@ -195,6 +189,21 @@ module.exports = {
           email: req.decrypt.email,
         },
       });
+      const tenantData = await tenantModel.findAll({
+        include: [
+          {
+            model: paymentMethodModel,
+            as: "bank",
+            required: true,
+          },
+          {
+            model: userModel,
+            as: "user",
+            required: true,
+          },
+        ],
+        where: { userId: data[0].userId },
+      });
       let token = createToken({
         ...data,
       });
@@ -202,6 +211,7 @@ module.exports = {
         return res.status(200).send({
           success: true,
           result: data[0],
+          tenant: tenantData[0],
           token,
         });
       }
@@ -215,13 +225,10 @@ module.exports = {
   },
   verifyAcc: async (req, res) => {
     try {
-      const {
-        otp,
-        phone
-      } = req.body;
+      const { otp, phone } = req.body;
       let user = await userModel.findOne({
         where: {
-          email: req.decrypt.email
+          email: req.decrypt.email,
         },
       });
 
@@ -233,25 +240,27 @@ module.exports = {
       } else if (Date.now() > user.expiredOtp) {
         return res.status(401).send({
           success: false,
-          message: "OTP expired, please request send OTP to update your OTP code"
-        })
+          message: "OTP expired, please request send OTP to update your OTP code",
+        });
       } else {
         const phoneNum = user.provider == "common" ? user.phone : phone;
-        let userUpdate = await userModel.update({
-          isVerified: 1,
-          phone: phoneNum
-        }, {
-          where: {
-            email: req.decrypt.email
+        let userUpdate = await userModel.update(
+          {
+            isVerified: 1,
+            phone: phoneNum,
           },
-        });
+          {
+            where: {
+              email: req.decrypt.email,
+            },
+          }
+        );
         return res.status(200).send({
           success: true,
           message: "Your account is verified",
           userUpdate,
         });
       }
-
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -263,36 +272,38 @@ module.exports = {
   },
   sendOtp: async (req, res) => {
     let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    const {
-      email
-    } = req.decrypt;
+    const { email } = req.decrypt;
 
     try {
       let user = await userModel.findOne({
         where: {
-          email
-        }
+          email,
+        },
       });
 
       if (Date.now() > user.expiredOtp) {
-        let updateUser = await userModel.update({
-          countOtp: 0,
-        }, {
-          where: {
-            email
+        let updateUser = await userModel.update(
+          {
+            countOtp: 0,
+          },
+          {
+            where: {
+              email,
+            },
           }
-        });
+        );
       }
 
       let updatedUser = await userModel.findOne({
         where: {
-          email
-        }
+          email,
+        },
       });
 
       if (updatedUser.countOtp < 5) {
         let otp = generateOTP();
-        transport.sendMail({
+        transport.sendMail(
+          {
             from: "Renthaven Admin",
             to: email,
             subject: "Account verification",
@@ -309,15 +320,18 @@ module.exports = {
           }
         );
 
-        let userUpdate = await userModel.update({
-          otp,
-          countOtp: updatedUser.countOtp + 1,
-          expiredOtp: tomorrow,
-        }, {
-          where: {
-            email
+        let userUpdate = await userModel.update(
+          {
+            otp,
+            countOtp: updatedUser.countOtp + 1,
+            expiredOtp: tomorrow,
+          },
+          {
+            where: {
+              email,
+            },
           }
-        });
+        );
 
         return res.status(200).send({
           success: true,
@@ -339,11 +353,7 @@ module.exports = {
   },
   changePass: async (req, res) => {
     try {
-      const {
-        oldPass,
-        password,
-        email
-      } = req.body;
+      const { oldPass, password, email } = req.body;
       const data = await userModel.findAll({
         where: {
           email: email,
@@ -357,15 +367,19 @@ module.exports = {
       }
 
       const check = bcrypt.compareSync(oldPass, data[0].password);
+
       if (check != false) {
         const pass = encryptPassword(password);
-        const update = await userModel.update({
-          password: pass
-        }, {
-          where: {
-            email: email,
+        const update = await userModel.update(
+          {
+            password: pass,
           },
-        });
+          {
+            where: {
+              email: email,
+            },
+          }
+        );
         if (update) {
           return res.status(200).send({
             success: true,

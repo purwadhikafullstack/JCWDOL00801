@@ -11,20 +11,26 @@ import EditUserNameBtn from "./EditUserNameBtn";
 import EditUserDobBtn from "./EditUserDobBtn";
 import EditUserGenBtn from "./EditUserGenBtn";
 import EditUserEmailBtn from "./EditUserEmailBtn";
+import EditBankNameBtn from "./EditBankNameBtn";
+import EditAccountNumBtn from "./EditAccountNumBtn";
 
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { email, name, gender, dob, provider, role } = useSelector((state) => {
-    return {
-      email: state.userReducer.email,
-      name: state.userReducer.name,
-      gender: state.userReducer.gender,
-      dob: state.userReducer.dob,
-      provider: state.userReducer.provider,
-      role: state.userReducer.role,
-    };
-  });
+  const { email, name, gender, dob, provider, role, bankName, bankAccountNum } = useSelector(
+    (state) => {
+      return {
+        email: state.userReducer.email,
+        name: state.userReducer.name,
+        gender: state.userReducer.gender,
+        dob: state.userReducer.dob,
+        provider: state.userReducer.provider,
+        role: state.userReducer.role,
+        bankName: state.tenantReducer.bankName,
+        bankAccountNum: state.tenantReducer.bankAccountNum,
+      };
+    }
+  );
 
   const onBtnUpdatePass = async () => {
     const { oldPass, password, confirmPassword } = values;
@@ -129,7 +135,7 @@ function ProfileForm(props) {
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Gender</Text>
-          <Text textTransform="capitalize">{gender === null ? `not set yet` : gender}</Text>
+          <Text>{gender === null ? `not set yet` : gender}</Text>
           <EditUserGenBtn />
         </Flex>
         <Flex direction="row" gap={4}>
@@ -148,19 +154,15 @@ function ProfileForm(props) {
           <Flex direction="column" gap={8}>
             <Flex direction="row" gap={4}>
               <Text minW="35%">Bank Name</Text>
-              <Text>{name}</Text>
+              <Text>{bankName === "" ? `not set yet` : bankName}</Text>
+              <EditBankNameBtn />
             </Flex>
             <Flex direction="row" gap={4}>
               <Text minW="35%">Account Number</Text>
               <Text>
-                {dob === null
-                  ? `not set yet`
-                  : new Date(dob).toLocaleDateString("id", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                {bankAccountNum === "" || bankAccountNum === null ? `not set yet` : bankAccountNum}
               </Text>
+              <EditAccountNumBtn accNum={bankAccountNum} />
             </Flex>
           </Flex>
         </>

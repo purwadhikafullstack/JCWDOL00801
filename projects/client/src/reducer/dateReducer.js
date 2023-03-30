@@ -21,7 +21,6 @@ export const dateReducer = (state = INITIAL_STATE, action) => {
     case `CLEAR_DOB`:
       return { ...state, dob: "" };
     case "CLEAR_ALLDATE":
-      console.log("CLEAR DATE")
       return state = INITIAL_STATE;
     default:
       return state;

@@ -24,6 +24,7 @@ import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
+import { tenantLogout } from "../actions/tenantAction";
 
 const Links = ["Home", "Contact"];
 
@@ -55,6 +56,7 @@ function Header(props) {
   });
   const logoutHandler = () => {
     dispatch(logoutAction());
+    dispatch(tenantLogout());
     localStorage.removeItem("renthaven1");
     navigate("/signin", { replace: true });
     window.location.reload();
@@ -62,7 +64,7 @@ function Header(props) {
   };
   return (
     <Box shadow="sm">
-      <Container maxW={"container.lg"}>
+      <Container p={0} maxW={{ md: "container.xl" }}>
         <Box px={4}>
           <Flex h={16} alignItems={"center"} justifyContent="space-between">
             <HStack spacing={8} alignItems={"center"}>
