@@ -23,7 +23,6 @@ function MainContent(props) {
         startDate,
         endDate
       })
-      console.log(res.data.result)
       setPropertyData(res.data.result)
     } catch (error) {
       console.log(error)

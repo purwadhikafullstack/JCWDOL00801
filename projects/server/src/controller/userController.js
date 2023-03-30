@@ -195,7 +195,6 @@ module.exports = {
           email: req.decrypt.email,
         },
       });
-      console.log(data[0].isVerified);
       let token = createToken({
         ...data,
       });
@@ -220,13 +219,11 @@ module.exports = {
         otp,
         phone
       } = req.body;
-      console.log(req.decrypt);
       let user = await userModel.findOne({
         where: {
           email: req.decrypt.email
         },
       });
-      console.log(user);
 
       if (user.otp !== otp && user.provider !== "google.com") {
         return res.status(400).send({
@@ -360,8 +357,6 @@ module.exports = {
       }
 
       const check = bcrypt.compareSync(oldPass, data[0].password);
-      console.log(check);
-
       if (check != false) {
         const pass = encryptPassword(password);
         const update = await userModel.update({
@@ -371,7 +366,6 @@ module.exports = {
             email: email,
           },
         });
-        console.log(`update`, update);
         if (update) {
           return res.status(200).send({
             success: true,
@@ -391,7 +385,6 @@ module.exports = {
   },
   changeImgProfile: async (req, res) => {
     try {
-      console.log(req.files);
       // yang disimpan ke database: /imgProfile/filename
       const pathName = req.files[0].destination.split(`/`);
       const profileImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
@@ -430,17 +423,11 @@ module.exports = {
       const dobField = dob || dob != "" ? dob : data[0].dob;
       const emailField = newEmail || newEmail != "" ? newEmail : data[0].email;
 
-      console.log(`name`, nameField);
-      console.log(`gender`, genderField);
-      console.log(`dob`, dobField);
-      console.log(`email`, emailField);
-
       let update = await userModel.update(
         { name: nameField, gender: genderField, dob: dobField, email: emailField },
         { where: { email } }
       );
 
-      console.log(update);
       const message = newEmail
         ? `Data Updated Successfully, Please re-login to your account`
         : `Data Updated Successfully`;

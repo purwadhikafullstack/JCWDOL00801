@@ -14,8 +14,6 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
     const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     setdiffDays(diffDay);
   }
-  console.log(startDate, "typeof", typeof startDate)
-  console.log(endDate, "typeof", typeof startDate)
   useEffect(() =>{
     howManyNight()
   },[])

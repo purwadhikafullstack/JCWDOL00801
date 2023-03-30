@@ -40,9 +40,6 @@ function PropertyDetail(props) {
       let roomAvail = res.data.room.filter(val =>{
         return !roomNotAvail.includes(val)
       })
-      console.log(roomAvail)
-      console.log(res.data.type)
-      console.log(res.data.message)
       setTypes(res.data.type);
       setRooms(roomAvail);
       setProperty(res.data.property)
@@ -50,10 +47,7 @@ function PropertyDetail(props) {
       setTenant(res.data.tenant)
       setUserTenant(res.data.userTenant)
       if(res.data.notAvailRooms.length > 0 && res.data.notAvailRooms != undefined){
-        console.log("SAMPE")
         setNotAvailableRoom(res.data.notAvailRooms);
-      }else if(res.data.notAvailRooms == undefined){
-        console.log("Hello")
       }
     } catch (error) {
       console.log(error)

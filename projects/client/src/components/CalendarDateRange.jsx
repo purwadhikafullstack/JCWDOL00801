@@ -49,10 +49,7 @@ function CalendarDateRange() {
   };
 
   const handleChange = (item) => {
-    console.log(`start:`, format(item.selection.startDate, "mm/dd/yyyy"));
-    console.log(`end:`, format(item.selection.endDate, "mm/dd/yyyy"));
     setCalendar([item.selection]);
-    console.log("startDate",calendar)
     dispatch(
       setDateAction({
         startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),

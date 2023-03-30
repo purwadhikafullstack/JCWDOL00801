@@ -8,6 +8,7 @@ import { format, addHours } from "date-fns";
 import { MdCancel } from "react-icons/md";
 import { useFormik } from "formik";
 import { ktpAndProofVal } from "../schemas/ktpAndProofVal";
+import moment from "moment-timezone";
 
 const {
   Box,
@@ -112,7 +113,6 @@ const PaymentProofPage = (props) => {
               },
             }
           );
-          console.log(res.data);
           Swal.fire({
             title: "Payment proof uploaded",
             icon: "success",
@@ -188,15 +188,14 @@ const PaymentProofPage = (props) => {
           <Text mb={isExpired ? "20px" : ""}>
             {isExpired
               ? ""
-              : data.payProofImg != null ? <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> : `Please upload the payment before ${new Date(
-                  data.transactionExpired
-                ).toLocaleTimeString("EN")}`}
+              : data.payProofImg != null ? <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> : `Please upload the payment before ${
+                  new Date(data.transactionExpired).toLocaleTimeString("EN")}`}
           </Text>
           {data.payProofImg != null ? <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
+          <ModalCloseButton/>
+          <ModalBody mt={7} mb={5}>
             <Image src={`http://localhost:8000${data.payProofImg}`}/>
           </ModalBody> </ModalContent> </Modal> : ""}
           {isExpired ? (

@@ -67,14 +67,6 @@ function App() {
       localStorage.removeItem("renthaven1");
     }
   };
-  const updateStatusAuto = async () =>{
-    try {
-      let res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/reload-status-transaction")
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   useEffect(() => {
     keepLogin();
@@ -265,14 +257,14 @@ function App() {
                 </VerifyChecker>
               }
             />
-            <Route
+            {/* <Route
               path="/tenant-dashboard"
               element={
                 <VerifyChecker loading={loading}>
                   <TenantDashboardPage />
                 </VerifyChecker>
               }
-            />
+            /> */}
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>

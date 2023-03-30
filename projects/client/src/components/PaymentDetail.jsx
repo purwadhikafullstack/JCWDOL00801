@@ -9,7 +9,8 @@ import PaymentMethod from "./PaymentMethod";
 import SpecialReq from "./SpecialReqForm";
 import { clearAllDate, clearDobAction } from "../actions/dateAction";
 import Swal from "sweetalert2";
-import {format, addHours, addDays} from "date-fns"
+import { format, addHours, addDays } from "date-fns";
+
 
 const PaymentDetail = (props) => {
   const location = useLocation();
@@ -26,29 +27,23 @@ const PaymentDetail = (props) => {
   const [otherCheck, setOtherCheck] = useState("");
   const othercheckHandle = (e) => {
     setOtherCheck(e.target.value);
-    console.log(otherCheck);
   };
   const setBankIdHandler = (e) => {
     const currentChoice = e.target.value.split(",");
     setBankId(parseInt(currentChoice[0]));
     setAccountNum(currentChoice[1]);
-    console.log(currentChoice);
-    console.log(parseInt(currentChoice[0]));
   };
   const handleChange = (e) => {
     const { value, checked } = e.target;
     const { specialReq } = specialRequest;
-    console.log(`${value} is ${checked}`);
     if (checked) {
       setSpecialReq({
         specialReq: [...specialReq, value],
       });
-      console.log(specialRequest.specialReq.join(", ") + " and " + otherCheck);
     } else {
       setSpecialReq({
         specialReq: specialReq.filter((e) => e !== value),
       });
-      console.log(specialRequest.specialReq.join(", ") + " and " + otherCheck);
     }
   };
   const [searchQuery, setSearchQuery] = useSearchParams();
@@ -63,6 +58,8 @@ const PaymentDetail = (props) => {
       endDate: state.dateReducer.endDate,
     };
   });
+  console.log(startDate);
+  console.log(endDate)
   const getData = async () => {
     try {
       const res = await Axios.post(
@@ -71,7 +68,6 @@ const PaymentDetail = (props) => {
           typeId: location.state.typeId,
         }
       );
-      console.log(res.data.result[0]);
       setData(res.data.result[0]);
       setPrice(res.data.result[0].price);
     } catch (error) {
@@ -93,16 +89,23 @@ const PaymentDetail = (props) => {
           denyButtonText: "Cancel",
           confirmButtonText: "Continue to payment",
           confirmButtonColor: "#48BB78",
-          customClass:{
+          customClass: {
             confirmButton: "order-2",
-            denyButton: "order-1"
-          }
+            denyButton: "order-1",
+          },
         }).then((response) => {
           if (response.isConfirmed) {
             Axios.post(
               process.env.REACT_APP_API_BASE_URL + "/transaction-new",
               {
-                specialReq: specialRequest.specialReq.join(", ") + " and " + otherCheck,
+                specialReq:
+                  specialRequest.specialReq.length < 1 && otherCheck !== ""
+                    ? otherCheck
+                    : specialRequest.specialReq.length > 0 && otherCheck === ""
+                    ? specialRequest.specialReq.join(", ")
+                    : specialRequest.specialReq.length < 1 && otherCheck === ""
+                    ? ""
+                    : specialRequest.specialReq.join(", ") + " and " + otherCheck,
                 totalGuest,
                 checkinDate: startDate,
                 checkoutDate: endDate,
@@ -110,7 +113,7 @@ const PaymentDetail = (props) => {
                 bankId,
                 bankAccountNum,
                 propertyId: searchQuery.get("id"),
-                transactionExpired: format(addDays(new Date(), 2), "yyyy-MM-dd HH:mm:ss")
+                transactionExpired: format(addDays(new Date(), 2), "yyyy-MM-dd HH:mm:ss"),
               },
               {
                 headers: {
@@ -124,14 +127,13 @@ const PaymentDetail = (props) => {
                   icon: "success",
                   confirmButtonText: "Confirm",
                   confirmButtonColor: "#48BB78",
-                }).then(r =>{
-                  navigate(`/payment-proof?id=${res.data.result.transactionId}`, {replace: true})
-                  window.scrollTo(0,0)
+                }).then((r) => {
+                  navigate(`/payment-proof?id=${res.data.result}`, { replace: true });
+                  window.scrollTo(0, 0);
                   navigate(0);
-                })
+                });
               })
               .catch((e) => {
-                console.log(e);
                 Swal.fire({
                   title: e.response.data.message,
                   icon: "error",
@@ -154,17 +156,17 @@ const PaymentDetail = (props) => {
   };
 
   useEffect(() => {
-    if(location.state === undefined ||location.state === null || location.state === ""){
+    if (location.state === undefined || location.state === null || location.state === "") {
       return Swal.fire({
         title: "Please select the type room",
         icon: "error",
         confirmButtonText: "Confirm",
         confirmButtonColor: "#48BB78",
-      }).then(res =>{
-        navigate(`/`, {replace: true})
-        window.scrollTo(0,0)
-        navigate(0)
-      })
+      }).then((res) => {
+        navigate(`/`, { replace: true });
+        window.scrollTo(0, 0);
+        navigate(0);
+      });
     }
     getData();
     return () => {
@@ -173,8 +175,8 @@ const PaymentDetail = (props) => {
   }, []);
   return (
     <Box style={{ padding: isMobile ? "0px" : "0px 0px 0px 160px" }} backgroundColor="#F0FFF4">
-      <Flex direction={isMobile ? "column" :"row"} justifyContent={"flex-start"}>
-        <Flex direction={"column"} w={isMobile? "100%":"50%"} order={isMobile ? 2 : 1}>
+      <Flex direction={isMobile ? "column" : "row"} justifyContent={"flex-start"}>
+        <Flex direction={"column"} w={isMobile ? "100%" : "50%"} order={isMobile ? 2 : 1}>
           <GuestBookingForm
             setTotalGuestHandler={setTotalGuestHandler}
             name={name}
@@ -186,7 +188,12 @@ const PaymentDetail = (props) => {
           <PaymentMethod data={data} setBankIdHandler={setBankIdHandler} />
           <SpecialReq handleChange={handleChange} othercheckHandle={othercheckHandle} />
         </Flex>
-        <Flex direction={"column"} w={isMobile? "100%" : "50%"} ml={isMobile? "0px":"40px"} order={isMobile? 1: 2}>
+        <Flex
+          direction={"column"}
+          w={isMobile ? "100%" : "50%"}
+          ml={isMobile ? "0px" : "40px"}
+          order={isMobile ? 1 : 2}
+        >
           <BookingDetail
             totalGuest={totalGuest}
             data={data}
@@ -195,9 +202,9 @@ const PaymentDetail = (props) => {
           />
         </Flex>
       </Flex>
-      <Box display="flex" w={isMobile? "100%" : "50%"} justifyContent={"flex-end"}>
+      <Box display="flex" w={isMobile ? "100%" : "50%"} justifyContent={"flex-end"}>
         <Button
-        isDisabled={bankId === 0 ? true : false}
+          isDisabled={bankId === 0 ? true : false}
           colorScheme={"green"}
           variant="solid"
           size="lg"

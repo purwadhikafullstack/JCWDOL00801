@@ -75,7 +75,6 @@ const TenantDashboardPage = ({ isMobile }) => {
           Authorization: `Bearer ${getLocalStorage}`
         }
       })
-      console.log(res)
       setTransactionData(res.data.result)
     }
     } catch (error) {

@@ -19,7 +19,6 @@ import Swal from "sweetalert2";
 
 function RoomCard(props) {
   const navigate = useNavigate();
-  console.log(props.isAvailable);
   const { email, startDate, endDate } = useSelector((state) => {
     return {
       email: state.userReducer.email,

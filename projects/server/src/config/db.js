@@ -5,7 +5,7 @@ const {
 const dbSequelize = new Sequelize(process.env.DB, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
     dialect: "mysql",
-    logQueryParameters: true
+    logQueryParameters: true,
 })
 
 const dbCheckConnection = async () => {

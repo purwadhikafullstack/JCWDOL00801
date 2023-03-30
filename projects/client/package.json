@@ -24,6 +24,7 @@
     "firebase": "^9.17.2",
     "formik": "^2.2.9",
     "framer-motion": "^10.2.2",
+    "moment-timezone": "^0.5.42",
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

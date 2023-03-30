@@ -15,18 +15,15 @@ const {
   QueryTypes,
   Op
 } = require("sequelize");
-const {format, addHours, addDays} = require("date-fns")
+const moment = require("moment-timezone")
 
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
-      console.log("currentDate", new Date());
-      const date1 = new Date(req.body.startDate);
-      const date2 = new Date(req.body.endDate);
-      const diffTime = Math.abs(date2 - date1);
-      const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const newStartDate = format(new Date(), "yyyy-MM-dd HH:mm:ss")
-      const newEndDate = format(addDays(new Date(), diffDay), "yyyy-MM-dd HH:mm:ss")
+      let newStartDate = new Date(req.body.startDate);
+      let newEndDate = new Date(req.body.endDate);
+      console.log("NEWDATE",newEndDate)
+      console.log(newStartDate)
       const data = await dbSequelize.query(`SELECT 
       MIN(t.price) AS price, 
       p.name, 
@@ -49,18 +46,8 @@ module.exports = {
             SELECT ra.roomId 
             FROM roomavailabilities AS ra
             WHERE 
-              STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate 
-              OR STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate
-              AND (
-                DATE_FORMAT(STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                AND TIME_FORMAT("${newStartDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                OR TIME_FORMAT("${newStartDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')
-              )
-              AND (
-                DATE_FORMAT(STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                AND TIME_FORMAT("${newEndDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                OR TIME_FORMAT("${newEndDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')
-              )
+            ra.startDate >= ${dbSequelize.escape(newStartDate)} 
+            OR ra.endDate <= ${dbSequelize.escape(newEndDate)}
             )
         GROUP BY 
           r.propertyId
@@ -96,12 +83,8 @@ module.exports = {
     const {
       id
     } = req.params;
-    const date1 = new Date(req.body.startDate);
-      const date2 = new Date(req.body.endDate);
-      const diffTime = Math.abs(date2 - date1);
-      const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const newStartDate = format(new Date(), "yyyy-MM-dd HH:mm:ss")
-      const newEndDate = format(addDays(new Date(), diffDay), "yyyy-MM-dd HH:mm:ss")
+    let startDate = new Date(req.body.startDate);
+    let endDate = new Date(req.body.endDate);
     try {
       let property = await propertyModel.findOne({
         where: {
@@ -151,23 +134,13 @@ module.exports = {
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
       WHERE p.propertyId = ${property.propertyId} AND
-      r.roomId NOT IN(
-              SELECT ra.roomId 
-              FROM roomavailabilities AS ra
-              WHERE 
-                STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate 
-                OR STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate
-                AND (
-                  DATE_FORMAT(STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                  AND TIME_FORMAT("${newStartDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                  OR TIME_FORMAT("${newStartDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')
-                )
-                AND (
-                  DATE_FORMAT(STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                  AND TIME_FORMAT("${newEndDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                  OR TIME_FORMAT("${newEndDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')   
-            )
-            );
+      r.roomId NOT IN (
+        SELECT ra.roomId 
+        FROM roomavailabilities AS ra
+        WHERE 
+        ra.startDate >= ${dbSequelize.escape(startDate)} 
+        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        )
 `, {
         type: QueryTypes.SELECT
       })
@@ -176,23 +149,14 @@ module.exports = {
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
       WHERE p.propertyId = ${property.propertyId} AND
-      r.roomId IN(
-              SELECT ra.roomId 
-              FROM roomavailabilities AS ra
-              WHERE 
-                STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate 
-                OR STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s') BETWEEN ra.startDate AND ra.endDate
-                AND (
-                  DATE_FORMAT(STR_TO_DATE("${newStartDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                  AND TIME_FORMAT("${newStartDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                  OR TIME_FORMAT("${newStartDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')
-                )
-                AND (
-                  DATE_FORMAT(STR_TO_DATE("${newEndDate}", '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d') = DATE_FORMAT(ra.startDate, '%Y-%m-%d') 
-                  AND TIME_FORMAT("${newEndDate}", '%H:%i:%s') >= TIME_FORMAT(ra.endDate, '%H:%i:%s') 
-                  OR TIME_FORMAT("${newEndDate}", '%H:%i:%s') <= TIME_FORMAT(ra.startDate, '%H:%i:%s')   
-            )
-            );
+      r.roomId NOT IN (
+        SELECT ra.roomId 
+        FROM roomavailabilities AS ra
+        WHERE 
+        ra.startDate >= ${dbSequelize.escape(startDate)} 
+        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        )
+
 `, {
         type: QueryTypes.SELECT
       })
@@ -225,6 +189,8 @@ module.exports = {
             userTenant
           });
         }
+
+        // console.log("bookedRooms ->", bookedRooms);
         return res.status(200).send({
           success: true,
           message: "roomAvail.length > 0",
