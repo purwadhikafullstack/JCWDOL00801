@@ -1,6 +1,6 @@
 require("dotenv/config");
 process.env.TZ = "Asia/Jakarta";
-console.log(new Date().toString())
+console.log(new Date())
 const moment = require("moment-timezone");
 moment.tz.setDefault("Asia/Jakarta");
 const express = require("express");

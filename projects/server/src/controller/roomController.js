@@ -78,7 +78,7 @@ module.exports = {
             })
             if (tenant.length > 0) {
                 const deleteRoom = await roomModel.update({
-                    isDelete: true
+                    isDeleted: true
                 }, {
                     where: {
                         roomId: req.body.roomId
