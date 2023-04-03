@@ -125,18 +125,16 @@ const SignupTenantPage = (props) => {
               icon: "success",
               confirmButtonText: "Confirm",
               confirmButtonColor: "#48BB78",
-            }).then((res) => {
-              Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+            }).then((r) => {
+              Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin/tenant", {
                 login: normalReg,
                 email: values.email,
                 password: values.password,
               }).then((res) => {
-                if (res.data.success == true) {
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
-                  window.location.reload();
                   navigate("/verify", { replace: true });
-                }
+                  window.location.reload();
               });
             });
           else if (res.data.success === false) {
@@ -147,7 +145,6 @@ const SignupTenantPage = (props) => {
           setSignupLoading(false);
         })
         .catch((e) => {
-          alert(e.response.data.message)
           setAlert(`${e.response.data.message}`)
           setSignupLoading(false);
         });

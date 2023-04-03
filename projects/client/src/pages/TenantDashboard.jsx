@@ -112,7 +112,6 @@ const TenantDashboardPage = ({ isMobile }) => {
                   <Link>See more...</Link>
                 </TableCaption>
                 <Thead>
-                  <Th textAlign="center">NO.</Th>
                   <Th textAlign="center">BOOKING ID</Th>
                   <Th textAlign="center">GUEST NAME</Th>
                   <Th textAlign="center">TYPE</Th>
@@ -122,7 +121,6 @@ const TenantDashboardPage = ({ isMobile }) => {
                 <Tbody>
                   {transactionData.map((val, idx)=>{
                     return <Tr>
-                    <Td textAlign="center">{idx + 1}</Td>
                     <Td textAlign="center">
                       <Link _hover={{ color: "blue", textDecoration: "none" }}>{val.transactionId}</Link>
                     </Td>

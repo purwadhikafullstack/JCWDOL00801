@@ -85,5 +85,5 @@ app.listen(PORT, (err) => {
   }
 });
 transactionController.changeStatus()
-//dbSequelize.sync();
+// dbSequelize.sync();
 dbCheckConnection();

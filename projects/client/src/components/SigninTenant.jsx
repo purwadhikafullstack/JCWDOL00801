@@ -39,13 +39,12 @@ const SigninTenantPage = (props) => {
     })
       .then((res) => {
         if (res.data.success == true) {
-          console.log(`res data result:`, res.data.result.bank);
           localStorage.setItem("renthaven1", res.data.token);
-          loginAction(res.data.result.user);
-          setTenantAction(res.data.result.bank);
+          loginAction(res.data.user);
           window.location.reload();
           setLoginLoading(false);
           navigate("/tenant-dashboard", { replace: true });
+          setTenantAction(res.data.tenant);      
         } else if (res.data.success == false) {
           setAlert(
             <p>
@@ -63,6 +62,7 @@ const SigninTenantPage = (props) => {
       .catch((e) => {
         setAlert(`${e.response.data.message}`);
         setLoginLoading(false);
+        console.log(e)
       });
   };
   const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
@@ -101,6 +101,7 @@ const SigninTenantPage = (props) => {
                 {alerts}
               </Alert>
             )}
+            
             <form onSubmit={handleSubmit}>
               <p>
                 Email <span style={{ color: "red" }}>*</span>
@@ -110,7 +111,10 @@ const SigninTenantPage = (props) => {
                 id="email"
                 value={values.email}
                 style={{ marginTop: "5px" }}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e)
+                }
+                }
                 onBlur={handleBlur}
               />
               {errors.email && touched.email ? (

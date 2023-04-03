@@ -11,7 +11,7 @@ import { CalendarIcon } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
 import { setDateAction } from "../actions/dateAction";
 
-function CalendarDateRange() {
+function CalendarDateRange(props) {
   //state untuk menyimpan date
   const [calendar, setCalendar] = React.useState([
     {
@@ -50,6 +50,8 @@ function CalendarDateRange() {
 
   const handleChange = (item) => {
     setCalendar([item.selection]);
+    props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
+    props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
     dispatch(
       setDateAction({
         startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),

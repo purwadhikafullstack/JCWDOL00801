@@ -99,7 +99,7 @@ typeModel.hasMany(roomModel, {
   foreignKey: "typeId",
 });
 
-typeModel.belongsTo(roomModel, {
+roomModel.belongsTo(typeModel, {
   as: "type",
   foreignKey: "typeId",
 });

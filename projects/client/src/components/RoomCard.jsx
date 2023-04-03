@@ -34,15 +34,14 @@ function RoomCard(props) {
         confirmButtonText: "Confirm",
         confirmButtonColor: "#48BB78",
       }).then(() => {
-        navigate("/signin", { replace: true });
+        navigate("/signin", { replace: true, state: {checkinDate: props.startDate, checkoutDate: props.endDate} });
         window.scrollTo(0, 0);
       });
     } else {
       navigate(`/payment?id=${props.id}`, {
         state: {
           id: props.id,
-          startDate: props.startDate,
-          endDate: props.endDate,
+          checkinDate: props.startDate ? props.startDate: startDate, checkoutDate: props.endDate ? props.endDate: endDate,
           typeId: props.data.typeId,
         },
       });

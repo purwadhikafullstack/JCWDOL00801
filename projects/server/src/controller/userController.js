@@ -152,7 +152,7 @@ module.exports = {
             res.status(200).send({
               success: true,
               message: "Login successfull",
-              result: data[0],
+              user: data[0],
               token,
             });
           } else {
@@ -192,11 +192,6 @@ module.exports = {
       const tenantData = await tenantModel.findAll({
         include: [
           {
-            model: paymentMethodModel,
-            as: "bank",
-            required: true,
-          },
-          {
             model: userModel,
             as: "user",
             required: true,
@@ -207,11 +202,24 @@ module.exports = {
       let token = createToken({
         ...data,
       });
+      if(tenantData.length > 0){
+        const bank = await paymentMethodModel.findAll({
+          where: {
+            bankId : tenantData[0].bankId
+          }
+        })
+        return res.status(200).send({
+          success: true,
+          user: data[0],
+          tenant: tenantData[0],
+          bank: bank[0],
+          token,
+        });
+      }
       if (data.length > 0) {
         return res.status(200).send({
           success: true,
-          result: data[0],
-          tenant: tenantData[0],
+          user: data[0],
           token,
         });
       }

@@ -26,7 +26,7 @@ const typeModel = dbSequelize.define("types", {
         allowNull: false
     },
     typeImg: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     isDeleted:{

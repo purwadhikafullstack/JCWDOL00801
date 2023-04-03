@@ -31,8 +31,8 @@ module.exports = {
       p.name, 
       c.city, 
       p.propertyId AS id, 
-      MIN(t.typeId) AS typeId,
-      r.roomId
+      r.roomId,
+      t.typeId
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -48,8 +48,8 @@ module.exports = {
             SELECT ra.roomId 
             FROM roomavailabilities AS ra
             WHERE 
-            ra.startDate >= ${dbSequelize.escape(newStartDate)} 
-            OR ra.endDate <= ${dbSequelize.escape(newEndDate)}
+            ${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
+            OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate
             )
         GROUP BY 
           r.propertyId
@@ -140,8 +140,8 @@ module.exports = {
         SELECT ra.roomId 
         FROM roomavailabilities AS ra
         WHERE 
-        ra.startDate >= ${dbSequelize.escape(startDate)} 
-        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        ${dbSequelize.escape(startDate)} BETWEEN ra.startDate AND ra.endDate 
+        OR ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
 `, {
         type: QueryTypes.SELECT
@@ -155,8 +155,8 @@ module.exports = {
         SELECT ra.roomId 
         FROM roomavailabilities AS ra
         WHERE 
-        ra.startDate >= ${dbSequelize.escape(startDate)} 
-        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        ${dbSequelize.escape(startDate)} BETWEEN ra.startDate AND ra.endDate 
+        AND ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
 
 `, {
