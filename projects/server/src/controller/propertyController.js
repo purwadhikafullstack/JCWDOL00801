@@ -10,27 +10,24 @@ const {
   transactionModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
-const {
-  dbSequelize
-} = require("../config/db");
-const {
-  QueryTypes,
-  Op
-} = require("sequelize");
-const moment = require("moment-timezone")
+const { dbSequelize } = require("../config/db");
+const { QueryTypes, Op } = require("sequelize");
+const moment = require("moment-timezone");
 
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
       let newStartDate = new Date(req.body.startDate);
       let newEndDate = new Date(req.body.endDate);
-      const data = await dbSequelize.query(`SELECT 
+      const data = await dbSequelize.query(
+        `SELECT 
       MIN(t.price) AS price, 
       p.name, 
       c.city, 
       p.propertyId AS id, 
       MIN(t.typeId) AS typeId,
-      r.roomId
+      r.roomId,
+      p.image
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -64,36 +61,39 @@ module.exports = {
       p.name, 
       c.city
     ORDER BY 
-      price;`, {
-        type: QueryTypes.SELECT
-      });
+      price;`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       return res.status(200).send({
         success: true,
-        result: data
-      })
+        result: data,
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).send({
         success: false,
-        message: "Database Error"
-      })
+        message: "Database Error",
+      });
     }
   },
   getProperties: async (req, res) => {
-    const {
-      id
-    } = req.params;
+    const { id } = req.params;
     let startDate = new Date(req.body.startDate);
     let endDate = new Date(req.body.endDate);
     try {
       let property = await propertyModel.findOne({
         where: {
-          [Op.and]: [{
-            propertyId: id
-          }, {
-            isDeleted: 0
-          }]
-        }
+          [Op.and]: [
+            {
+              propertyId: id,
+            },
+            {
+              isDeleted: 0,
+            },
+          ],
+        },
       });
 
       if (!property) {
@@ -104,32 +104,33 @@ module.exports = {
       }
       const tenant = await tenantModel.findOne({
         where: {
-          tenantId: property.tenantId
-        }
-      })
+          tenantId: property.tenantId,
+        },
+      });
       const userTenant = await userModel.findOne({
         where: {
-          userId: tenant.userId
-        }
-      })
+          userId: tenant.userId,
+        },
+      });
       const category = await categoryModel.findOne({
         where: {
-          categoryId: property.categoryId
-        }
-      })
+          categoryId: property.categoryId,
+        },
+      });
       let room = await roomModel.findAll({
         where: {
-          propertyId: id
-        }
+          propertyId: id,
+        },
       });
 
-      let roomArr = room.map(val => ({
-        typeId: val.typeId
+      let roomArr = room.map((val) => ({
+        typeId: val.typeId,
       }));
       let filteredType = roomArr.filter((val, index, self) => {
         return index === self.findIndex((t) => t.typeId === val.typeId);
       });
-      let roomAvail = await dbSequelize.query(`
+      let roomAvail = await dbSequelize.query(
+        `
       SELECT * 
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
@@ -141,10 +142,13 @@ module.exports = {
         ra.startDate >= ${dbSequelize.escape(startDate)} 
         OR ra.endDate <= ${dbSequelize.escape(endDate)}
         )
-`, {
-        type: QueryTypes.SELECT
-      })
-      const roomNotAvail = await dbSequelize.query(`
+`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+      const roomNotAvail = await dbSequelize.query(
+        `
       SELECT * 
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
@@ -157,25 +161,32 @@ module.exports = {
         OR ra.endDate <= ${dbSequelize.escape(endDate)}
         )
 
-`, {
-        type: QueryTypes.SELECT
-      })
+`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       if (roomAvail.length > 0) {
-        let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
+        let notAvail = roomAvail.map((val) => ["t.typeId != " + val.typeId]);
         let bookedRooms = roomAvail.map((val) => ({
-          typeId: val.typeId
-        }))
+          typeId: val.typeId,
+        }));
         let type = await typeModel.findAll({
           where: {
-            [Op.or]: bookedRooms
+            [Op.or]: bookedRooms,
           },
           order: ["price"],
         });
         if (notAvail.length > 0) {
-          let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
-          where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-            type: QueryTypes.SELECT
-          })
+          let notAvailRooms = await dbSequelize.query(
+            `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+          where p.propertyId = ${property.propertyId} AND ${notAvail.join(
+              " AND "
+            )} GROUP BY t.typeId ORDER BY t.price;`,
+            {
+              type: QueryTypes.SELECT,
+            }
+          );
           return res.status(200).send({
             success: true,
             message: "roomAvail.length > 0",
@@ -186,7 +197,7 @@ module.exports = {
             category,
             notAvailRooms,
             tenant,
-            userTenant
+            userTenant,
           });
         }
 
@@ -199,23 +210,28 @@ module.exports = {
           roomAvail,
           category,
           tenant,
-          userTenant
+          userTenant,
         });
       }
-      let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
+      let notAvail = roomAvail.map((val) => ["t.typeId != " + val.typeId]);
       let bookedRooms = roomAvail.map((val) => ({
-        typeId: val.typeId
-      }))
+        typeId: val.typeId,
+      }));
       let type = await typeModel.findAll({
         where: {
-          [Op.or]: bookedRooms
+          [Op.or]: bookedRooms,
         },
         order: ["price"],
       });
-      let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
-          where p.propertyId = ${property.propertyId} ${notAvail.length > 0 ? " AND " : ""} ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-        type: QueryTypes.SELECT
-      })
+      let notAvailRooms = await dbSequelize.query(
+        `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+          where p.propertyId = ${property.propertyId} ${
+          notAvail.length > 0 ? " AND " : ""
+        } ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       return res.status(200).send({
         success: true,
         message: "roomAvail.length > 0",
@@ -226,7 +242,7 @@ module.exports = {
         category,
         notAvailRooms,
         tenant,
-        userTenant
+        userTenant,
       });
     } catch (error) {
       console.log(error);
@@ -442,4 +458,4 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
-}
+};
