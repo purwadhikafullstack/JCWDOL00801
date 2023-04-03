@@ -10,7 +10,8 @@ route.post(
 route.get("/property", propertyController.getData);
 route.patch("/property/update/:propertyId", propertyController.update);
 route.get("/property/:propertyId", propertyController.getEditData);
-
+route.post("/property/all", propertyController.getPropertyData);
+route.post("/property/find/:id", propertyController.getProperties);
 route.patch(
   "/property/edit",
   uploader("/propertyImg", "IMGPROPERTY").array("images", 1),
@@ -18,3 +19,4 @@ route.patch(
 );
 
 module.exports = route;
+

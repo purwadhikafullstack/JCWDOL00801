@@ -163,9 +163,15 @@ paymentMethodModel.hasMany(tenantModel, {
 });
 tenantModel.belongsTo(paymentMethodModel, {
   as: "bank",
-  foreignKey: "bankId",
-});
-
+  foreignKey: "bankId"
+})
+paymentMethodModel.hasMany(transactionModel, {
+  foreignKey: "bankId"
+})
+transactionModel.belongsTo(paymentMethodModel, {
+  as: "bank",
+  foreignKey: "bankId"
+})
 module.exports = {
   userModel,
   tenantModel,

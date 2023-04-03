@@ -25,6 +25,10 @@ const typeModel = dbSequelize.define("types", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    typeImg: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     isDeleted:{
         type: DataTypes.BOOLEAN,
         defaultValue: 0

@@ -52,17 +52,13 @@ const SignupTenantPage = (props) => {
   // This function will be triggered when the file field change
   const recognizing = async (image) => {
     try {
-      console.log(image);
       const worker = await createWorker({
         logger: (m) => {
           setProgress(m.progress);
-          console.log(m);
         },
       });
       await worker.loadLanguage("ind");
-      console.log("1");
       await worker.initialize("ind");
-      console.log("2");
       const {
         data: { text },
       } = await worker.recognize(image);
@@ -75,13 +71,11 @@ const SignupTenantPage = (props) => {
         setKtpAlert("KTP is not recognized, please try again.");
         setFieldValue("ktp", "");
       }
-      console.log("convert number =>", convertNumber);
       setFieldValue("ktp", convertNumber);
       setDone(true);
       setKtpValid(true);
       worker.terminate();
     } catch (error) {
-      console.log(error);
       setFieldValue("ktp", "");
       setDone(false);
       setFile(null);
@@ -103,7 +97,6 @@ const SignupTenantPage = (props) => {
     setKtpAlert("");
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      console.log(e.target.files);
       recognizing(e.target.files[0]);
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
     }
@@ -154,7 +147,6 @@ const SignupTenantPage = (props) => {
           setSignupLoading(false);
         })
         .catch((e) => {
-          console.log(e);
           alert(e.response.data.message)
           setAlert(`${e.response.data.message}`)
           setSignupLoading(false);
@@ -209,7 +201,6 @@ const SignupTenantPage = (props) => {
     });
   useEffect(() => {
     document.title = "RentHaven || Signup";
-    console.log(selectedFile)
   }, [selectedFile]);
   return (
     <div>

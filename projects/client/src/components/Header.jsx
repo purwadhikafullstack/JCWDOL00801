@@ -60,6 +60,7 @@ function Header(props) {
     localStorage.removeItem("renthaven1");
     navigate("/signin", { replace: true });
     window.location.reload();
+    window.scrollTo(0, 0);
   };
   return (
     <Box shadow="sm">
@@ -71,7 +72,10 @@ function Header(props) {
                 _hover={{
                   cursor: "pointer",
                 }}
-                onClick={() => navigate("/", { replace: true })}
+                onClick={() => {
+                  navigate("/", { replace: true });
+                  window.scrollTo(0, 0);
+                }}
               >
                 <Image boxSize="70px" src={logo} />
                 <Heading size="md">Renthaven</Heading>
@@ -109,7 +113,8 @@ function Header(props) {
                     </HStack>
                   </MenuButton>
                   <MenuList zIndex="dropdown">
-                    <MenuItem onClick={() => navigate("/profile", { replace: true })}>
+                    <MenuItem onClick={() => {navigate("/profile", { replace: true })
+                  window.scrollTo(0,0)}}>
                       My Profile
                     </MenuItem>
                     <MenuItem>My Orders</MenuItem>
@@ -135,14 +140,16 @@ function Header(props) {
                     fontWeight={500}
                     variant={"link"}
                     colorScheme="gray"
-                    onClick={() => navigate("/signin", { replace: true })}
+                    onClick={() => {navigate("/signin", { replace: true })
+                    window.scrollTo(0,0)}}
                   >
                     Sign In
                   </Button>
                   <Button
                     display={{ base: "none", md: "inline-flex" }}
                     colorScheme="green"
-                    onClick={() => navigate("/signup", { replace: true })}
+                    onClick={() => {navigate("/signup", { replace: true })
+                    window.scrollTo(0,0)}}
                   >
                     Register
                   </Button>
@@ -170,7 +177,8 @@ function Header(props) {
                     minW="50%"
                     variant="outline"
                     colorScheme="green"
-                    onClick={() => navigate("/signin", { replace: true })}
+                    onClick={() => {navigate("/signin", { replace: true })
+                    window.scrollTo(0,0)}}
                   >
                     Sign In
                   </Button>
@@ -178,7 +186,8 @@ function Header(props) {
                     minW="50%"
                     variant="solid"
                     colorScheme="green"
-                    onClick={() => navigate("/signup", { replace: true })}
+                    onClick={() => {navigate("/signup", { replace: true })
+                    window.scrollTo(0,0)}}
                   >
                     Register
                   </Button>
@@ -192,7 +201,8 @@ function Header(props) {
                 <HStack
                   spacing={7}
                   _hover={{ cursor: "pointer" }}
-                  onClick={() => navigate("/profile", { replace: true })}
+                  onClick={() => {navigate("/profile", { replace: true })
+                  window.scrollTo(0,0)}}
                 >
                   <Avatar
                     size={"lg"}

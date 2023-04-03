@@ -85,7 +85,15 @@ const SignupUserPage = (props) => {
             setInfoIcon(false);
             setAlert("The email had already been registered");
             setGoogleLoading(false);
-          });
+          }).catch((e) => {
+            if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+              setFacebookLoading(false);
+            } else {
+              setAlert("The email had already been registered");
+              setInfoIcon(false);
+              setFacebookLoading(false);
+            };
+          })
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
@@ -135,7 +143,13 @@ const SignupUserPage = (props) => {
                   navigate("/verify", { replace: true });
                 })
                 .catch((e) => {
-                  console.log(e);
+                  if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+                    setFacebookLoading(false);
+                  } else {
+                    setAlert("The email had already been registered");
+                    setInfoIcon(false);
+                    setFacebookLoading(false);
+                  };
                 });
             })
             .catch((e) => {
@@ -145,13 +159,20 @@ const SignupUserPage = (props) => {
               setFacebookLoading(false);
             });
           setFacebookLoading(false);
-        });
+        }).catch((e) => {
+          if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+            setFacebookLoading(false);
+          } else {
+            setAlert("The email had already been registered");
+            setInfoIcon(false);
+            setFacebookLoading(false);
+          };
+        })
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setFacebookLoading(false);
         } else {
-          onToggle();
           setAlert("The email had already been registered");
           setInfoIcon(false);
           setFacebookLoading(false);

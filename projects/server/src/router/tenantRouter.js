@@ -1,4 +1,5 @@
 const { tokenVerify } = require("../config/encrypt");
+const { uploader2 } = require("../config/uploader2");
 const { uploader } = require("../config/uploader");
 const route = require("express").Router();
 const { tenantController } = require("../controller");

@@ -3,10 +3,15 @@
   cursor: pointer;
   text-decoration: underline;
 }
-
-.menu-list {
-  color: gray;
-  -webkit-user-select: none; /* Safari */
+.order-1{
+    order: 1;
+}
+.order-2{
+    order: 2;
+}
+.menu-list{
+    color: gray;
+    -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none;
   transition: all ease-in-out 0.25s;
@@ -18,12 +23,17 @@
 .menu-list:active {
   background-color: #c6f6d5;
 }
-@media only screen and (min-width: 0px) {
-  .mobile {
-    height: auto;
-    width: 100vw;
-    margin: 0 auto;
-  }
+.sticky-position{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+}
+@media only screen and (min-width: 0px){
+    .mobile{
+        width: 100vw;
+        margin: 0 auto;
+    }
 }
 
 @media only screen and (min-width: 760px) {

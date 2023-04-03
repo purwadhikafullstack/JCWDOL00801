@@ -7,7 +7,7 @@ import Profile from "./pages/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
 import { loginAction } from "./actions/userAction";
-import { Box, Container, Flex, Spinner, useMediaQuery } from "@chakra-ui/react";
+import { Flex, Spinner, useMediaQuery } from "@chakra-ui/react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
@@ -17,6 +17,15 @@ import Sidebar from "./components/Sidebar";
 import TenantDashboardPage from "./pages/TenantDashboard";
 import TenantHeader from "./components/TenantHeader";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import NotFoundPage from "./pages/NotFound";
+import BookingDetail from "./components/BookingDetail";
+import GuestBookingForm from "./components/GuestBookingForm";
+import SpecialReq from "./components/SpecialReqForm";
+import PaymentMethod from "./components/PaymentMethod";
+import PaymentDetail from "./components/PaymentDetail";
+import PropertyDetail from "./pages/PropertyDetail";
+import { clearAllDate } from "./actions/dateAction";
+import PaymentProofPage from "./pages/PaymentProof";
 import Property from "./pages/Property";
 import { setTenantAction } from "./actions/tenantAction";
 import PropertyCreateMenu from "./pages/PropertyCreateMenu";
@@ -70,11 +79,12 @@ function App() {
       localStorage.removeItem("renthaven1");
     }
   };
-  // const [message, setMessage] = useState("");
 
   useEffect(() => {
     keepLogin();
-    console.log(isOpen);
+    if(window.location.pathname != "/payment"){
+      dispatch(clearAllDate())
+    }
   }, [isOpen]);
 
   return (
@@ -251,6 +261,12 @@ function App() {
         </>
       ) : (
         //USER
+        loading ? (
+          <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
+            {" "}
+            <Spinner />{" "}
+          </Flex>
+        ) :
         <>
           <Header loading={loading} />
           <Routes>
@@ -294,15 +310,18 @@ function App() {
                 </VerifyChecker>
               }
             />
-            <Route
+            {/* <Route
               path="/tenant-dashboard"
               element={
                 <VerifyChecker loading={loading}>
                   <TenantDashboardPage />
                 </VerifyChecker>
               }
-            />
-            <Route path="/*" />
+            /> */}
+            <Route path="/*" element={<NotFoundPage />} />
+            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
+            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>
+            <Route path="/payment-proof" element={<PaymentProofPage/>} isMobile={isMobile}/>
           </Routes>
           <Footer />
         </>
@@ -312,3 +331,4 @@ function App() {
 }
 
 export default App;
+

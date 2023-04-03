@@ -9,3 +9,8 @@ export const clearDobAction = () => {
     type: "CLEAR_DOB",
   };
 };
+export const clearAllDate = () => {
+  return {
+    type: "CLEAR_ALLDATE",
+  };
+};

@@ -24,7 +24,7 @@ module.exports = {
         },
       });
       if (data.length > 0) {
-        res.status(200).send({
+        res.status(403).send({
           success: false,
           message: "The email has been registered",
         });
@@ -228,13 +228,11 @@ module.exports = {
   verifyAcc: async (req, res) => {
     try {
       const { otp, phone } = req.body;
-      console.log(req.decrypt);
       let user = await userModel.findOne({
         where: {
           email: req.decrypt.email,
         },
       });
-      console.log(user);
 
       if (user.otp !== otp && user.provider !== "google.com") {
         return res.status(400).send({
@@ -403,7 +401,6 @@ module.exports = {
   },
   changeImgProfile: async (req, res) => {
     try {
-      console.log(req.files);
       // yang disimpan ke database: /imgProfile/filename
       const pathName = req.files[0].destination.split(`/`);
       const profileImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;

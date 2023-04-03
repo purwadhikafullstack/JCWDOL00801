@@ -45,7 +45,7 @@ const SigninUserPage = (props) => {
           if (res.data.success == true) {
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
-            window.location.reload();
+            navigate(0)
             navigate("/", { replace: true });
             setGoogleLoading(false);
           } else if (res.data.success == false) {
@@ -82,7 +82,7 @@ const SigninUserPage = (props) => {
           if (res.data.success == true) {
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
-            window.location.reload();
+            navigate(0)
             navigate("/", { replace: true });
             setFacebookLoading(false);
           } else if (res.data.success == false) {
@@ -117,7 +117,7 @@ const SigninUserPage = (props) => {
         if (res.data.success == true) {
           localStorage.setItem("renthaven1", res.data.token);
           loginAction(res.data.result);
-          window.location.reload();
+          navigate(0)
           navigate("/", { replace: true });
           setLoginLoading(false);
         } else if (res.data.success == false) {
