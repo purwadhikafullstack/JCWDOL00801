@@ -58,8 +58,6 @@ const PaymentDetail = (props) => {
       endDate: state.dateReducer.endDate,
     };
   });
-  console.log(startDate);
-  console.log(endDate)
   const getData = async () => {
     try {
       const res = await Axios.post(
