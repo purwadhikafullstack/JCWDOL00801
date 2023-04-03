@@ -159,7 +159,7 @@ function AddPropertyRoom() {
                         <option
                           value={val.categoryId}
                           key={idx}
-                        >{`${val.province}, ${val.city}`}</option>
+                        >{`${val.province} - ${val.city}`}</option>
                       );
                     })}
                   </Select>

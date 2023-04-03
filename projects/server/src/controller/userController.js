@@ -190,18 +190,19 @@ module.exports = {
         },
       });
       const tenantData = await tenantModel.findAll({
-        include: [
-          {
-            model: paymentMethodModel,
-            as: "bank",
-            required: true,
-          },
-          {
-            model: userModel,
-            as: "user",
-            required: true,
-          },
-        ],
+        include: {
+          model: userModel,
+          as: "user",
+          required: true,
+        },
+        where: { userId: data[0].userId },
+      });
+      const bankData = await tenantModel.findAll({
+        include: {
+          model: paymentMethodModel,
+          as: "bank",
+          required: true,
+        },
         where: { userId: data[0].userId },
       });
       let token = createToken({
@@ -212,6 +213,7 @@ module.exports = {
           success: true,
           result: data[0],
           tenant: tenantData[0],
+          bank: bankData[0],
           token,
         });
       }

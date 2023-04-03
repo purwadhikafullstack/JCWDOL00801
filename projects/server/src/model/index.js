@@ -99,7 +99,7 @@ typeModel.hasMany(roomModel, {
   foreignKey: "typeId",
 });
 
-typeModel.belongsTo(roomModel, {
+roomModel.belongsTo(typeModel, {
   as: "type",
   foreignKey: "typeId",
 });
@@ -159,12 +159,12 @@ propertyFcModel.belongsTo(propertyModel, {
 });
 
 paymentMethodModel.hasMany(tenantModel, {
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 tenantModel.belongsTo(paymentMethodModel, {
   as: "bank",
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 
 module.exports = {
   userModel,
@@ -182,5 +182,5 @@ module.exports = {
   roomImageModel,
   facilityModel,
   propertyFcModel,
-  paymentMethodModel
+  paymentMethodModel,
 };

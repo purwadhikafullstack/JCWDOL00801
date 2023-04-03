@@ -3,6 +3,7 @@ const categoryController = require("./categoryController");
 const tenantController = require("./tenantController");
 const propertyController = require("./propertyController");
 const paymentMethodController = require("./paymentMethodController");
+const orderListController = require("./orderListController");
 
 module.exports = {
   userController,
@@ -10,4 +11,5 @@ module.exports = {
   tenantController,
   propertyController,
   paymentMethodController,
+  orderListController,
 };

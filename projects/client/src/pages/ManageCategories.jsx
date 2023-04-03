@@ -14,6 +14,7 @@ import {
   Select,
   Text,
   IconButton,
+  Switch,
 } from "@chakra-ui/react";
 import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import Axios from "axios";
@@ -29,7 +30,7 @@ function ManageCategories(props) {
   });
   const [categoryData, setCategoryData] = React.useState([]);
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(false);
+  const [desc, setDesc] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -43,24 +44,23 @@ function ManageCategories(props) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedProvince, setSelectedProvince] = React.useState("");
   const [selectedCity, setSelectedCity] = React.useState("");
+  const [edit, setEdit] = React.useState(false);
 
   const getCategoryData = async () => {
-    let endpoint = [`/category?tenant=${tenantId}&limit=${limit}&page=${page}&`];
-    let reqQuery = [];
-    if (sortData !== "") {
+    let url = `/category?tenant=${tenantId}&limit=${limit}&page=${page}`;
+    let reqQuery = "";
+    if (sortData) {
       if (desc) {
-        reqQuery.push(`sortby=${sortData}&order=desc`);
+        reqQuery += `&sortby=${sortData}&order=desc`;
       } else {
-        reqQuery.push(`sortby=${sortData}`);
+        reqQuery += `&sortby=${sortData}`;
       }
     }
-    if (queryData !== "") {
-      reqQuery.push(`search=${queryData}`);
+    if (queryData) {
+      reqQuery += `&search=${queryData}`;
     }
     try {
-      let response = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
-      );
+      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + reqQuery);
       setCategoryData(response.data.data);
       setPage(response.data.page);
       setPages(response.data.totalPage);
@@ -92,31 +92,6 @@ function ManageCategories(props) {
         console.log(error);
       }
     }
-  };
-
-  const renderCategoryData = () => {
-    if (categoryData.length === 0) {
-      return (
-        <Tr>
-          <Td colSpan="5">
-            <Text fontSize="lg" align="center">
-              DATA NOT FOUND
-            </Text>
-          </Td>
-        </Tr>
-      );
-    }
-    return categoryData.map((category, idx) => {
-      const { city, province } = category;
-      return (
-        <Tr key={idx}>
-          <Td>
-            <Text>{province}</Text>
-          </Td>
-          <Td>{city}</Td>
-        </Tr>
-      );
-    });
   };
 
   const onBtnSearch = (e) => {
@@ -182,6 +157,54 @@ function ManageCategories(props) {
     }
   };
 
+  const handleEdit = (provinceName, city) => {
+    const result = province.filter((province) => {
+      return province.name === provinceName;
+    });
+    setSelectedProvince(result[0].id);
+    setSelectedCity(city);
+    setEdit(true);
+    setIsOpen(true);
+  };
+
+  const handleCancel = () => {
+    setEdit(false);
+    setIsOpen(false);
+  };
+
+  const renderCategoryData = () => {
+    if (categoryData.length === 0) {
+      return (
+        <Tr>
+          <Td colSpan="5">
+            <Text fontSize="lg" align="center">
+              DATA NOT FOUND
+            </Text>
+          </Td>
+        </Tr>
+      );
+    }
+    return categoryData.map((category, idx) => {
+      const { city, province } = category;
+      return (
+        <Tr key={idx}>
+          <Td>
+            <Text>{province}</Text>
+          </Td>
+          <Td>{city}</Td>
+          <Td>
+            <Switch colorScheme="green" />
+          </Td>
+          <Td>
+            <Button colorScheme="green" onClick={() => handleEdit(province, city)}>
+              Edit
+            </Button>
+          </Td>
+        </Tr>
+      );
+    });
+  };
+
   useEffect(() => {
     getProvinceData();
   }, []);
@@ -213,50 +236,97 @@ function ManageCategories(props) {
               </Button>
             ) : null}
             {isOpen ? (
-              <Stack gap={3}>
-                <Heading size="md">Add Category</Heading>
-                <Flex direction="column" gap={3}>
-                  <FormControl>
-                    <FormLabel>Province</FormLabel>
-                    <Select
-                      value={selectedProvince}
-                      placeholder="Select province"
-                      onChange={(e) => setSelectedProvince(e.target.value)}
-                    >
-                      {province.map((val, idx) => {
-                        return (
-                          <option value={val.id} key={idx}>
-                            {val.name}
-                          </option>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                  {city.length !== 0 ? (
+              edit ? (
+                <Stack gap={3}>
+                  <Heading size="md">Edit Category</Heading>
+                  <Flex direction="column" gap={3}>
                     <FormControl>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>Province</FormLabel>
                       <Select
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        placeholder="Select city"
+                        value={selectedProvince}
+                        placeholder="Select province"
+                        onChange={(e) => setSelectedProvince(e.target.value)}
                       >
-                        {city.map((val, idx) => {
-                          return <option key={idx}>{val.name}</option>;
+                        {province.map((val, idx) => {
+                          return (
+                            <option value={val.id} key={idx}>
+                              {val.name}
+                            </option>
+                          );
                         })}
                       </Select>
                     </FormControl>
-                  ) : null}
-                </Flex>
-                <Flex justify="space-between" gap={3}>
-                  <Button onClick={() => setIsOpen(false)} colorScheme="green" variant="ghost">
-                    Cancel
-                  </Button>
-                  <Button isDisabled={selectedCity === ""} onClick={onBtnAdd} colorScheme="green">
-                    Add
-                  </Button>
-                </Flex>
-                <Divider />
-              </Stack>
+                    {city.length !== 0 ? (
+                      <FormControl>
+                        <FormLabel>City</FormLabel>
+                        <Select
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          placeholder="Select city"
+                        >
+                          {city.map((val, idx) => {
+                            return <option key={idx}>{val.name}</option>;
+                          })}
+                        </Select>
+                      </FormControl>
+                    ) : null}
+                  </Flex>
+                  <Flex justify="space-between" gap={3}>
+                    <Button onClick={handleCancel} colorScheme="green" variant="ghost">
+                      Cancel
+                    </Button>
+                    <Button isDisabled={selectedCity === ""} onClick={onBtnAdd} colorScheme="green">
+                      Update
+                    </Button>
+                  </Flex>
+                  <Divider />
+                </Stack>
+              ) : (
+                <Stack gap={3}>
+                  <Heading size="md">Add Category</Heading>
+                  <Flex direction="column" gap={3}>
+                    <FormControl>
+                      <FormLabel>Province</FormLabel>
+                      <Select
+                        value={selectedProvince}
+                        placeholder="Select province"
+                        onChange={(e) => setSelectedProvince(e.target.value)}
+                      >
+                        {province.map((val, idx) => {
+                          return (
+                            <option value={val.id} key={idx}>
+                              {val.name}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                    {city.length !== 0 ? (
+                      <FormControl>
+                        <FormLabel>City</FormLabel>
+                        <Select
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          placeholder="Select city"
+                        >
+                          {city.map((val, idx) => {
+                            return <option key={idx}>{val.name}</option>;
+                          })}
+                        </Select>
+                      </FormControl>
+                    ) : null}
+                  </Flex>
+                  <Flex justify="space-between" gap={3}>
+                    <Button onClick={() => setIsOpen(false)} colorScheme="green" variant="ghost">
+                      Cancel
+                    </Button>
+                    <Button isDisabled={selectedCity === ""} onClick={onBtnAdd} colorScheme="green">
+                      Add
+                    </Button>
+                  </Flex>
+                  <Divider />
+                </Stack>
+              )
             ) : null}
             <Heading size="md">Search by</Heading>
             <Flex direction="column" gap={3}>
@@ -304,6 +374,8 @@ function ManageCategories(props) {
                 <Tr>
                   <Th>Province</Th>
                   <Th>City</Th>
+                  <Th>Active</Th>
+                  <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>{renderCategoryData()}</Tbody>
@@ -317,37 +389,39 @@ function ManageCategories(props) {
             </Table>
           </TableContainer>
         </Flex>
-        <Flex justify="center">
-          <Text>{pageMessage}</Text>
-          <nav key={rows}>
-            <ReactPaginate
-              previousLabel={
-                <IconButton
-                  isDisabled={page === 0}
-                  variant="outline"
-                  colorScheme="green"
-                  icon={<ArrowLeftIcon />}
-                />
-              }
-              nextLabel={
-                <IconButton
-                  isDisabled={page + 1 === pages}
-                  variant="outline"
-                  colorScheme="green"
-                  icon={<ArrowRightIcon />}
-                />
-              }
-              pageCount={Math.min(10, pages)}
-              onPageChange={onPageChange}
-              containerClassName={"pagination-container"}
-              pageLinkClassName={"pagination-link"}
-              previousLinkClassName={"pagination-prev"}
-              nextLinkClassName={"pagination-next"}
-              activeLinkClassName={"pagination-link-active"}
-              disabledLinkClassName={"pagination-link-disabled"}
-            />
-          </nav>
-        </Flex>
+        {pages === 0 ? null : (
+          <Flex justify="center">
+            <Text>{pageMessage}</Text>
+            <nav key={rows}>
+              <ReactPaginate
+                previousLabel={
+                  <IconButton
+                    isDisabled={page === 0}
+                    variant="outline"
+                    colorScheme="green"
+                    icon={<ArrowLeftIcon />}
+                  />
+                }
+                nextLabel={
+                  <IconButton
+                    isDisabled={page + 1 === pages}
+                    variant="outline"
+                    colorScheme="green"
+                    icon={<ArrowRightIcon />}
+                  />
+                }
+                pageCount={Math.min(10, pages)}
+                onPageChange={onPageChange}
+                containerClassName={"pagination-container"}
+                pageLinkClassName={"pagination-link"}
+                previousLinkClassName={"pagination-prev"}
+                nextLinkClassName={"pagination-next"}
+                activeLinkClassName={"pagination-link-active"}
+                disabledLinkClassName={"pagination-link-disabled"}
+              />
+            </nav>
+          </Flex>
+        )}
       </Flex>
     </Box>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Flex, Heading, Input, Divider, Center, Box, Stack } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, Divider, Center, Box, Stack, Tag } from "@chakra-ui/react";
 import {
   Table,
   Thead,
@@ -22,12 +22,14 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Image,
 } from "@chakra-ui/react";
-import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import Axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
+import { differenceInDays } from "date-fns";
 
 function OrderHistory(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,125 +38,104 @@ function OrderHistory(props) {
       tenantId: state.tenantReducer.tenantId,
     };
   });
-  const [categoryData, setCategoryData] = React.useState([]);
-  const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(false);
+  const [tableData, setTableData] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
   const [rows, setRows] = React.useState(0);
   const [pageMessage, setPageMessage] = React.useState("");
-  const [searchData, setSearchData] = React.useState("");
-  const [queryData, setQueryData] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = React.useState("");
+  const [modalData, setModalData] = React.useState("");
+  const [clicked, setClicked] = React.useState(false);
+  const [selectedOption, setSelectedOption] = React.useState("");
+  const [searchBooking, setSearchBooking] = React.useState("");
+  const [searchProperty, setSearchProperty] = React.useState("");
+  const [filterBooking, setFilterBooking] = React.useState("");
+  const [filterProperty, setFilterProperty] = React.useState("");
 
-  const [province, setProvince] = React.useState([]);
-  const [city, setCity] = React.useState([]);
-  const [selectedProvince, setSelectedProvince] = React.useState("");
-  const [selectedCity, setSelectedCity] = React.useState("");
-  const [selectedStatus, setSelectedStatus] = React.useState(null);
+  const getTableData = async () => {
+    let url = `/orderlist?tenant=${tenantId}&limit=${limit}&page=${page}`;
+    let reqQuery = "";
 
-  const getCategoryData = async () => {
-    let endpoint = [`/category?tenant=${tenantId}&limit=${limit}&page=${page}&`];
-    let reqQuery = [];
-    if (sortData !== "") {
-      if (desc) {
-        reqQuery.push(`sortby=${sortData}&order=desc`);
-      } else {
-        reqQuery.push(`sortby=${sortData}`);
-      }
+    if (selectedStatus) {
+      reqQuery += `&status=${selectedStatus}`;
     }
-    if (queryData !== "") {
-      reqQuery.push(`search=${queryData}`);
+    if (filterBooking) {
+      reqQuery += `&orderId=${filterBooking}`;
     }
-    console.log(endpoint + reqQuery.join("&"));
+    if (filterProperty) {
+      reqQuery += `&property=${filterProperty}`;
+    }
     try {
-      let response = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
-      );
-      setCategoryData(response.data.data);
+      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + reqQuery);
+      setTableData(response.data.data);
       setPage(response.data.page);
       setPages(response.data.totalPage);
       setRows(response.data.totalRows);
     } catch (error) {
       console.log(error);
+      setTableData(error.response.data.data);
     }
-  };
-
-  const getProvinceData = async () => {
-    try {
-      let response = await Axios.get(
-        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
-      );
-      setProvince(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getCityData = async () => {
-    if (province.length !== 0) {
-      try {
-        let response = await Axios.get(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
-        );
-        setCity(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  const renderCategoryData = () => {
-    if (categoryData.length === 0) {
-      return (
-        <Tr>
-          <Td colSpan="5">
-            <Text fontSize="lg" align="center">
-              DATA NOT FOUND
-            </Text>
-          </Td>
-        </Tr>
-      );
-    }
-    return categoryData.map((category, idx) => {
-      const { city, province } = category;
-      return (
-        <Tr key={idx}>
-          <Td>
-            <Text>{province}</Text>
-          </Td>
-          <Td>{city}</Td>
-          <Td>{city}</Td>
-          <Td>{city}</Td>
-          <Td>{city}</Td>
-          <Td>
-            <Select>
-              <option value="option1" hidden>
-                Action
-              </option>
-              <option value="option2">Confirm</option>
-              <option value="option3">Reject</option>
-              <option value="option4" onClick={onOpen}>
-                Details
-              </option>
-            </Select>
-          </Td>
-        </Tr>
-      );
-    });
   };
 
   const onBtnSearch = (e) => {
     e.preventDefault();
     setPage(0);
-    setQueryData(searchData);
+    setFilterBooking(searchBooking);
+    setFilterProperty(searchProperty);
   };
 
   const onBtnReset = () => {
-    setQueryData("");
-    setSearchData("");
-    setSortData("");
-    getCategoryData();
+    setSearchBooking("");
+    setSearchProperty("");
+    setFilterBooking("");
+    setFilterProperty("");
+    setSelectedStatus("");
+    getTableData();
+  };
+
+  const onBtnAction = async (id, status) => {
+    Swal.fire({
+      title:
+        status === "Confirmed"
+          ? "Are you sure you want to confirm this order?"
+          : "Are you sure you want to reject this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#38A169",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          let res = await Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/update", {
+            transactionId: id,
+            status,
+          });
+          if (res.data.success) {
+            Swal.fire({
+              icon: "success",
+              title: res.data.message,
+              confirmButtonText: "OK",
+              confirmButtonColor: "#48BB78",
+              timer: 1500,
+            }).then(() => {
+              getTableData();
+              setSelectedOption("");
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  };
+
+  const onBtnDetails = (data) => {
+    setModalData(data);
+    setClicked(true);
+    onOpen();
   };
 
   const onPageChange = ({ selected }) => {
@@ -168,17 +149,156 @@ function OrderHistory(props) {
     }
   };
 
-  useEffect(() => {
-    getProvinceData();
-  }, []);
+  const renderTableData = () => {
+    if (tableData.length === 0) {
+      return (
+        <Tr>
+          <Td colSpan="5">
+            <Text fontSize="lg" align="center">
+              DATA NOT FOUND
+            </Text>
+          </Td>
+        </Tr>
+      );
+    }
+    return tableData.map((data, idx) => {
+      const { transaction, orderId, price, room } = data;
+      const { status } = transaction;
+      return (
+        <Tr key={idx}>
+          <Td>{orderId}</Td>
+          <Td>{room.property.name}</Td>
+          <Td>{room.type.name}</Td>
+          <Td>{`Rp. ${parseInt(price).toLocaleString("id")}`}</Td>
+          <Td>
+            <Tag
+              size={"lg"}
+              colorScheme={
+                status === "Waiting for payment"
+                  ? "orange"
+                  : status === "Waiting for confirmation"
+                  ? "blue"
+                  : status === "Confirmed"
+                  ? "green"
+                  : status === "Cancelled"
+                  ? "red"
+                  : null
+              }
+            >
+              {status}
+            </Tag>
+          </Td>
+          <Td>
+            <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
+              <option hidden>Action</option>
+              <option
+                hidden={
+                  status === "Confirmed" ||
+                  status === "Cancelled" ||
+                  status === "Waiting for payment"
+                }
+                onClick={() => onBtnAction(transaction.transactionId, "Confirmed")}
+              >
+                Confirm
+              </option>
+              <option
+                hidden={
+                  status === "Confirmed" ||
+                  status === "Cancelled" ||
+                  status === "Waiting for payment"
+                }
+                onClick={() => onBtnAction(transaction.transactionId, "Waiting for payment")}
+              >
+                Reject
+              </option>
+              <option onClick={() => onBtnDetails(data)}>Details</option>
+            </Select>
+          </Td>
+        </Tr>
+      );
+    });
+  };
+
+  const renderModalData = () => {
+    if (clicked) {
+      const { orderId, room, transaction, price } = modalData;
+      const { status } = transaction;
+      const checkIn = new Date(transaction.checkinDate).toLocaleDateString("id");
+      const checkOut = new Date(transaction.checkoutDate).toLocaleDateString("id");
+      const nights = differenceInDays(
+        new Date(transaction.checkoutDate),
+        new Date(transaction.checkinDate)
+      );
+      return (
+        <ModalBody>
+          <Flex justify="space-between" align="center">
+            <Heading size="md">Booking No: {orderId}</Heading>
+            <Flex align="center" justify="center">
+              <Heading size="md">
+                Status:{" "}
+                <Tag
+                  size={"lg"}
+                  colorScheme={
+                    status === "Waiting for payment"
+                      ? "orange"
+                      : status === "Waiting for confirmation"
+                      ? "blue"
+                      : status === "Confirmed"
+                      ? "green"
+                      : status === "Cancelled"
+                      ? "red"
+                      : null
+                  }
+                >
+                  {status}
+                </Tag>{" "}
+              </Heading>
+            </Flex>
+          </Flex>
+          <Divider my={3} />
+          <Stack mx={5} gap={6}>
+            <Flex justify="space-between">
+              <Text>Guest Name : </Text>
+              <Text textTransform="capitalize">{transaction.user.name}</Text>
+            </Flex>
+            <Flex justify="space-between">
+              <Text>Total Guest :</Text>
+              <Text>{transaction.totalGuest}</Text>
+            </Flex>
+            <Flex justify="space-between">
+              <Text>Property Name :</Text>
+              <Text>{room.property.name}</Text>
+            </Flex>
+            <Flex justify="space-between">
+              <Text>Room Type :</Text>
+              <Text>{room.type.name}</Text>
+            </Flex>
+            <Flex justify="space-between">
+              <Text>Length of Stay :</Text>
+              <Text>{`${checkIn} - ${checkOut} / ${nights} night(s)`}</Text>
+            </Flex>
+            <Flex justify="space-between">
+              <Text>Price :</Text>
+              <Text fontSize="2xl">Rp. {parseInt(price).toLocaleString("id")}</Text>
+            </Flex>
+            {transaction.payProofImg ? (
+              <Flex direction="column" gap={5}>
+                <Divider />
+                <Heading size="sm">Payment:</Heading>
+                <Flex alignItems="center" justifyContent="center">
+                  <Image height="500px" src={transaction.payProofImg} />
+                </Flex>
+              </Flex>
+            ) : null}
+          </Stack>
+        </ModalBody>
+      );
+    }
+  };
 
   useEffect(() => {
-    getCityData();
-  }, [selectedProvince]);
-
-  useEffect(() => {
-    getCategoryData();
-  }, [page, queryData, selectedStatus]);
+    getTableData();
+  }, [page, filterBooking, filterProperty, selectedStatus]);
 
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>
@@ -190,11 +310,11 @@ function OrderHistory(props) {
             <Flex direction="column" gap={3}>
               <FormControl>
                 <FormLabel>Booking Number</FormLabel>
-                <Input value={searchData} onChange={(e) => setSearchData(e.target.value)} />
+                <Input value={searchBooking} onChange={(e) => setSearchBooking(e.target.value)} />
               </FormControl>
               <FormControl>
                 <FormLabel>Property</FormLabel>
-                <Input value={searchData} onChange={(e) => setSearchData(e.target.value)} />
+                <Input value={searchProperty} onChange={(e) => setSearchProperty(e.target.value)} />
               </FormControl>
             </Flex>
             <Flex justify="space-between" gap={3}>
@@ -213,11 +333,21 @@ function OrderHistory(props) {
             <Flex mb={4} gap={3} align="center">
               Status:
               <Button
+                colorScheme="twitter"
+                variant="outline"
+                onClick={() => {
+                  setSelectedStatus("");
+                }}
+                isActive={selectedStatus === ""}
+              >
+                Show All
+              </Button>
+              <Button
                 colorScheme="yellow"
                 variant="outline"
                 onClick={() => {
                   selectedStatus === "Waiting for payment"
-                    ? setSelectedStatus(null)
+                    ? setSelectedStatus("")
                     : setSelectedStatus("Waiting for payment");
                 }}
                 isActive={selectedStatus === "Waiting for payment"}
@@ -229,7 +359,7 @@ function OrderHistory(props) {
                 variant="outline"
                 onClick={() => {
                   selectedStatus === "Waiting for confirmation"
-                    ? setSelectedStatus(null)
+                    ? setSelectedStatus("")
                     : setSelectedStatus("Waiting for confirmation");
                 }}
                 isActive={selectedStatus === "Waiting for confirmation"}
@@ -241,7 +371,7 @@ function OrderHistory(props) {
                 variant="outline"
                 onClick={() => {
                   selectedStatus === "Confirmed"
-                    ? setSelectedStatus(null)
+                    ? setSelectedStatus("")
                     : setSelectedStatus("Confirmed");
                 }}
                 isActive={selectedStatus === "Confirmed"}
@@ -253,7 +383,7 @@ function OrderHistory(props) {
                 variant="outline"
                 onClick={() => {
                   selectedStatus === "Cancelled"
-                    ? setSelectedStatus(null)
+                    ? setSelectedStatus("")
                     : setSelectedStatus("Cancelled");
                 }}
                 isActive={selectedStatus === "Cancelled"}
@@ -272,7 +402,7 @@ function OrderHistory(props) {
                   <Th></Th>
                 </Tr>
               </Thead>
-              <Tbody>{renderCategoryData()}</Tbody>
+              <Tbody>{renderTableData()}</Tbody>
               <TableCaption>
                 <Flex>
                   <Text>
@@ -283,46 +413,46 @@ function OrderHistory(props) {
             </Table>
           </TableContainer>
         </Flex>
-        <Flex justify="center">
-          <Text>{pageMessage}</Text>
-          <nav key={rows}>
-            <ReactPaginate
-              previousLabel={
-                <IconButton
-                  isDisabled={page === 0}
-                  variant="outline"
-                  colorScheme="green"
-                  icon={<ArrowLeftIcon />}
-                />
-              }
-              nextLabel={
-                <IconButton
-                  isDisabled={page + 1 === pages}
-                  variant="outline"
-                  colorScheme="green"
-                  icon={<ArrowRightIcon />}
-                />
-              }
-              pageCount={Math.min(10, pages)}
-              onPageChange={onPageChange}
-              containerClassName={"pagination-container"}
-              pageLinkClassName={"pagination-link"}
-              previousLinkClassName={"pagination-prev"}
-              nextLinkClassName={"pagination-next"}
-              activeLinkClassName={"pagination-link-active"}
-              disabledLinkClassName={"pagination-link-disabled"}
-            />
-          </nav>
-        </Flex>
+        {pages === 0 ? null : (
+          <Flex justify="center">
+            <Text>{pageMessage}</Text>
+            <nav key={rows}>
+              <ReactPaginate
+                previousLabel={
+                  <IconButton
+                    isDisabled={page === 0}
+                    variant="outline"
+                    colorScheme="green"
+                    icon={<ArrowLeftIcon />}
+                  />
+                }
+                nextLabel={
+                  <IconButton
+                    isDisabled={page + 1 === pages}
+                    variant="outline"
+                    colorScheme="green"
+                    icon={<ArrowRightIcon />}
+                  />
+                }
+                pageCount={Math.min(10, pages)}
+                onPageChange={onPageChange}
+                containerClassName={"pagination-container"}
+                pageLinkClassName={"pagination-link"}
+                previousLinkClassName={"pagination-prev"}
+                nextLinkClassName={"pagination-next"}
+                activeLinkClassName={"pagination-link-active"}
+                disabledLinkClassName={"pagination-link-disabled"}
+              />
+            </nav>
+          </Flex>
+        )}
       </Flex>
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal size="xl" scrollBehavior="inside" onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Order Details</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Heading size="md">Booking No: </Heading>
-          </ModalBody>
+          {renderModalData()}
           <ModalFooter>
             <Button onClick={onClose}>Close</Button>
           </ModalFooter>

@@ -6,6 +6,9 @@ const {
   orderListModel,
   transactionModel,
 } = require("../model");
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
 
 module.exports = {
   getData: async (req, res) => {
@@ -82,8 +85,13 @@ module.exports = {
   },
   create: async (req, res) => {
     try {
+      await sharp(req.files[0].path)
+        .resize(600, 400, { fit: "fill" })
+        .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+      fs.unlinkSync(req.files[0].path);
+
       const pathName = req.files[0].destination.split("/");
-      const propertyImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
+      const propertyImg = `/${pathName[pathName.length - 1]}/RH${req.files[0].filename}`;
 
       const newBody = { ...req.body, image: propertyImg };
       const checkData = await propertyModel.findAll({

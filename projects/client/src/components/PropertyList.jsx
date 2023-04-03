@@ -39,7 +39,7 @@ function PropertyList(props) {
   const [filterCity, setFilterCity] = React.useState("");
   const [filterAddress, setFilterAddress] = React.useState("");
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(false);
+  const [desc, setDesc] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -50,28 +50,26 @@ function PropertyList(props) {
   const [searchAddress, setSearchAddress] = React.useState("");
 
   const getPropertyData = async () => {
-    let endpoint = [`/property?tenant=${tenantId}&limit=${limit}&page=${page}&`];
-    let reqQuery = [];
-    if (sortData !== "") {
+    let url = `/property?tenant=${tenantId}&limit=${limit}&page=${page}`;
+    let reqQuery = "";
+    if (sortData) {
       if (desc) {
-        reqQuery.push(`sortby=${sortData}&order=desc`);
+        reqQuery += `&sortby=${sortData}&order=desc`;
       } else {
-        reqQuery.push(`sortby=${sortData}`);
+        reqQuery += `&sortby=${sortData}`;
       }
     }
-    if (filterName !== "") {
-      reqQuery.push(`name=${filterName}`);
+    if (filterName) {
+      reqQuery += `&name=${filterName}`;
     }
-    if (filterCity !== "") {
-      reqQuery.push(`city=${filterCity}`);
+    if (filterCity) {
+      reqQuery += `&city=${filterCity}`;
     }
-    if (filterAddress !== "") {
-      reqQuery.push(`address=${filterAddress}`);
+    if (filterAddress) {
+      reqQuery += `&address=${filterAddress}`;
     }
     try {
-      let response = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
-      );
+      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + reqQuery);
       setPropertyData(response.data.data);
       setPage(response.data.page);
       setPages(response.data.totalPage);
@@ -116,7 +114,7 @@ function PropertyList(props) {
               <Text>{name}</Text>
             </Flex>
           </Td>
-          <Td>{`${category.province}, ${category.city}`}</Td>
+          <Td>{`${category.province} - ${category.city}`}</Td>
           <Td whiteSpace={{ base: "nowrap", md: "normal" }}>
             <Text noOfLines={1}>{address}</Text>
           </Td>
@@ -272,7 +270,7 @@ function PropertyList(props) {
                     <option
                       value={val.categoryId}
                       key={idx}
-                    >{`${val.province}, ${val.city}`}</option>
+                    >{`${val.province} - ${val.city}`}</option>
                   );
                 })}
               </Select>
@@ -337,37 +335,39 @@ function PropertyList(props) {
           </Table>
         </TableContainer>
       </Flex>
-      <Flex justify="center">
-        <Text>{pageMessage}</Text>
-        <nav key={rows}>
-          <ReactPaginate
-            previousLabel={
-              <IconButton
-                isDisabled={page === 0}
-                variant="outline"
-                colorScheme="green"
-                icon={<ArrowLeftIcon />}
-              />
-            }
-            nextLabel={
-              <IconButton
-                isDisabled={page + 1 === pages}
-                variant="outline"
-                colorScheme="green"
-                icon={<ArrowRightIcon />}
-              />
-            }
-            pageCount={Math.min(10, pages)}
-            onPageChange={onPageChange}
-            containerClassName={"pagination-container"}
-            pageLinkClassName={"pagination-link"}
-            previousLinkClassName={"pagination-prev"}
-            nextLinkClassName={"pagination-next"}
-            activeLinkClassName={"pagination-link-active"}
-            disabledLinkClassName={"pagination-link-disabled"}
-          />
-        </nav>
-      </Flex>
+      {pages === 0 ? null : (
+        <Flex justify="center">
+          <Text>{pageMessage}</Text>
+          <nav key={rows}>
+            <ReactPaginate
+              previousLabel={
+                <IconButton
+                  isDisabled={page === 0}
+                  variant="outline"
+                  colorScheme="green"
+                  icon={<ArrowLeftIcon />}
+                />
+              }
+              nextLabel={
+                <IconButton
+                  isDisabled={page + 1 === pages}
+                  variant="outline"
+                  colorScheme="green"
+                  icon={<ArrowRightIcon />}
+                />
+              }
+              pageCount={Math.min(10, pages)}
+              onPageChange={onPageChange}
+              containerClassName={"pagination-container"}
+              pageLinkClassName={"pagination-link"}
+              previousLinkClassName={"pagination-prev"}
+              nextLinkClassName={"pagination-next"}
+              activeLinkClassName={"pagination-link-active"}
+              disabledLinkClassName={"pagination-link-disabled"}
+            />
+          </nav>
+        </Flex>
+      )}
     </Flex>
   );
 }

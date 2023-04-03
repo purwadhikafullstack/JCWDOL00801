@@ -171,7 +171,10 @@ function PropertyForm(props) {
             >
               {city.map((val, idx) => {
                 return (
-                  <option value={val.categoryId} key={idx}>{`${val.province}, ${val.city}`}</option>
+                  <option
+                    value={val.categoryId}
+                    key={idx}
+                  >{`${val.province} - ${val.city}`}</option>
                 );
               })}
             </Select>

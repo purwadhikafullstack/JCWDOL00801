@@ -108,19 +108,15 @@ module.exports = {
         },
       });
       const tenantData = await tenantModel.findAll({
-        include: [
-          {
-            model: paymentMethodModel,
-            as: "bank",
-            required: true,
-          },
-          {
-            model: userModel,
-            as: "user",
-            required: true,
-          },
-        ],
+        include: {
+          model: userModel,
+          as: "user",
+          required: true,
+        },
         where: { userId: data[0].userId },
+      });
+      const bankData = await paymentMethodModel.findAll({
+        where: { bankId: tenantData[0].bankId },
       });
       let token = createToken({
         ...data,
@@ -137,7 +133,9 @@ module.exports = {
           res.status(200).send({
             success: true,
             message: "Login successfull",
-            result: tenantData[0],
+            user: data[0],
+            tenant: tenantData[0],
+            bank: bankData[0],
             token,
           });
         } else {

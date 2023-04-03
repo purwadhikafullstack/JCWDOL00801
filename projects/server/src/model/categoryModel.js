@@ -22,6 +22,10 @@ const categoryModel = dbSequelize.define("categories", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  isDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 module.exports = { categoryModel };

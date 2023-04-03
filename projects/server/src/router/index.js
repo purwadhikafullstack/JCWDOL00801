@@ -3,6 +3,7 @@ const categoryRouter = require("./categoryRouter");
 const tenantRouter = require("./tenantRouter");
 const propertyRouter = require("./propertyRouter");
 const paymentMethodRouter = require("./paymentMethodRouter");
+const orderListRouter = require("./orderListRouter");
 
 module.exports = {
   userRouter,
@@ -10,4 +11,5 @@ module.exports = {
   tenantRouter,
   propertyRouter,
   paymentMethodRouter,
+  orderListRouter,
 };
