@@ -94,7 +94,7 @@ function OrderHistory(props) {
     getTableData();
   };
 
-  const onBtnAction = async (id, status) => {
+  const onBtnAction = async (transId, roomId, status) => {
     Swal.fire({
       title:
         status === "Confirmed"
@@ -110,7 +110,8 @@ function OrderHistory(props) {
       if (result.isConfirmed) {
         try {
           let res = await Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/update", {
-            transactionId: id,
+            transactionId: transId,
+            roomId,
             status,
           });
           if (res.data.success) {
@@ -197,7 +198,7 @@ function OrderHistory(props) {
                   status === "Cancelled" ||
                   status === "Waiting for payment"
                 }
-                onClick={() => onBtnAction(transaction.transactionId, "Confirmed")}
+                onClick={() => onBtnAction(transaction.transactionId, room.roomId, "Confirmed")}
               >
                 Confirm
               </option>
@@ -207,9 +208,20 @@ function OrderHistory(props) {
                   status === "Cancelled" ||
                   status === "Waiting for payment"
                 }
-                onClick={() => onBtnAction(transaction.transactionId, "Waiting for payment")}
+                onClick={() =>
+                  onBtnAction(transaction.transactionId, room.roomId, "Waiting for payment")
+                }
               >
                 Reject
+              </option>
+              <option
+                hidden={
+                  status === "Confirmed" ||
+                  status === "Cancelled" ||
+                  status === "Waiting for confirmation"
+                }
+              >
+                Cancel
               </option>
               <option onClick={() => onBtnDetails(data)}>Details</option>
             </Select>

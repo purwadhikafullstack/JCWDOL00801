@@ -45,6 +45,8 @@ function ManageCategories(props) {
   const [selectedProvince, setSelectedProvince] = React.useState("");
   const [selectedCity, setSelectedCity] = React.useState("");
   const [edit, setEdit] = React.useState(false);
+  const [editCity, setEditCity] = React.useState("");
+  const [editId, setEditId] = React.useState("");
 
   const getCategoryData = async () => {
     let url = `/category?tenant=${tenantId}&limit=${limit}&page=${page}`;
@@ -139,6 +141,12 @@ function ManageCategories(props) {
     }
   };
 
+  const onBtnUpdate = () => {
+    console.log(`province`, selectedProvince);
+    console.log(`city`, editCity);
+    console.log("category id", editId);
+  };
+
   const onBtnReset = () => {
     setQueryData("");
     setSearchData("");
@@ -157,19 +165,28 @@ function ManageCategories(props) {
     }
   };
 
-  const handleEdit = (provinceName, city) => {
+  const handleEdit = (provinceName, city, categoryId) => {
     const result = province.filter((province) => {
       return province.name === provinceName;
     });
     setSelectedProvince(result[0].id);
-    setSelectedCity(city);
+    setEditCity(city);
+    setEditId(categoryId);
     setEdit(true);
     setIsOpen(true);
   };
 
   const handleCancel = () => {
     setEdit(false);
+    setSelectedProvince("");
+    setEditCity("");
+    setEditId("");
     setIsOpen(false);
+  };
+
+  const handleEditProvinceChange = (e) => {
+    setSelectedProvince(e.target.value);
+    setEditCity("");
   };
 
   const renderCategoryData = () => {
@@ -185,9 +202,9 @@ function ManageCategories(props) {
       );
     }
     return categoryData.map((category, idx) => {
-      const { city, province } = category;
+      const { city, province, categoryId } = category;
       return (
-        <Tr key={idx}>
+        <Tr key={idx} backgroundColor={categoryId === editId ? "gray.100" : null}>
           <Td>
             <Text>{province}</Text>
           </Td>
@@ -196,7 +213,11 @@ function ManageCategories(props) {
             <Switch colorScheme="green" />
           </Td>
           <Td>
-            <Button colorScheme="green" onClick={() => handleEdit(province, city)}>
+            <Button
+              isDisabled={categoryId === editId}
+              colorScheme="green"
+              onClick={() => handleEdit(province, city, categoryId)}
+            >
               Edit
             </Button>
           </Td>
@@ -210,6 +231,7 @@ function ManageCategories(props) {
   }, []);
 
   useEffect(() => {
+    setSelectedCity("");
     getCityData();
   }, [selectedProvince]);
 
@@ -237,6 +259,7 @@ function ManageCategories(props) {
             ) : null}
             {isOpen ? (
               edit ? (
+                // TAMPILAN EDIT CATEGORY
                 <Stack gap={3}>
                   <Heading size="md">Edit Category</Heading>
                   <Flex direction="column" gap={3}>
@@ -245,7 +268,7 @@ function ManageCategories(props) {
                       <Select
                         value={selectedProvince}
                         placeholder="Select province"
-                        onChange={(e) => setSelectedProvince(e.target.value)}
+                        onChange={(e) => handleEditProvinceChange(e)}
                       >
                         {province.map((val, idx) => {
                           return (
@@ -256,32 +279,31 @@ function ManageCategories(props) {
                         })}
                       </Select>
                     </FormControl>
-                    {city.length !== 0 ? (
-                      <FormControl>
-                        <FormLabel>City</FormLabel>
-                        <Select
-                          value={selectedCity}
-                          onChange={(e) => setSelectedCity(e.target.value)}
-                          placeholder="Select city"
-                        >
-                          {city.map((val, idx) => {
-                            return <option key={idx}>{val.name}</option>;
-                          })}
-                        </Select>
-                      </FormControl>
-                    ) : null}
+                    <FormControl>
+                      <FormLabel>City</FormLabel>
+                      <Select
+                        value={editCity}
+                        onChange={(e) => setEditCity(e.target.value)}
+                        placeholder="Select city"
+                      >
+                        {city.map((val, idx) => {
+                          return <option key={idx}>{val.name}</option>;
+                        })}
+                      </Select>
+                    </FormControl>
                   </Flex>
                   <Flex justify="space-between" gap={3}>
                     <Button onClick={handleCancel} colorScheme="green" variant="ghost">
                       Cancel
                     </Button>
-                    <Button isDisabled={selectedCity === ""} onClick={onBtnAdd} colorScheme="green">
+                    <Button isDisabled={editCity === ""} onClick={onBtnUpdate} colorScheme="green">
                       Update
                     </Button>
                   </Flex>
                   <Divider />
                 </Stack>
               ) : (
+                // TAMPILAN ADD CATEGORY
                 <Stack gap={3}>
                   <Heading size="md">Add Category</Heading>
                   <Flex direction="column" gap={3}>

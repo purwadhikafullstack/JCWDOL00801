@@ -5,6 +5,7 @@ const {
   propertyModel,
   userModel,
   typeModel,
+  roomAvailModel,
 } = require("../model");
 const { Op } = require("sequelize");
 
@@ -79,19 +80,53 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      const update = await transactionModel.update(
-        {
-          status: req.body.status,
-        },
-        {
-          where: { transactionId: req.body.transactionId },
+      const { status, transactionId, roomId } = req.body;
+      if (status === "Confirmed") {
+        const update = await transactionModel.update(
+          {
+            status,
+          },
+          {
+            where: { transactionId },
+          }
+        );
+        if (update) {
+          return res.status(200).send({
+            success: true,
+            message: `Order has been updated`,
+          });
         }
-      );
-      if (update) {
-        return res.status(200).send({
-          success: true,
-          message: `Order has been updated`,
+      } else if (status === "Waiting for payment") {
+        const expired = new Date();
+        expired.setHours(expired.getHours() + 2);
+        const roomAvailData = await roomAvailModel.findAll({
+          where: { roomId },
         });
+        const updateRoom = await roomAvailModel.update(
+          {
+            endDate: roomAvailData[0].startDate,
+          },
+          {
+            where: { roomId },
+          }
+        );
+        if (updateRoom) {
+          const update = await transactionModel.update(
+            {
+              status,
+              transactionExpired: expired,
+            },
+            {
+              where: { transactionId },
+            }
+          );
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: `Order has been updated`,
+            });
+          }
+        }
       }
     } catch (error) {
       console.log(error);
