@@ -32,7 +32,7 @@ module.exports = {
   getNecessaryData: async (req, res) => {
     try {
       //get neccessary data for transaction page
-      const data = await dbSequelize.query(`select p.image, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
+      const data = await dbSequelize.query(`select p.image, t.typeImg, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
             INNER JOIN types as t on r.typeId = t.typeId INNER JOIN tenants as ten on p.tenantId = ten.tenantId INNER JOIN paymentmethods as pay on ten.bankId = pay.bankId where p.propertyId = ${req.query.id} and t.typeId = ${req.body.typeId}`, {
         type: QueryTypes.SELECT
       })

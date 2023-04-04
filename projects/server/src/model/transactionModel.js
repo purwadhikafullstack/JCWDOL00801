@@ -1,6 +1,6 @@
-const {Sequelize} = require('sequelize');
-const { dbSequelize } = require('../config/db');
-const {DataTypes} = Sequelize;
+const { Sequelize } = require("sequelize");
+const { dbSequelize } = require("../config/db");
+const { DataTypes } = Sequelize;
 
 const transactionModel = dbSequelize.define("transactions", {
     transactionId: {

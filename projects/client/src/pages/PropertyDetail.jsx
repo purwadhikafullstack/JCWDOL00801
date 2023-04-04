@@ -8,6 +8,7 @@ import "../styles/imageGallery.css";
 import { useLocation, useSearchParams } from "react-router-dom";
 import CalendarDateRange from "../components/CalendarDateRange";
 import { useDispatch, useSelector } from "react-redux";
+import "../styles/imageGallery.css";
 
 function PropertyDetail(props) {
   const location = useLocation();

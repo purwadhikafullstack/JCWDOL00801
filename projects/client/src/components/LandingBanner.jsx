@@ -8,6 +8,7 @@ import "../styles/swiperKita.css";
 import bannerImage from "../assets/landingBanner";
 
 function LandingBanner(props) {
+  const [loading, setLoading] = React.useState(false);
   return (
     <Container px={0} maxW={{ base: "container", md: "100%" }}>
       <Swiper
@@ -26,7 +27,7 @@ function LandingBanner(props) {
         {bannerImage.map((banner, idx) => {
           return (
             <SwiperSlide key={idx}>
-              <Skeleton isLoaded>
+              <Skeleton isLoaded={loading}>
                 <Image
                   height={{ base: "200px", md: "450px" }}
                   width="100%"
@@ -34,6 +35,7 @@ function LandingBanner(props) {
                   objectFit="cover"
                   fallbackSrc="https://via.placeholder.com/500"
                   alt="Landing Banner"
+                  onLoad={() => setLoading(true)}
                 />
               </Skeleton>
             </SwiperSlide>

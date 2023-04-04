@@ -159,8 +159,8 @@ propertyFcModel.belongsTo(propertyModel, {
 });
 
 paymentMethodModel.hasMany(tenantModel, {
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 tenantModel.belongsTo(paymentMethodModel, {
   as: "bank",
   foreignKey: "bankId"
@@ -188,5 +188,5 @@ module.exports = {
   roomImageModel,
   facilityModel,
   propertyFcModel,
-  paymentMethodModel
+  paymentMethodModel,
 };

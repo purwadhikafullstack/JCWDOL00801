@@ -44,7 +44,7 @@ function PropertyCard({ data }) {
         transitionDuration: "0.15s",
       }}
     >
-      <Image src={banner1} alt="Green double couch with wooden legs" borderTopRadius="lg" />
+      <Image src={process.env.REACT_APP_API_BASE_IMG_URL + data.image} borderTopRadius="lg" />
       <CardBody>
         <Stack spacing="3">
           <Heading

@@ -26,7 +26,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate, setNight}) => {
             Booking Detail
           </Heading>
           <Flex border="#ccc solid 1px" alignItems="center" rounded="md">
-            <Image h="70px" w="70px" src={image1} m="5px" rounded="md" objectFit="cover"/>
+            <Image h="70px" w="70px" src={process.env.REACT_APP_API_BASE_IMG_URL + data.typeImg} m="5px" rounded="md" objectFit="cover"/>
             <Flex direction={"column"}>
               <Text fontWeight={"600"} fontSize="18px" color="#6e6c6d">
                 {data.name}

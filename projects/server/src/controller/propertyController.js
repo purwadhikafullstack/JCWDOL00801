@@ -31,7 +31,8 @@ module.exports = {
       p.propertyId AS id, 
       r.roomId,
       t.typeId,
-      t.typeImg
+      t.typeImg,
+      p.image
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -92,7 +93,7 @@ module.exports = {
           [Op.and]: [{
             propertyId: id
           }, {
-            isDeleted: 0
+            isDeleted: 0 || false
           }]
         }
       });

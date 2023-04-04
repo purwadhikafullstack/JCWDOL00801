@@ -1,6 +1,5 @@
 require("dotenv/config");
 process.env.TZ = "Asia/Jakarta";
-console.log(new Date())
 const moment = require("moment-timezone");
 moment.tz.setDefault("Asia/Jakarta");
 const express = require("express");
@@ -32,6 +31,7 @@ const {
   roomRouter,
   propertyRouter,
   paymentMethodRouter,
+  orderListRouter,
 } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 const { transactionController } = require("./controller");
@@ -42,6 +42,7 @@ app.use("/api", propertyRouter);
 app.use("/api", transactionRouter);
 app.use("/api", roomRouter);
 app.use("/api", paymentMethodRouter);
+app.use("/api", orderListRouter);
 
 // ===========================
 
