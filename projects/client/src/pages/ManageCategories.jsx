@@ -142,9 +142,7 @@ function ManageCategories(props) {
   };
 
   const onBtnUpdate = () => {
-    console.log(`province`, selectedProvince);
-    console.log(`city`, editCity);
-    console.log("category id", editId);
+    // update category function
   };
 
   const onBtnReset = () => {
