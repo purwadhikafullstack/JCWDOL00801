@@ -70,7 +70,6 @@ function PropertyFormEdit(props) {
       formData.append("phone", values.phone);
       formData.append("address", values.address);
       formData.append("desc", values.desc);
-      console.log(formData);
       let response = await Axios.patch(
         process.env.REACT_APP_API_BASE_URL + "/property/edit",
         formData

@@ -69,7 +69,7 @@ function RoomCreateMenu() {
             py="20"
             colorScheme="green"
             variant="outline"
-            onClick={() => navigate("/property/new/building-room", { replace: true })}
+            onClick={() => navigate("/room/photos", { replace: true })}
           >
             <Flex direction="column" justify="center" align="center">
               <Flex align="center" >

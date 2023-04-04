@@ -24,15 +24,14 @@ module.exports = {
     try {
       let newStartDate = new Date(req.body.startDate);
       let newEndDate = new Date(req.body.endDate);
-      console.log("NEWDATE",newEndDate)
-      console.log(newStartDate)
       const data = await dbSequelize.query(`SELECT 
       MIN(t.price) AS price, 
       p.name, 
       c.city, 
       p.propertyId AS id, 
       r.roomId,
-      t.typeId
+      t.typeId,
+      t.typeImg
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId

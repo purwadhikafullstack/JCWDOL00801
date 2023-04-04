@@ -90,7 +90,6 @@ function RoomForm(props) {
       setIsPropAvail(false);
     }
   };
-  console.log(chosenPropData);
   const getTypeData = async (propId) => {
     try {
       const res = await Axios.get(
@@ -152,7 +151,6 @@ function RoomForm(props) {
       const getLocalStorage = localStorage.getItem("renthaven1");
       if (getLocalStorage) {
         if (!addType) {
-          console.log(chosenPropData.propertyId)
           const res = await Axios.post(
             process.env.REACT_APP_API_BASE_URL + "/rooms/new",
             {
@@ -217,7 +215,6 @@ function RoomForm(props) {
         }
       }
     } catch (error) {
-      console.log(chosenPropData.propertyId)
       console.log(error);
     }
   };
@@ -377,6 +374,13 @@ function RoomForm(props) {
                 <Text fontSize="20px" mb={3} fontWeight="600">
                   Type Detail
                 </Text>
+                <Image
+                  src={process.env.REACT_APP_API_BASE_IMG_URL + chosenType.typeImg}
+                  w="300px"
+                  h="150px"
+                  objectFit={"cover"}
+                  mb={2}
+                ></Image>
                 <FormLabel>Type Name</FormLabel>
                 <Text>{chosenType.name}</Text>
               </FormControl>
@@ -476,6 +480,7 @@ function RoomForm(props) {
                 variant={"outline"}
                 onClick={() => {
                   setAddTypes(false);
+                  setFieldValue("image",undefined)
                 }}
               >
                 Cancel

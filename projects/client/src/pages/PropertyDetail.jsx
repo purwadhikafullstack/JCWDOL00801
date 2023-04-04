@@ -61,9 +61,10 @@ function PropertyDetail(props) {
       console.log(error)
     }
   }
+  console.log(types)
   const renderRoom = () =>{
       return types.map((val, idx )=>{
-        return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} isAvailable = {true} />
+        return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} typeImg={types.typeImg} isAvailable = {true} />
       })
   }
   const renderNotAvailRoom = () =>{

@@ -24,6 +24,7 @@ import { useToast } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
+import { Select as Select2 } from "chakra-react-select";
 
 function RoomList(props) {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ function RoomList(props) {
   const [filterCity, setFilterCity] = React.useState("");
   const [filterAddress, setFilterAddress] = React.useState("");
   const [sortData, setSortData] = React.useState("");
+  const [typeOption, setTypeOption] = React.useState([]);
   const [desc, setDesc] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
@@ -72,11 +74,12 @@ function RoomList(props) {
       let response = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
       );
-      console.log(response.data.data)
       setRoomData(response.data.data);
       setPage(response.data.page);
       setPages(response.data.totalPage);
       setRows(response.data.totalRows);
+      setTypeOption(response.data.types);
+      
     } catch (error) {
       console.log(error);
     }
@@ -90,7 +93,18 @@ function RoomList(props) {
       console.log(error);
     }
   };
-
+  const renderOption = () =>{
+    if(typeOption.length > 0){
+      return typeOption.map((val, idx) => {
+        return (
+          <option
+            value={val.typeId}
+            key={idx}
+          >{`${val.name}`}</option>
+        );
+      })
+    }
+  }
   const renderRoomData = () => {
     if (roomData.length === 0) {
       return (
@@ -269,14 +283,7 @@ function RoomList(props) {
                 onChange={(e) => setSearchCity(e.target.value)}
                 placeholder="Select Type"
               >
-                {roomData.map((val, idx) => {
-                  return (
-                    <option
-                      value={val.type.typeId}
-                      key={idx}
-                    >{`${val.type.name}`}</option>
-                  );
-                })}
+                {renderOption()}
               </Select>
             </FormControl>
           </Flex>

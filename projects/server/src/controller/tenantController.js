@@ -116,7 +116,6 @@ module.exports = {
           },
         ],
       });
-      console.log("Hello", tenantData)
       const bank = await paymentMethodModel.findAll({
         where: {
           bankId : tenantData[0].bankId

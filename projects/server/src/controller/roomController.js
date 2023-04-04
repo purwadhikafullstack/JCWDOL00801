@@ -13,6 +13,9 @@ const {
     categoryModel,
     typeModel
 } = require("../model");
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path")
 
 module.exports = {
     getRoomData: async (req, res) => {
@@ -20,78 +23,103 @@ module.exports = {
             const page = parseInt(req.query.page) || 0;
             const limit = parseInt(req.query.limit) || 5;
             const offset = limit * page;
-      
-            const { name, type, sortby, typeName, propName } = req.query;
+            const {
+                name,
+                type,
+                sortby,
+                typeName,
+                propName
+            } = req.query;
             const order = req.query.order || "asc";
-            let filterData = [];
-            let sortDefault = [];
             let sortData = [];
-            console.log(sortby)
+            let filterData = [];
+            let propFilterData = [];
             if (name) {
-              filterData.push({
-                [Op.or]: [
-                  {
-                    name: {
-                      [Op.like]: "%" + name + "%",
-                    },
-                  },
-                ],
-              });
+                propFilterData.push({
+                    [Op.or]: [{
+                        name: {
+                            [Op.like]: "%" + name + "%",
+                        },
+                    }, ],
+                });
             }
             if (type) {
-              filterData.push({
-                typeId: type,
-              });
+                filterData.push({
+                    typeId: type,
+                });
             }
             if (sortby == "name" || sortby == "price") {
-              sortData.push(["type",sortby, order.toUpperCase()]);
+                sortData.push(["type", sortby, order.toUpperCase()]);
             } else {
-              sortData.push(["roomId", "DESC"]);
+                sortData.push(["roomId", "DESC"]);
             }
-            
-            console.log(sortData)
-            // const data = await dbSequelize.query(`SELECT t.name as typeName, p.name as propName, t.price, t.typeImg, r.roomId, r.isDeleted from rooms as r INNER JOIN properties as p
-            // ON r.propertyId = p.propertyId INNER JOIN tenants AS ten ON p.tenantId = ten.tenantId
-            // INNER JOIN types as t on r.typeId = t.typeId WHERE ten.tenantId = ${dbSequelize.escape(req.query.tenant)} OR t.name LIKE '%${typeName}%' OR p.name LIKE '%${propName}%' ORDER BY ${req.query.type ? dbSequelize.escape(req.query.type) : "r.roomId"} ${order} limit ${limit} offset ${offset};
-            // `, {type: QueryTypes.SELECT})
             const data = await roomModel.findAndCountAll({
                 include: [{
-                  model: propertyModel,
-                  as: "property",
-                  required: true,
-                  where: {
-                    tenantId: req.query.tenant
-                  }
-                }, {model: typeModel, as: "type"}],
-                [Op.and]: filterData,
+                    model: propertyModel,
+                    as: "property",
+                    required: true,
+                    where: {
+                       [Op.and] : [...propFilterData,{tenantId: req.query.tenant}]
+                    }
+                }, {
+                    model: typeModel,
+                    as: "type",
+                    where: filterData,
+                }],
                 order: sortData,
                 offset: offset,
                 limit: limit,
-              });
-            console.log("LENGTH", data)
+            });
+            const rooms = await roomModel.findAll({
+                include: [{
+                    model: propertyModel,
+                    as: "property",
+                    required: true,
+                    where: {
+                        tenantId: req.query.tenant
+                    }
+                }]
+            })
+            const roomArr = rooms.map(val => ({
+                typeId: val.typeId
+            }));
+            const filteredType = roomArr.filter((val, index, self) => {
+                return index === self.findIndex((t) => t.typeId === val.typeId);
+            });
+            const types = await typeModel.findAll({
+                where: {
+                    [Op.or]: filteredType
+                }
+            })
             const totalPage = Math.ceil(data.count / limit);
             if (data.count > 0) {
-              return res.status(200).send({
-                data: data.rows,
-                page,
-                limit,
-                totalRows: data.count,
-                totalPage,
-              });
+                return res.status(200).send({
+                    data: data.rows,
+                    page,
+                    types,
+                    limit,
+                    totalRows: data.count,
+                    totalPage,
+                });
             } else {
-              return res.status(404).send({
-                message: `Data Not Found`,
-                data: [],
-              });
+                return res.status(404).send({
+                    message: `Data Not Found`,
+                    data: [],
+                });
             }
-          } catch (error) {
+        } catch (error) {
             console.log(error);
-            return res.status(500).send(error);
-          }
+            return res.status(500).send({
+                success: false,
+                message: "Database Error"
+            });
+        }
     },
-    getTypeRoom : async(req, res) =>{
+    getTypeRoom: async (req, res) => {
         try {
-            const {id} = req.query;
+            const {
+                id
+            } = req.query;
             const user = await userModel.findAll({
                 where: {
                     email: req.decrypt.email
@@ -104,27 +132,27 @@ module.exports = {
             })
             const room = await roomModel.findAll({
                 where: {
-                  propertyId: id
+                    propertyId: id
                 }
-              });
-              
-              const roomArr = room.map(val => ({
+            });
+
+            const roomArr = room.map(val => ({
                 typeId: val.typeId
-              }));
-              const filteredType = roomArr.filter((val, index, self) => {
+            }));
+            const filteredType = roomArr.filter((val, index, self) => {
                 return index === self.findIndex((t) => t.typeId === val.typeId);
-              });
-              const type = await typeModel.findAll({
+            });
+            const type = await typeModel.findAll({
                 where: {
-                    [Op.or] : filteredType
+                    [Op.or]: filteredType
                 }
-              })
-              return res.status(200).send({
+            })
+            return res.status(200).send({
                 success: true,
                 result: type
-              })
+            })
         } catch (error) {
-            
+
         }
     },
     createRoom: async (req, res) => {
@@ -175,23 +203,33 @@ module.exports = {
                 }
             })
             if (tenant.length > 0) {
-                    const createType = await typeModel.create({
-                        name: req.body.name,
-                        price: req.body.price,
-                        desc: req.body.desc,
-                        typeImg: req.body.picture,
-                        capacity: req.body.capacity,
-                        typeImg: `/typeImg/${req.files[0].filename}`
+                await sharp(req.files[0].path)
+                    .resize(600, 400, {
+                        fit: "fill"
                     })
-                    console.log(req.files[0].filename)
-                    const createRoom = await roomModel.create({
-                        propertyId: req.body.propertyId,
-                        typeId: createType.typeId,
-                    })
-                    return res.status(200).send({
-                        success: true,
-                        message: "Room Created"
-                    })          
+                    .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+                fs.unlinkSync(req.files[0].path);
+                const pathName = req.files[0].destination.split("/");
+                const typeImg = `/typeImg/` + `RH${req.files[0].filename}`;
+                const newBody = {
+                    ...req.body, typeImg
+                }
+                const createType = await typeModel.create({
+                    name: req.body.name,
+                    price: req.body.price,
+                    desc: req.body.desc,
+                    typeImg: req.body.picture,
+                    capacity: req.body.capacity,
+                    typeImg: typeImg
+                })
+                const createRoom = await roomModel.create({
+                    propertyId: req.body.propertyId,
+                    typeId: createType.typeId,
+                })
+                return res.status(200).send({
+                    success: true,
+                    message: "Room Created"
+                })
             } else {
                 return res.status(401).send({
                     success: false,
@@ -247,9 +285,10 @@ module.exports = {
     },
     updateRoom: async (req, res) => {
         try {
+
             const user = await userModel.findAll({
                 where: {
-                    email: req.body.email
+                    email: req.decrypt.email
                 }
             })
             const tenant = await tenantModel.findAll({
@@ -258,8 +297,74 @@ module.exports = {
                 }
             })
             if (tenant.length > 0) {
+                if (req.body.isTypeUpdate) {
+                    if (!req.files[0]) {
+                        req.files[0] = {
+                            filename: "",
+                        };
+                    } else if (!req.body.filename) {
+                        req.body.filename == "";
+                        await sharp(req.files[0].path)
+                            .resize(600, 400, {
+                                fit: "fill"
+                            })
+                            .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+                    }
+                    if(req.files[0].path){
+                        fs.unlinkSync(req.files[0].path);
+                    }
+                    const pathName = req.files[0].filname ? req.files[0].destination.split("/") : "";
+                    const typeImg = req.files[0].filename ? `/typeImg/` + `RH${req.files[0].filename}` : "";
+                    const newBody = {
+                        ...req.body,
+                    }
+                    const roomPicture =
+                        req.files[0].filename === "" ?
+                        `${req.body.filename}` :
+                        typeImg;
+                    const type = typeModel.update({
+                        name: req.body.name,
+                        price: req.body.price,
+                        desc: req.body.desc,
+                        typeImg: req.body.picture,
+                        capacity: req.body.capacity,
+                        typeImg: roomPicture
+                    }, {
+                        where: {
+                            typeId: req.body.typeId
+                        }
+                    })
+                } else if (req.body.addType) {
+                    const createType = await typeModel.create({
+                        name: req.body.name,
+                        price: req.body.price,
+                        desc: req.body.desc,
+                        typeImg: req.body.picture,
+                        capacity: req.body.capacity,
+                        typeImg: `/typeImg/${req.files[0].filename}`
+                    })
+                    const updatedRoom = await roomModel.update({
+                        typeId: createType.typeId
+                    }, {
+                        where: {
+                            roomId: req.body.roomId
+                        }
+                    })
+                    return res.status(200).send({
+                        success: true,
+                        message: "Room updated"
+                    })
+                }
                 const updatedRoom = await roomModel.update({
-
+                    typeId: req.body.typeId
+                }, {
+                    where: {
+                        roomId: req.body.roomId
+                    }
+                })
+                return res.status(200).send({
+                    success: true,
+                    message: "Room updated"
                 })
             }
         } catch (error) {
@@ -270,7 +375,7 @@ module.exports = {
             })
         }
     },
-    checkAvailProperty: async (req, res) =>{
+    checkAvailProperty: async (req, res) => {
         try {
             const user = await userModel.findAll({
                 where: {
@@ -282,13 +387,16 @@ module.exports = {
                     userId: user[0].userId
                 }
             })
-            if(tenant.length > 0){
+            if (tenant.length > 0) {
                 const availProp = await propertyModel.findAll({
                     where: {
-                        [Op.and] :[{tenantId: tenant[0].tenantId, isDeleted: 0 || false}]
+                        [Op.and]: [{
+                            tenantId: tenant[0].tenantId,
+                            isDeleted: 0 || false
+                        }]
                     }
                 })
-                if(availProp.length < 1){
+                if (availProp.length < 1) {
                     return res.status(401).send({
                         success: false,
                         message: "You have not created any property yet. Try to create it?"
@@ -306,7 +414,7 @@ module.exports = {
             })
         }
     },
-    getChosenPropertyData: async (req, res) =>{
+    getChosenPropertyData: async (req, res) => {
         try {
             const user = await userModel.findAll({
                 where: {
@@ -318,10 +426,14 @@ module.exports = {
                     userId: user[0].userId
                 }
             })
-            if(tenant.length > 0){
+            if (tenant.length > 0) {
                 const chosenProp = await propertyModel.findOne({
                     where: {
-                        [Op.and] :[{tenantId: tenant[0].tenantId, isDeleted: 0 || false, propertyId: req.query.id}] 
+                        [Op.and]: [{
+                            tenantId: tenant[0].tenantId,
+                            isDeleted: 0 || false,
+                            propertyId: req.query.id
+                        }]
                     }
                 })
                 const category = await categoryModel.findOne({
@@ -343,30 +455,32 @@ module.exports = {
             })
         }
     },
-    getRoomType : async (req, res) => {
+    getRoomType: async (req, res) => {
         try {
-            const {id} = req.query;
+            const {
+                id
+            } = req.query;
             const room = await roomModel.findAll({
                 where: {
-                  propertyId: id
+                    propertyId: id
                 }
-              });
-        
-              const roomArr = room.map(val => ({
+            });
+
+            const roomArr = room.map(val => ({
                 typeId: val.typeId
-              }));
-              const filteredType = roomArr.filter((val, index, self) => {
+            }));
+            const filteredType = roomArr.filter((val, index, self) => {
                 return index === self.findIndex((t) => t.typeId === val.typeId);
-              });
-              const type = await typeModel.findAll({
+            });
+            const type = await typeModel.findAll({
                 where: {
-                    [Op.or] : filteredType
+                    [Op.or]: filteredType
                 }
-              })
-              return res.status(200).send({
+            })
+            return res.status(200).send({
                 success: true,
                 result: type
-              })
+            })
         } catch (error) {
             console.log(error);
             return res.status(500).send({
@@ -375,11 +489,11 @@ module.exports = {
             })
         }
     },
-    getCurrentPropEdit : async (req, res) =>{
+    getCurrentPropEdit: async (req, res) => {
         try {
             const room = await roomModel.findOne({
                 where: {
-                    roomId : req.query.id
+                    roomId: req.query.id
                 }
             })
             const property = await propertyModel.findOne({
@@ -387,21 +501,62 @@ module.exports = {
                     propertyId: room.propertyId
                 }
             })
+            const category = await categoryModel.findOne({
+                where: {
+                    categoryId: property.categoryId
+                }
+            })
+            const type = await typeModel.findOne({
+                where: {
+                    typeId: room.typeId
+                }
+            })
             res.status(200).send({
                 success: true,
-                result: property
+                property: property,
+                type: type,
+                category
             })
         } catch (error) {
             console.log(error),
-            res.status(500).send({
+                res.status(500).send({
+                    success: false,
+                    message: "Database Error."
+                })
+        }
+    },
+    getCurrentTypeData: async (req, res) => {
+        try {
+            const {
+                id
+            } = req.query
+            const room = await roomModel.findOne({
+                where: {
+                    roomId: id
+                }
+            })
+            const type = await typeModel.findOne({
+                where: {
+                    typeId: room.typeId
+                }
+            })
+            return res.status(200).send({
+                success: true,
+                result: type
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({
                 success: false,
                 message: "Database Error."
             })
         }
     },
-    getRoomTypeData: async (req, res) =>{
+    getRoomTypeData: async (req, res) => {
         try {
-            const { id } = req.query
+            const {
+                id
+            } = req.query
             const type = await typeModel.findOne({
                 where: {
                     typeId: id
@@ -421,47 +576,46 @@ module.exports = {
     },
     update: async (req, res) => {
         try {
-          // akan ditambahkan ketika fitur transaksi sudah di merge
-          // const check = await orderListModel.findAll({
-          //   include: [
-          //     {
-          //       model: transactionModel,
-          //       as: "transaction",
-          //       required: true,
-          //       where: {
-          //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
-          //       },
-          //     },
-          //     {
-          //       model: roomModel,
-          //       as: "room",
-          //       required: true,
-          //       include: {
-          //         model: propertyModel,
-          //         as: "property",
-          //         required: true,
-          //         where: {
-          //           propertyId: req.params.propertyId,
-          //         },
-          //       },
-          //     },
-          //   ],
-          // });
-          console.log(req.query.roomId)
-          let update = await roomModel.update(req.body, {
-            where: {
-              roomId: req.params.roomId,
-            },
-          });
-          if (update) {
-            return res.status(200).send({
-              success: true,
-              message: `Data Updated Successfully`,
+            // akan ditambahkan ketika fitur transaksi sudah di merge
+            // const check = await orderListModel.findAll({
+            //   include: [
+            //     {
+            //       model: transactionModel,
+            //       as: "transaction",
+            //       required: true,
+            //       where: {
+            //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            //       },
+            //     },
+            //     {
+            //       model: roomModel,
+            //       as: "room",
+            //       required: true,
+            //       include: {
+            //         model: propertyModel,
+            //         as: "property",
+            //         required: true,
+            //         where: {
+            //           propertyId: req.params.propertyId,
+            //         },
+            //       },
+            //     },
+            //   ],
+            // });
+            let update = await roomModel.update(req.body, {
+                where: {
+                    roomId: req.params.roomId,
+                },
             });
-          }
+            if (update) {
+                return res.status(200).send({
+                    success: true,
+                    message: `Data Updated Successfully`,
+                });
+            }
         } catch (error) {
-          console.log(error);
-          return res.status(500).send(error);
+            console.log(error);
+            return res.status(500).send(error);
         }
-      },
+    },
 }

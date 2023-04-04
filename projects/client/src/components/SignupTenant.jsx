@@ -131,10 +131,10 @@ const SignupTenantPage = (props) => {
                 email: values.email,
                 password: values.password,
               }).then((res) => {
+                window.location.reload();
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
                   navigate("/verify", { replace: true });
-                  window.location.reload();
               });
             });
           else if (res.data.success === false) {

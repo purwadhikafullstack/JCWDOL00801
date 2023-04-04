@@ -39,6 +39,7 @@ import RoomListPage from "./pages/Room";
 import RoomCreateMenu from "./pages/RoomCreateMenu";
 import RoomForm from "./components/RoomForm";
 import RoomFormEdit from "./components/RoomFormEdit";
+import RoomPhoto from "./components/RoomPhoto";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -266,6 +267,7 @@ function App() {
               <Route path="/room/edit" element={<RoomFormEdit />} />
               <Route path="/room/new" element={<RoomCreateMenu />} />
               <Route path="/room/new/type" element={<RoomForm />} />
+              <Route path="/room/photos" element={<RoomPhoto />} />
               <Route path="/*" />
             </Routes>
           </div>
