@@ -35,7 +35,9 @@ function PropertyForm(props) {
 
   const getCityData = async () => {
     try {
-      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + `/category/${tenantId}`);
+      let response = await Axios.get(
+        process.env.REACT_APP_API_BASE_URL + `/category/for-create/${tenantId}`
+      );
       setCity(response.data);
     } catch (error) {
       console.log(error);

@@ -21,6 +21,7 @@ import Axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
+import { useToast } from "@chakra-ui/react";
 
 function ManageCategories(props) {
   const { tenantId } = useSelector((state) => {
@@ -28,6 +29,7 @@ function ManageCategories(props) {
       tenantId: state.tenantReducer.tenantId,
     };
   });
+  const toast = useToast();
   const [categoryData, setCategoryData] = React.useState([]);
   const [sortData, setSortData] = React.useState("");
   const [desc, setDesc] = React.useState(true);
@@ -69,6 +71,7 @@ function ManageCategories(props) {
       setRows(response.data.totalRows);
     } catch (error) {
       console.log(error);
+      setCategoryData(error.response.data.data);
     }
   };
 
@@ -141,8 +144,122 @@ function ManageCategories(props) {
     }
   };
 
-  const onBtnUpdate = () => {
-    // update category function
+  const onBtnUpdate = async () => {
+    const provinceName = province.filter((province) => {
+      return province.id === selectedProvince;
+    });
+    Swal.fire({
+      title: `Are you sure you want to change this category?`,
+      text: "all properties in this category will be changed too",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#38A169",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          let response = await Axios.patch(
+            process.env.REACT_APP_API_BASE_URL + "/category/update",
+            {
+              province: provinceName[0].name,
+              city: editCity,
+              categoryId: editId,
+            }
+          );
+          if (response.data.success) {
+            Swal.fire({
+              icon: "success",
+              title: response.data.message,
+              confirmButtonText: "OK",
+              confirmButtonColor: "#48BB78",
+            }).then(() => {
+              setIsOpen(false);
+              setEdit(false);
+              setSelectedProvince("");
+              setEditCity("");
+              setEditId("");
+              getCategoryData();
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  };
+
+  const onBtnSwitch = async (id, isDeleted) => {
+    const changeStatus = !isDeleted;
+    if (!isDeleted) {
+      Swal.fire({
+        title: `Are you sure you want to deactivate this category?`,
+        text: "all properties in this category will be deactivated too",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#38A169",
+        confirmButtonText: "Yes",
+        cancelButtonColor: "#d33",
+        reverseButtons: true,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            let response = await Axios.patch(
+              process.env.REACT_APP_API_BASE_URL + "/category/active/switch",
+              {
+                tenantId: tenantId,
+                categoryId: id,
+                isDeleted: changeStatus,
+              }
+            );
+            if (response.data.success) {
+              toast({
+                title: response.data.message,
+                status: "success",
+                isClosable: true,
+                duration: 2500,
+                position: "top",
+              });
+              getCategoryData();
+            }
+          } catch (error) {
+            console.log(error);
+            if (!error.response.data.success) {
+              Swal.fire({
+                icon: "error",
+                title: error.response.data.message,
+                confirmButtonColor: "#38A169",
+                confirmButtonText: "OK",
+              });
+            }
+          }
+        }
+      });
+    } else {
+      try {
+        let response = await Axios.patch(
+          process.env.REACT_APP_API_BASE_URL + "/category/active/switch",
+          {
+            tenantId: tenantId,
+            categoryId: id,
+            isDeleted: changeStatus,
+          }
+        );
+        if (response.data.success) {
+          toast({
+            title: response.data.message,
+            status: "success",
+            isClosable: true,
+            duration: 2500,
+            position: "top",
+          });
+          getCategoryData();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const onBtnReset = () => {
@@ -200,7 +317,7 @@ function ManageCategories(props) {
       );
     }
     return categoryData.map((category, idx) => {
-      const { city, province, categoryId } = category;
+      const { city, province, categoryId, isDeleted } = category;
       return (
         <Tr key={idx} backgroundColor={categoryId === editId ? "gray.100" : null}>
           <Td>
@@ -208,7 +325,11 @@ function ManageCategories(props) {
           </Td>
           <Td>{city}</Td>
           <Td>
-            <Switch colorScheme="green" />
+            <Switch
+              isChecked={!isDeleted}
+              onChange={() => onBtnSwitch(categoryId, isDeleted)}
+              colorScheme="green"
+            />
           </Td>
           <Td>
             <Button

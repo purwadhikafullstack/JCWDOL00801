@@ -48,7 +48,9 @@ function PropertyFormEdit(props) {
 
   const getCityData = async () => {
     try {
-      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + `/category/${tenantId}`);
+      let response = await Axios.get(
+        process.env.REACT_APP_API_BASE_URL + `/category/for-create/${tenantId}`
+      );
       setCity(response.data);
     } catch (error) {
       console.log(error);
@@ -70,7 +72,6 @@ function PropertyFormEdit(props) {
       formData.append("phone", values.phone);
       formData.append("address", values.address);
       formData.append("desc", values.desc);
-      console.log(formData);
       let response = await Axios.patch(
         process.env.REACT_APP_API_BASE_URL + "/property/edit",
         formData
@@ -129,7 +130,7 @@ function PropertyFormEdit(props) {
   return (
     <Box px={{ base: "0", md: "20" }} pb={5}>
       <Heading mb="5">Edit Property</Heading>
-      <form onSubmit={handleSubmit}>
+      <form>
         <Flex direction="column" align="center" justify="center" gap={6}>
           <FormControl
             isInvalid={

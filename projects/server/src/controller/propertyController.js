@@ -13,6 +13,10 @@ const bcrypt = require("bcrypt");
 const { dbSequelize } = require("../config/db");
 const { QueryTypes, Op } = require("sequelize");
 const moment = require("moment-timezone");
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
+const { log } = require("console");
 
 module.exports = {
   getPropertyData: async (req, res) => {
@@ -326,9 +330,13 @@ module.exports = {
   },
   create: async (req, res) => {
     try {
-      const pathName = req.files[0].destination.split("/");
-      const propertyImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
+      await sharp(req.files[0].path)
+        .resize(600, 400, { fit: "fill" })
+        .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+      fs.unlinkSync(req.files[0].path);
 
+      const pathName = req.files[0].destination.split("/");
+      const propertyImg = `/${pathName[pathName.length - 1]}/RH${req.files[0].filename}`;
       const newBody = { ...req.body, image: propertyImg };
       const checkData = await propertyModel.findAll({
         where: {
@@ -355,35 +363,62 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      // akan ditambahkan ketika fitur transaksi sudah di merge
-      // const check = await orderListModel.findAll({
-      //   include: [
-      //     {
-      //       model: transactionModel,
-      //       as: "transaction",
-      //       required: true,
-      //       where: {
-      //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
-      //       },
-      //     },
-      //     {
-      //       model: roomModel,
-      //       as: "room",
-      //       required: true,
-      //       include: {
-      //         model: propertyModel,
-      //         as: "property",
-      //         required: true,
-      //         where: {
-      //           propertyId: req.params.propertyId,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // });
-      let update = await propertyModel.update(req.body, {
+      const { propertyId } = req.params;
+      const checkTransaction = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.or]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: {
+                propertyId: req.params.propertyId,
+              },
+            },
+          },
+        ],
+      });
+      const checkCategory = await propertyModel.findAll({
+        include: {
+          model: categoryModel,
+          as: "category",
+          required: true,
+          where: {
+            isDeleted: false,
+          },
+        },
+        where: { propertyId },
+      });
+
+      if (checkTransaction.length > 0) {
+        return res.status(400).send({
+          success: false,
+          message: `Can not deactivate property because there are ongoing transaction(s)`,
+        });
+      }
+
+      if (checkCategory.length <= 0) {
+        return res.status(400).send({
+          data: checkCategory,
+          success: false,
+          message: `Can not activate property because corresponding category is not active`,
+        });
+      }
+
+      const update = await propertyModel.update(req.body, {
         where: {
-          propertyId: req.params.propertyId,
+          propertyId,
         },
       });
       if (update) {
@@ -418,6 +453,12 @@ module.exports = {
   updateEditData: async (req, res) => {
     try {
       const { propertyId, name, desc, phone, categoryId, address } = req.body;
+      if (req.files[0]) {
+        await sharp(req.files[0].path)
+          .resize(600, 400, { fit: "fill" })
+          .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+        fs.unlinkSync(req.files[0].path);
+      }
       if (!req.files[0]) {
         req.files[0] = {
           filename: "",
@@ -429,7 +470,8 @@ module.exports = {
       let propertyPicture =
         req.files[0].filename === ""
           ? `${req.body.filename}`
-          : `/propertyImg/${req.files[0].filename}`;
+          : `/propertyImg/RH${req.files[0].filename}`;
+
       let update = await propertyModel.update(
         {
           propertyId,
@@ -451,6 +493,48 @@ module.exports = {
           success: true,
           message: `Property Data Updated Successfully`,
           picture: propertyPicture,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  checkData: async (req, res) => {
+    try {
+      const { propertyId } = req.params;
+      const checkStatus = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.or]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: { propertyId },
+            },
+          },
+        ],
+      });
+      if (checkStatus.length > 0) {
+        return res.status(400).send({
+          result: checkStatus,
+          success: false,
+          message: `Can not edit because there are ongoing transaction(s)`,
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
         });
       }
     } catch (error) {
