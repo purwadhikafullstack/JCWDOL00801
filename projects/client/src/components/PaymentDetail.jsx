@@ -12,14 +12,16 @@ import Swal from "sweetalert2";
 import { format, addHours, addDays } from "date-fns";
 
 
-const PaymentDetail = (props) => {
+const PaymentDetail = () => {
   const location = useLocation();
+  console.log("LOCATION", location.state)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isMobile] = useMediaQuery("(max-width: 760px)");
   const [totalGuest, setTotalGuest] = useState(1);
   const [bankAccountNum, setAccountNum] = useState("");
   const [bankId, setBankId] = useState(0);
+  const [night, setNight] = useState(0);
   const [specialRequest, setSpecialReq] = useState({
     specialReq: [],
   });
@@ -33,6 +35,9 @@ const PaymentDetail = (props) => {
     setBankId(parseInt(currentChoice[0]));
     setAccountNum(currentChoice[1]);
   };
+  const handleNight = (e) =>{
+    setNight(e);
+  }
   const handleChange = (e) => {
     const { value, checked } = e.target;
     const { specialReq } = specialRequest;
@@ -87,10 +92,6 @@ const PaymentDetail = (props) => {
           denyButtonText: "Cancel",
           confirmButtonText: "Continue to payment",
           confirmButtonColor: "#48BB78",
-          customClass: {
-            confirmButton: "order-2",
-            denyButton: "order-1",
-          },
         }).then((response) => {
           if (response.isConfirmed) {
             Axios.post(
@@ -105,9 +106,9 @@ const PaymentDetail = (props) => {
                     ? ""
                     : specialRequest.specialReq.join(", ") + " and " + otherCheck,
                 totalGuest,
-                checkinDate: startDate,
-                checkoutDate: endDate,
-                price,
+                checkinDate: location.state.checkinDate ? location.state.checkinDate : startDate,
+                checkoutDate: location.state.checkoutDate ? location.state.checkoutDate: endDate,
+                price: price * night,
                 bankId,
                 bankAccountNum,
                 propertyId: searchQuery.get("id"),
@@ -193,10 +194,11 @@ const PaymentDetail = (props) => {
           order={isMobile ? 1 : 2}
         >
           <BookingDetail
+            setNight = {setNight}
             totalGuest={totalGuest}
             data={data}
-            startDate={location.state == null ? "" : location.state.startDate}
-            endDate={location.state == null ? "" : location.state.endDate}
+            startDate={location.state == null ? "" : location.state.checkinDate ? location.state.checkinDate : location.state.startDate }
+            endDate={location.state == null ? "" : location.state.checkoutDate ? location.state.checkoutDate : location.state.endDate}
           />
         </Flex>
       </Flex>

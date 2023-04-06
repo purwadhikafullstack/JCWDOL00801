@@ -4,8 +4,8 @@ import { BsDot, BsFillPersonFill } from "react-icons/bs";
 import format from "date-fns/format";
 import { useEffect, useState } from "react";
 
-const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
-  const [diffDays, setdiffDays] = useState(0)
+const BookingDetail = ({totalGuest, data, startDate, endDate, setNight}) => {
+  const [diffDays, setdiffDays] = useState(0);
   const [isMobile] = useMediaQuery("(max-width: 760px)");
   const howManyNight =() =>{
     const date1 = new Date(startDate);
@@ -13,6 +13,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
     const diffTime = Math.abs(date2 - date1);
     const diffDay = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     setdiffDays(diffDay);
+    setNight(diffDay)
   }
   useEffect(() =>{
     howManyNight()
@@ -25,7 +26,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
             Booking Detail
           </Heading>
           <Flex border="#ccc solid 1px" alignItems="center" rounded="md">
-            <Image h="70px" w="70px" src={image1} m="5px" rounded="md" objectFit="cover"/>
+            <Image h="70px" w="70px" src={process.env.REACT_APP_API_BASE_IMG_URL + data.typeImg} m="5px" rounded="md" objectFit="cover"/>
             <Flex direction={"column"}>
               <Text fontWeight={"600"} fontSize="18px" color="#6e6c6d">
                 {data.name}
@@ -51,7 +52,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate}) => {
           </Flex>
           <Flex justifyContent="space-between" mt="20px">
             <Text>TOTAL</Text>
-            <Text>{parseInt(data.price).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text>
+            <Text>{parseInt(data.price * diffDays).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text>
           </Flex>
         </Flex>
       </Flex>

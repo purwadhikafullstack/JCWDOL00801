@@ -23,5 +23,6 @@
   "dependencies": {
     "react-paginate": "^8.1.4",
     "styled-components": "^5.3.9"
+    
   }
 }

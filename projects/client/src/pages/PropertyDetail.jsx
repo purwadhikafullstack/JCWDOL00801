@@ -8,6 +8,7 @@ import "../styles/imageGallery.css";
 import { useLocation, useSearchParams } from "react-router-dom";
 import CalendarDateRange from "../components/CalendarDateRange";
 import { useDispatch, useSelector } from "react-redux";
+import "../styles/imageGallery.css";
 
 function PropertyDetail(props) {
   const location = useLocation();
@@ -27,6 +28,14 @@ function PropertyDetail(props) {
       endDate: state.dateReducer.endDate
     }
   })
+  const [checkinDate, setCheckinDate] = useState(null);
+  const [checkoutDate, setCheckoutDate] = useState(null);
+  const changeCheckinDate = (e) =>{
+    setCheckinDate(new Date(e))
+  }
+  const changeCheckoutDate = (e) =>{
+    setCheckoutDate(new Date(e))
+  }
   const getData = async () =>{
     try {
       const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/property/find/${searchQuery.get('id')}`, {
@@ -53,20 +62,20 @@ function PropertyDetail(props) {
       console.log(error)
     }
   }
+  console.log(types)
   const renderRoom = () =>{
       return types.map((val, idx )=>{
-        return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={startDate} endDate={endDate} isAvailable = {true} />
+        return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} typeImg={types.typeImg} isAvailable = {true} />
       })
   }
   const renderNotAvailRoom = () =>{
     return notAvailableRoom.map((val, idx) =>{
-      return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={startDate} endDate={endDate} isAvailable = {false} />
+      return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} isAvailable = {false} />
     })
   }
   useEffect(() =>{
     getData();
-    
-  },[])
+  },[startDate, endDate])
   return (
     <Container maxW={{ base: "container", md: "container.lg" }}>
       <Flex direction="column" mb={3}>
@@ -90,7 +99,7 @@ function PropertyDetail(props) {
       <Divider my={5} />
       <Flex minW="100%" direction={"column"}>
         <FormLabel>Date</FormLabel>
-        <CalendarDateRange />
+        <CalendarDateRange checkinHandler = {changeCheckinDate} checkoutHandler = {changeCheckoutDate}/>
       </Flex>
       <Divider my={5} />
       <Flex direction="column" gap={4} mb="20px">

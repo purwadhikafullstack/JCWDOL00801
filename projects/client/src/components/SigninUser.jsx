@@ -44,7 +44,7 @@ const SigninUserPage = (props) => {
         }).then((res) => {
           if (res.data.success == true) {
             localStorage.setItem("renthaven1", res.data.token);
-            loginAction(res.data.result);
+            loginAction(res.data.user);
             navigate(0)
             navigate("/", { replace: true });
             setGoogleLoading(false);
@@ -68,6 +68,8 @@ const SigninUserPage = (props) => {
         });
       })
       .catch((e) => {
+        console.log(e)
+        setAlert(`${e.response.data.message}`)
         setGoogleLoading(false);
       });
   };
@@ -81,7 +83,7 @@ const SigninUserPage = (props) => {
         }).then((res) => {
           if (res.data.success == true) {
             localStorage.setItem("renthaven1", res.data.token);
-            loginAction(res.data.result);
+            loginAction(res.data.user);
             navigate(0)
             navigate("/", { replace: true });
             setFacebookLoading(false);
@@ -104,7 +106,10 @@ const SigninUserPage = (props) => {
           setFacebookLoading(false);
         });
       })
-      .catch((e) => {setFacebookLoading(false)});
+      .catch((e) => {
+        console.log(e)
+        setAlert(`${e.response.data.message}`)
+        setFacebookLoading(false)});
   };
   const handleEmailLogin = () => {
     setLoginLoading(true);
@@ -116,7 +121,7 @@ const SigninUserPage = (props) => {
       .then((res) => {
         if (res.data.success == true) {
           localStorage.setItem("renthaven1", res.data.token);
-          loginAction(res.data.result);
+          loginAction(res.data.user);
           navigate(0)
           navigate("/", { replace: true });
           setLoginLoading(false);
@@ -135,6 +140,7 @@ const SigninUserPage = (props) => {
         setLoginLoading(false);
       })
       .catch((e) => {
+        console.log(e)
         setAlert(`${e.response.data.message}`)
         setLoginLoading(false)});
   };

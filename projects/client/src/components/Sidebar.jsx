@@ -95,7 +95,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 Manage Properties
               </Text>
             </Box>
-            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list" onClick={() => navigate("/room", { replace: true })}>
               <Text
                 fontSize={"13px"}
                 fontWeight={"600"}

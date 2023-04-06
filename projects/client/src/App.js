@@ -34,6 +34,12 @@ import AddPropertyRoom from "./pages/AddPropertyRoom";
 import PropertyFormEdit from "./components/PropertyFormEdit";
 import ManageCategories from "./pages/ManageCategories";
 import OrderHistory from "./pages/OrderHistory";
+import RoomList from "./components/RoomList";
+import RoomListPage from "./pages/Room";
+import RoomCreateMenu from "./pages/RoomCreateMenu";
+import RoomForm from "./components/RoomForm";
+import RoomFormEdit from "./components/RoomFormEdit";
+import RoomPhoto from "./components/RoomPhoto";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -63,11 +69,13 @@ function App() {
             },
           }
         );
-        if (res.data.tenant !== undefined) {
+        if (res.data.tenant) {
+          console.log("get")
           dispatch(setTenantAction(res.data.tenant));
-          dispatch(setTenantAction(res.data.bank.bank));
+          dispatch(setTenantAction(res.data.bank));
         }
-        dispatch(loginAction(res.data.result));
+        console.log("got")
+        dispatch(loginAction(res.data.user));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
       } else {
@@ -99,7 +107,7 @@ function App() {
         <>
           <TenantHeader loading={loading} isMobile={isMobile} />
 
-          {!isVerified || isMobile ? (
+          { isMobile ? (
             ""
           ) : (
             <div style={{ display: "flex" }}>
@@ -255,6 +263,11 @@ function App() {
               />
               <Route path="/manage-categories" element={<ManageCategories />} />
               <Route path="/orderlist" element={<OrderHistory />} />
+              <Route path="/room" element={<RoomListPage />} />
+              <Route path="/room/edit" element={<RoomFormEdit />} />
+              <Route path="/room/new" element={<RoomCreateMenu />} />
+              <Route path="/room/new/type" element={<RoomForm />} />
+              <Route path="/room/photos" element={<RoomPhoto />} />
               <Route path="/*" />
             </Routes>
           </div>

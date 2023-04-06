@@ -68,7 +68,7 @@ function EditAccountNumBtn(props) {
             setFieldValue("accountNum", "");
             dispatch(loginAction(res.data.result));
             dispatch(setTenantAction(res.data.tenant));
-            dispatch(setTenantAction(res.data.bank.bank));
+            dispatch(setTenantAction(res.data.bank));
             localStorage.setItem("renthaven1", res.data.token);
           }
         } catch (error) {

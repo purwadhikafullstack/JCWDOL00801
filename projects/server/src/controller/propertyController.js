@@ -16,7 +16,6 @@ const moment = require("moment-timezone");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-const { log } = require("console");
 
 module.exports = {
   getPropertyData: async (req, res) => {
@@ -29,8 +28,9 @@ module.exports = {
       p.name, 
       c.city, 
       p.propertyId AS id, 
-      MIN(t.typeId) AS typeId,
       r.roomId,
+      t.typeId,
+      t.typeImg,
       p.image
     FROM 
       properties AS p 
@@ -47,8 +47,8 @@ module.exports = {
             SELECT ra.roomId 
             FROM roomavailabilities AS ra
             WHERE 
-            ra.startDate >= ${dbSequelize.escape(newStartDate)} 
-            OR ra.endDate <= ${dbSequelize.escape(newEndDate)}
+            ${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
+            OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate
             )
         GROUP BY 
           r.propertyId
@@ -94,7 +94,7 @@ module.exports = {
               propertyId: id,
             },
             {
-              isDeleted: 0,
+              isDeleted: 0 || false,
             },
           ],
         },
@@ -143,8 +143,8 @@ module.exports = {
         SELECT ra.roomId 
         FROM roomavailabilities AS ra
         WHERE 
-        ra.startDate >= ${dbSequelize.escape(startDate)} 
-        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        ${dbSequelize.escape(startDate)} BETWEEN ra.startDate AND ra.endDate 
+        OR ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
 `,
         {
@@ -161,8 +161,8 @@ module.exports = {
         SELECT ra.roomId 
         FROM roomavailabilities AS ra
         WHERE 
-        ra.startDate >= ${dbSequelize.escape(startDate)} 
-        OR ra.endDate <= ${dbSequelize.escape(endDate)}
+        ${dbSequelize.escape(startDate)} BETWEEN ra.startDate AND ra.endDate 
+        AND ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
 
 `,

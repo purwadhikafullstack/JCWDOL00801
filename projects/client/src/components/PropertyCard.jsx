@@ -6,6 +6,8 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import banner1 from "../assets/landingBanner/banner-4.jpg";
+
 
 function PropertyCard({ data }) {
   const navigate = useNavigate();
@@ -23,15 +25,14 @@ function PropertyCard({ data }) {
         icon: "error",
         confirmButtonText: "Confirm",
         confirmButtonColor: "#48BB78",
-      }).then(() => {
-        navigate("/signin", { replace: true });
-        window.scrollTo(0, 0);
+      }).then(() =>{
+        navigate("/signin", {replace: true})
+        window.scrollTo(0,0)
       });
-    } else {
-      navigate(`/payment?id=${data.id}`, {
-        state: { id: data.id, startDate: startDate, endDate: endDate, typeId: data.typeId },
-      });
-      window.scrollTo(0, 0);
+    }
+    else{
+      navigate(`/payment?id=${data.id}`, {state: {id: data.id, startDate: startDate, endDate: endDate, typeId: data.typeId}})
+      window.scrollTo(0,0)
     }
   };
 
@@ -48,10 +49,9 @@ function PropertyCard({ data }) {
         <Stack spacing="3">
           <Heading
             size="md"
-            onClick={() => {
-              navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
-              window.scrollTo(0, 0);
-            }}
+            onClick={() => {navigate(`/detail?id=${data.id}`, { state: { id: data.id } })
+            window.scrollTo(0,0)
+          }}
             _hover={{ cursor: "pointer" }}
           >
             {data.name}

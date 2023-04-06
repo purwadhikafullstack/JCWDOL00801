@@ -32,7 +32,7 @@ module.exports = {
   getNecessaryData: async (req, res) => {
     try {
       //get neccessary data for transaction page
-      const data = await dbSequelize.query(`select p.image, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
+      const data = await dbSequelize.query(`select p.image, t.typeImg, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
             INNER JOIN types as t on r.typeId = t.typeId INNER JOIN tenants as ten on p.tenantId = ten.tenantId INNER JOIN paymentmethods as pay on ten.bankId = pay.bankId where p.propertyId = ${req.query.id} and t.typeId = ${req.body.typeId}`, {
         type: QueryTypes.SELECT
       })
@@ -72,8 +72,8 @@ module.exports = {
           SELECT ra.roomId 
           FROM roomavailabilities AS ra
           WHERE 
-          ra.startDate >= ${dbSequelize.escape(new Date(checkinDate))} 
-          OR ra.endDate <= ${dbSequelize.escape(new Date(checkoutDate))}
+          ra.startDate >= ${dbSequelize.escape(new Date(checkinDate))}
+          AND ra.endDate <= ${dbSequelize.escape(new Date(checkoutDate))}
           )
         `, {
         type: QueryTypes.SELECT
@@ -87,7 +87,7 @@ module.exports = {
       //randomly take 1 of available rooms in current property
       let randomRoomId = Math.floor(Math.random() * data.length);
       const createTransactions = await dbSequelize.query(`INSERT INTO transactions (userId, specialReq, totalGuest, checkinDate, checkoutDate, bankId, bankAccountNum, transactionExpired, createdAt, updatedAt)
-      VALUES (${dbSequelize.escape(userId)}, ${dbSequelize.escape(specialReq)}, ${dbSequelize.escape(totalGuest)}, ${dbSequelize.escape(new Date(checkinDate))}, ${dbSequelize.escape(new Date(checkoutDate))}, ${dbSequelize.escape(bankId)}, ${dbSequelize.escape(bankAccountNum)}, ${dbSequelize.escape(new Date(format(addHours(new Date(), 2), "yyyy-MM-dd HH:mm:ss")))}, ${dbSequelize.escape(checkinDate)}, ${dbSequelize.escape(checkinDate)})`, {
+      VALUES (${dbSequelize.escape(userId)}, ${dbSequelize.escape(specialReq)}, ${dbSequelize.escape(totalGuest)}, ${dbSequelize.escape(new Date(checkinDate))}, ${dbSequelize.escape(new Date(checkoutDate))}, ${dbSequelize.escape(bankId)}, ${dbSequelize.escape(bankAccountNum)}, ${dbSequelize.escape(new Date(format(addHours(new Date(), 2), "yyyy-MM-dd HH:mm:ss")))}, ${dbSequelize.escape(new Date(checkinDate))}, ${dbSequelize.escape(new Date(checkinDate))})`, {
         type: QueryTypes.INSERT
       })
       const trans = await transactionModel.findAll({
@@ -172,7 +172,7 @@ module.exports = {
       })
       if (user.length > 0) {
         const data = await transactionModel.update({
-          payProofImg: `/ProofImg/${req.files[0].filename}`,
+          payProofImg: `/proofImg/${req.files[0].filename}`,
           status: "Waiting for confirmation"
         }, {
           where: {

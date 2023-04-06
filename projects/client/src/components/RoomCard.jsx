@@ -34,29 +34,28 @@ function RoomCard(props) {
         confirmButtonText: "Confirm",
         confirmButtonColor: "#48BB78",
       }).then(() => {
-        navigate("/signin", { replace: true });
+        navigate("/signin", { replace: true, state: {checkinDate: props.startDate, checkoutDate: props.endDate} });
         window.scrollTo(0, 0);
       });
     } else {
       navigate(`/payment?id=${props.id}`, {
         state: {
           id: props.id,
-          startDate: props.startDate,
-          endDate: props.endDate,
+          checkinDate: props.startDate ? props.startDate: startDate, checkoutDate: props.endDate ? props.endDate: endDate,
           typeId: props.data.typeId,
         },
       });
       window.scrollTo(0, 0);
     }
   };
-
+  console.log(props)
   return (
     <Card shadow="sm" direction={{ base: "column", sm: "row" }} overflow="hidden" variant="outline">
       <Image
         style={{ filter: props.isAvailable ? "" : "grayscale(1)" }}
         objectFit="cover"
         maxW={{ base: "100%", sm: "200px" }}
-        src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
+        src={process.env.REACT_APP_API_BASE_IMG_URL + props.data.typeImg}
         alt="Caffe Latte"
       />
       <CardBody>

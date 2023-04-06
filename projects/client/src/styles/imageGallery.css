@@ -12,10 +12,12 @@
     width: '100%';
 }
 .image-gallery-thumbnail {
-    width: 100px
+    width: 100px;
+
   }
   
   .image-gallery-thumbnail img {
     width: auto;
     height: 70px;
+    overflow: scroll;
   }

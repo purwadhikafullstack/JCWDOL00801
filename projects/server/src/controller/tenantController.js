@@ -108,16 +108,19 @@ module.exports = {
         },
       });
       const tenantData = await tenantModel.findAll({
-        include: {
-          model: userModel,
-          as: "user",
-          required: true,
-        },
-        where: { userId: data[0].userId },
+        include: [
+          {
+            model: userModel,
+            as: "user",
+            required: true,
+          },
+        ],
       });
-      const bankData = await paymentMethodModel.findAll({
-        where: { bankId: tenantData[0].bankId },
-      });
+      const bank = await paymentMethodModel.findAll({
+        where: {
+          bankId : tenantData[0].bankId
+        }
+      })
       let token = createToken({
         ...data,
       });
@@ -130,16 +133,16 @@ module.exports = {
         }
         const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
         if (checkPass) {
-          res.status(200).send({
+          return res.status(200).send({
             success: true,
             message: "Login successfull",
             user: data[0],
             tenant: tenantData[0],
-            bank: bankData[0],
+            bank: bank[0],
             token,
           });
         } else {
-          res.status(200).send({
+          return res.status(401).send({
             success: false,
             message: "Username or password invalid",
           });
