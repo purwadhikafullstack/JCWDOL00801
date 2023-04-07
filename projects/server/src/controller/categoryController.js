@@ -1,4 +1,10 @@
-const { categoryModel } = require("../model");
+const {
+  categoryModel,
+  orderListModel,
+  transactionModel,
+  roomModel,
+  propertyModel,
+} = require("../model");
 const { Op } = require("sequelize");
 
 module.exports = {
@@ -37,6 +43,18 @@ module.exports = {
     try {
       const data = await categoryModel.findAll({
         where: { tenantId: req.params.tenantId },
+        order: ["province"],
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getDataForCreate: async (req, res) => {
+    try {
+      const data = await categoryModel.findAll({
+        where: { [Op.and]: [{ tenantId: req.params.tenantId }, { isDeleted: false }] },
         order: ["province"],
       });
       return res.status(200).send(data);
@@ -99,6 +117,107 @@ module.exports = {
           message: `Data Not Found`,
           data: [],
         });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  editData: async (req, res) => {
+    try {
+      const { province, city, categoryId } = req.body;
+      const update = await categoryModel.update(
+        {
+          province,
+          city,
+        },
+        {
+          where: { categoryId },
+        }
+      );
+      if (update) {
+        return res.status(200).send({
+          success: true,
+          message: `Category has been updated`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const { isDeleted, categoryId, tenantId } = req.body;
+      if (!isDeleted) {
+        const updateCategory = await categoryModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { categoryId },
+          }
+        );
+        if (updateCategory) {
+          return res.status(200).send({
+            success: true,
+            message: `Category has been updated`,
+          });
+        }
+      }
+      const checkStatus = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.or]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: { [Op.and]: [{ tenantId }, { categoryId }] },
+            },
+          },
+        ],
+      });
+      if (checkStatus.length > 0) {
+        return res.status(400).send({
+          result: checkStatus,
+          success: false,
+          message: `Can not deactivate this category because there are ongoing transaction(s)`,
+        });
+      } else {
+        const updateProperty = await propertyModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { [Op.and]: [{ tenantId }, { categoryId }] },
+          }
+        );
+
+        const updateCategory = await categoryModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { categoryId },
+          }
+        );
+        if (updateCategory) {
+          return res.status(200).send({
+            success: true,
+            message: `Category has been updated`,
+          });
+        }
       }
     } catch (error) {
       console.log(error);

@@ -150,6 +150,11 @@ function OrderHistory(props) {
     }
   };
 
+  const handleClose = () => {
+    setSelectedOption("");
+    onClose();
+  };
+
   const renderTableData = () => {
     if (tableData.length === 0) {
       return (
@@ -462,14 +467,14 @@ function OrderHistory(props) {
           </Flex>
         )}
       </Flex>
-      <Modal size="xl" scrollBehavior="inside" onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal size="xl" scrollBehavior="inside" onClose={handleClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Order Details</ModalHeader>
           <ModalCloseButton />
           {renderModalData()}
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={handleClose}>Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
