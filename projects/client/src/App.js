@@ -40,6 +40,9 @@ import RoomCreateMenu from "./pages/RoomCreateMenu";
 import RoomForm from "./components/RoomForm";
 import RoomFormEdit from "./components/RoomFormEdit";
 import RoomPhoto from "./components/RoomPhoto";
+import SearchProperty from "./components/SearchPropertyCard";
+import SearchCard from "./components/SearchCard";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -70,11 +73,9 @@ function App() {
           }
         );
         if (res.data.tenant) {
-          console.log("get")
           dispatch(setTenantAction(res.data.tenant));
           dispatch(setTenantAction(res.data.bank));
         }
-        console.log("got")
         dispatch(loginAction(res.data.user));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
@@ -334,6 +335,7 @@ function App() {
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/payment-proof" element={<PaymentProofPage/>} isMobile={isMobile}/>
           </Routes>
           <Footer />

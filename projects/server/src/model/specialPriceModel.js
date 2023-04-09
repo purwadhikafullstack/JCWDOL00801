@@ -10,7 +10,7 @@ const specialPriceModel = dbSequelize.define("specialPrices", {
         allowNull: false
     },
     //fk
-    roomId: {
+    typeId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },

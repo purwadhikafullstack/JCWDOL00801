@@ -1,13 +1,21 @@
 import { Box, Button, Container, FormLabel, Heading, Stack, VStack } from "@chakra-ui/react";
 import { FormControl, Select, Flex } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CalendarDateRange from "./CalendarDateRange";
 import { SearchIcon } from "@chakra-ui/icons";
 import Axios from "axios";
+import { Select as Select2 } from "chakra-react-select";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function LandingSearchForm(props) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [province, setProvince] = React.useState([]);
   const [selectedProvince, setSelectedProvince] = React.useState("");
+  const [selectedCity, setSelectedCity] = React.useState("");
+  const [provinceLabel, setProvinceLabel] = useState("");
+  const [cityLabel, setCityLabel] = useState("");
   const [city, setCity] = React.useState([]);
 
   const getProvinceData = async () => {
@@ -15,25 +23,45 @@ function LandingSearchForm(props) {
       let response = await Axios.get(
         "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
       );
-      setProvince(response.data);
+
+      const provinceOption = response.data.map((val, idx) => {
+        return { value: val.id, label: val.name };
+      });
+      setProvince(provinceOption);
     } catch (error) {
       console.log(error);
     }
   };
-
+  const selectProvinceHandler = (e, triggeredAction) => {
+    if (triggeredAction.action === "clear") {
+      setCity([]);
+      return setSelectedProvince("");
+    }
+    setSelectedProvince(e.value);
+    setProvinceLabel(e.label);
+  };
+  const setCityHandler = (e, triggeredAction) => {
+    if (triggeredAction.action === "clear") {
+      return setSelectedCity("");
+    }
+    setSelectedCity(e.value);
+    setCityLabel(e.label);
+  };
   const getCityData = async () => {
     if (province.length !== 0) {
       try {
         let response = await Axios.get(
           `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
         );
-        setCity(response.data);
+        const cityOption = response.data.map((val, idx) => {
+          return { value: val.id, label: val.name };
+        });
+        setCity(cityOption);
       } catch (error) {
         console.log(error);
       }
     }
   };
-
   useEffect(() => {
     getProvinceData();
   }, []);
@@ -52,28 +80,32 @@ function LandingSearchForm(props) {
           <Flex direction="column" gap={6} minW="100%">
             <FormControl>
               <FormLabel>Province</FormLabel>
-              <Select
-                value={selectedProvince}
+              <Select2
+                isClearable
+                isSearchable
+                maxMenuHeight={200}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                options={province}
                 placeholder="Select province"
-                onChange={(e) => setSelectedProvince(e.target.value)}
-              >
-                {province.map((val, idx) => {
-                  return (
-                    <option value={val.id} key={idx}>
-                      {val.name}
-                    </option>
-                  );
-                })}
-              </Select>
+                onChange={(e, triggeredAction) => selectProvinceHandler(e, triggeredAction)}
+              ></Select2>
             </FormControl>
-            {city.length !== 0 ? (
+            {city.length > 0 ? (
               <FormControl>
                 <FormLabel>City</FormLabel>
-                <Select placeholder="Select city">
-                  {city.map((val, idx) => {
-                    return <option key={idx}>{val.name}</option>;
-                  })}
-                </Select>
+                <Select2
+                  isClearable
+                  isSearchable
+                  maxMenuHeight={200}
+                  options={city}
+                  menuPortalTarget={document.body}
+                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                  placeholder="Select city"
+                  onChange={(e, triggeredAction) => {
+                    setCityHandler(e, triggeredAction);
+                  }}
+                ></Select2>
               </FormControl>
             ) : null}
           </Flex>
@@ -87,7 +119,17 @@ function LandingSearchForm(props) {
               <CalendarDateRange />
             </Box>
             <Box>
-              <Button leftIcon={<SearchIcon />} minW="50%" colorScheme="green">
+              <Button
+                leftIcon={<SearchIcon />}
+                minW="50%"
+                colorScheme="green"
+                onClick={() => {
+                  navigate(`/search`, {
+                    replace: true,
+                    state: { province: provinceLabel, city: cityLabel, defaultProvince: selectedProvince, defaultCity: selectedCity },
+                  });
+                }}
+              >
                 Search
               </Button>
             </Box>

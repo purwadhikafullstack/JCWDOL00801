@@ -32,6 +32,7 @@ const {
   propertyRouter,
   paymentMethodRouter,
   orderListRouter,
+  searchRouter
 } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 const { transactionController } = require("./controller");
@@ -43,6 +44,7 @@ app.use("/api", transactionRouter);
 app.use("/api", roomRouter);
 app.use("/api", paymentMethodRouter);
 app.use("/api", orderListRouter);
+app.use("/api", searchRouter);
 
 // ===========================
 

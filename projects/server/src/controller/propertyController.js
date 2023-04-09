@@ -32,17 +32,25 @@ module.exports = {
       r.roomId,
       t.typeId,
       t.typeImg,
-      p.image
+      p.image,
+      (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+        AND ${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AS nominal
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
       INNER JOIN (
         SELECT 
           r.propertyId, 
-          MIN(t.price) AS min_price
+          MIN(t.price) AS min_price,
+          MIN(sp2.nominal) as min_nominal,
+          sp2.typeId as sp_typeId
         FROM 
           rooms AS r 
           INNER JOIN types AS t ON r.typeId = t.typeId
+          LEFT JOIN specialprices AS sp2 ON sp2.typeId = r.typeId AND (
+            sp2.nominal IS NOT NULL 
+            AND ${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate
+          )
         WHERE 
           r.roomId NOT IN (
             SELECT ra.roomId 
@@ -55,10 +63,9 @@ module.exports = {
           r.propertyId
       ) AS min_prices ON p.propertyId = min_prices.propertyId 
       INNER JOIN rooms AS r ON min_prices.propertyId = r.propertyId
-        AND min_prices.min_price = (
-          SELECT MIN(t.price) 
-          FROM types AS t 
-          WHERE t.typeId = r.typeId
+        AND (
+          (min_prices.min_nominal IS NOT NULL AND min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)) OR 
+          (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId))
         )
       INNER JOIN types AS t ON r.typeId = t.typeId
     GROUP BY 
@@ -164,17 +171,26 @@ module.exports = {
       })
       if (roomAvail.length > 0) {
         let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
-        let bookedRooms = roomAvail.map((val) => ({
-          typeId: val.typeId
-        }))
-        let type = await typeModel.findAll({
-          where: {
-            [Op.or]: bookedRooms
-          },
-          order: ["price"],
+        let filtered = roomAvail.filter((val, index, self) => {
+          return index === self.findIndex((t) => t.typeId === val.typeId);
         });
+        let bookedRooms = filtered.map((val) => ([
+          "t.typeId = " + val.typeId
+        ]))
+        let type = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+          AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
+          ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
+        where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(" OR ")} GROUP BY t.typeId ORDER BY t.price;`, {type: QueryTypes.SELECT})
+        // let type = await typeModel.findAll({
+        //   where: {
+        //     [Op.or]: bookedRooms
+        //   },
+        //   order: ["price"],
+        // });
         if (notAvail.length > 0) {
-          let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+          let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+            AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
+            ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
           where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
             type: QueryTypes.SELECT
           })
@@ -214,7 +230,9 @@ module.exports = {
         },
         order: ["price"],
       });
-      let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+      let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+        AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
+        ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
           where p.propertyId = ${property.propertyId} ${notAvail.length > 0 ? " AND " : ""} ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
         type: QueryTypes.SELECT
       })

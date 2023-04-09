@@ -17,7 +17,7 @@ const BookingDetail = ({totalGuest, data, startDate, endDate, setNight}) => {
   }
   useEffect(() =>{
     howManyNight()
-  },[])
+  },[data])
   return (
     <Box w={isMobile? "100%" : "70%"}  shadow={isMobile? "none" :"lg"} rounded="md" ml={isMobile? "0px":"30px"} mt={isMobile? "0px":"50px"} pos="sticky" top="16px" alignSelf={"flex-start"} background={"white"}>
       <Flex direction={"column"} m="20px" >
@@ -50,9 +50,12 @@ const BookingDetail = ({totalGuest, data, startDate, endDate, setNight}) => {
             <Text>Check out</Text>
             <Text>{startDate == "" || startDate == null ? "": format(new Date(endDate), "E MMM, dd yyyy") }</Text>
           </Flex>
-          <Flex justifyContent="space-between" mt="20px">
+          <Flex justifyContent={"flex-end"} mt={"20px"}>
+          {data.nominal && data.nominal < data.price ? <Text textDecoration={"line-through"}>{parseInt(data.price * diffDays).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text> :""}
+          </Flex>
+          <Flex justifyContent="space-between" mt={data.nominal ? "" : "20px"}>
             <Text>TOTAL</Text>
-            <Text>{parseInt(data.price * diffDays).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text>
+            {data.nominal ? <Text>{parseInt(data.nominal * diffDays).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text> :<Text>{parseInt(data.price * diffDays).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text> }
           </Flex>
         </Flex>
       </Flex>

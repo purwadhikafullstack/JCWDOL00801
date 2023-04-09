@@ -8,15 +8,21 @@ import "react-date-range/dist/theme/default.css";
 
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setDateAction } from "../actions/dateAction";
 
 function CalendarDateRange(props) {
+  const {currentStartDate, currentEndDate} = useSelector(state =>{
+    return{
+      currentStartDate: state.dateReducer.startDate,
+      currentEndDate: state.dateReducer.endDate
+    }
+  })
   //state untuk menyimpan date
   const [calendar, setCalendar] = React.useState([
     {
-      startDate: new Date(),
-      endDate: addDays(new Date(), 1),
+      startDate: new Date(currentStartDate),
+      endDate: new Date(currentEndDate),
       key: "selection",
     },
   ]);
@@ -50,8 +56,10 @@ function CalendarDateRange(props) {
 
   const handleChange = (item) => {
     setCalendar([item.selection]);
-    props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
-    props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
+    if(props.checkinHandler && props.checkoutHandler){
+      props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
+      props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
+    }
     dispatch(
       setDateAction({
         startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),

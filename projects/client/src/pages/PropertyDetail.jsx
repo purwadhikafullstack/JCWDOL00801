@@ -54,6 +54,7 @@ function PropertyDetail(props) {
       setProperty(res.data.property)
       setCategories(res.data.category)
       setTenant(res.data.tenant)
+      console.log("TYPE",res.data.type)
       setUserTenant(res.data.userTenant)
       if(res.data.notAvailRooms.length > 0 && res.data.notAvailRooms != undefined){
         setNotAvailableRoom(res.data.notAvailRooms);

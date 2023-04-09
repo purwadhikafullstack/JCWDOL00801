@@ -6,6 +6,7 @@ const propertyController = require("./propertyController");
 const transactionController = require("./transactionController")
 const roomController = require("./roomController")
 const orderListController = require("./orderListController");
+const searchController = require("./searchController");
 module.exports = {
   userController,
   categoryController,
@@ -15,4 +16,5 @@ module.exports = {
   propertyController,
   paymentMethodController,
   orderListController,
+  searchController
 };
