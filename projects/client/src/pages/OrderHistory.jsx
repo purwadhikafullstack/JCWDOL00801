@@ -29,7 +29,7 @@ import Axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 
 function OrderHistory(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -150,6 +150,11 @@ function OrderHistory(props) {
     }
   };
 
+  const handleClose = () => {
+    setSelectedOption("");
+    onClose();
+  };
+
   const renderTableData = () => {
     if (tableData.length === 0) {
       return (
@@ -235,8 +240,8 @@ function OrderHistory(props) {
     if (clicked) {
       const { orderId, room, transaction, price } = modalData;
       const { status } = transaction;
-      const checkIn = new Date(transaction.checkinDate).toLocaleDateString("id");
-      const checkOut = new Date(transaction.checkoutDate).toLocaleDateString("id");
+      const checkIn = new Date(transaction.checkinDate);
+      const checkOut = new Date(transaction.checkoutDate);
       const nights = differenceInDays(
         new Date(transaction.checkoutDate),
         new Date(transaction.checkinDate)
@@ -287,7 +292,10 @@ function OrderHistory(props) {
             </Flex>
             <Flex justify="space-between">
               <Text>Length of Stay :</Text>
-              <Text>{`${checkIn} - ${checkOut} / ${nights} night(s)`}</Text>
+              <Text>{`${format(checkIn, "MMM dd, yyyy")} - ${format(
+                checkOut,
+                "MMM dd, yyyy"
+              )} / ${nights} night(s)`}</Text>
             </Flex>
             <Flex justify="space-between">
               <Text>Price :</Text>
@@ -459,14 +467,14 @@ function OrderHistory(props) {
           </Flex>
         )}
       </Flex>
-      <Modal size="xl" scrollBehavior="inside" onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal size="xl" scrollBehavior="inside" onClose={handleClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Order Details</ModalHeader>
           <ModalCloseButton />
           {renderModalData()}
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={handleClose}>Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

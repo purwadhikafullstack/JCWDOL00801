@@ -76,6 +76,7 @@ function PropertyList(props) {
       setRows(response.data.totalRows);
     } catch (error) {
       console.log(error);
+      setPropertyData(error.response.data.data);
     }
   };
 
@@ -126,13 +127,34 @@ function PropertyList(props) {
             />
           </Td>
           <Td>
-            <Button onClick={() => navigate(`/property/edit?${propertyId}`)} colorScheme="green">
+            <Button onClick={() => handleEdit(propertyId)} colorScheme="green">
               Edit
             </Button>
           </Td>
         </Tr>
       );
     });
+  };
+
+  const handleEdit = async (propertyId) => {
+    try {
+      let response = await Axios.get(
+        process.env.REACT_APP_API_BASE_URL + `/propety/check/${propertyId}`
+      );
+      if (response.data.success) {
+        navigate(`/property/edit?${propertyId}`, { replace: true });
+      }
+    } catch (error) {
+      console.log(error);
+      if (!error.response.data.success) {
+        Swal.fire({
+          icon: "error",
+          title: error.response.data.message,
+          confirmButtonColor: "#38A169",
+          confirmButtonText: "OK",
+        });
+      }
+    }
   };
 
   const onBtnSearch = (e) => {
@@ -180,6 +202,14 @@ function PropertyList(props) {
             }
           } catch (error) {
             console.log(error);
+            if (!error.response.data.success) {
+              Swal.fire({
+                icon: "error",
+                title: error.response.data.message,
+                confirmButtonColor: "#38A169",
+                confirmButtonText: "OK",
+              });
+            }
           }
         }
       });
@@ -203,6 +233,14 @@ function PropertyList(props) {
         }
       } catch (error) {
         console.log(error);
+        if (!error.response.data.success) {
+          Swal.fire({
+            icon: "error",
+            title: error.response.data.message,
+            confirmButtonColor: "#38A169",
+            confirmButtonText: "OK",
+          });
+        }
       }
     }
   };

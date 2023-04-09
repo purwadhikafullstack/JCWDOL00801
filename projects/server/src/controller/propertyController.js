@@ -10,21 +10,20 @@ const {
   transactionModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
-const {
-  dbSequelize
-} = require("../config/db");
-const {
-  QueryTypes,
-  Op
-} = require("sequelize");
-const moment = require("moment-timezone")
+const { dbSequelize } = require("../config/db");
+const { QueryTypes, Op } = require("sequelize");
+const moment = require("moment-timezone");
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
       let newStartDate = new Date(req.body.startDate);
       let newEndDate = new Date(req.body.endDate);
-      const data = await dbSequelize.query(`SELECT 
+      const data = await dbSequelize.query(
+        `SELECT 
       MIN(t.price) AS price, 
       p.name, 
       c.city, 
@@ -73,36 +72,39 @@ module.exports = {
       p.name, 
       c.city
     ORDER BY 
-      price;`, {
-        type: QueryTypes.SELECT
-      });
+      price;`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       return res.status(200).send({
         success: true,
-        result: data
-      })
+        result: data,
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).send({
         success: false,
-        message: "Database Error"
-      })
+        message: "Database Error",
+      });
     }
   },
   getProperties: async (req, res) => {
-    const {
-      id
-    } = req.params;
+    const { id } = req.params;
     let startDate = new Date(req.body.startDate);
     let endDate = new Date(req.body.endDate);
     try {
       let property = await propertyModel.findOne({
         where: {
-          [Op.and]: [{
-            propertyId: id
-          }, {
-            isDeleted: 0 || false
-          }]
-        }
+          [Op.and]: [
+            {
+              propertyId: id,
+            },
+            {
+              isDeleted: 0 || false,
+            },
+          ],
+        },
       });
 
       if (!property) {
@@ -113,32 +115,33 @@ module.exports = {
       }
       const tenant = await tenantModel.findOne({
         where: {
-          tenantId: property.tenantId
-        }
-      })
+          tenantId: property.tenantId,
+        },
+      });
       const userTenant = await userModel.findOne({
         where: {
-          userId: tenant.userId
-        }
-      })
+          userId: tenant.userId,
+        },
+      });
       const category = await categoryModel.findOne({
         where: {
-          categoryId: property.categoryId
-        }
-      })
+          categoryId: property.categoryId,
+        },
+      });
       let room = await roomModel.findAll({
         where: {
-          propertyId: id
-        }
+          propertyId: id,
+        },
       });
 
-      let roomArr = room.map(val => ({
-        typeId: val.typeId
+      let roomArr = room.map((val) => ({
+        typeId: val.typeId,
       }));
       let filteredType = roomArr.filter((val, index, self) => {
         return index === self.findIndex((t) => t.typeId === val.typeId);
       });
-      let roomAvail = await dbSequelize.query(`
+      let roomAvail = await dbSequelize.query(
+        `
       SELECT * 
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
@@ -150,10 +153,13 @@ module.exports = {
         ${dbSequelize.escape(startDate)} BETWEEN ra.startDate AND ra.endDate 
         OR ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
-`, {
-        type: QueryTypes.SELECT
-      })
-      const roomNotAvail = await dbSequelize.query(`
+`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+      const roomNotAvail = await dbSequelize.query(
+        `
       SELECT * 
       FROM rooms AS r 
       INNER JOIN properties AS p ON r.propertyId = p.propertyId 
@@ -166,9 +172,11 @@ module.exports = {
         AND ${dbSequelize.escape(endDate)} BETWEEN ra.startDate AND ra.endDate
         )
 
-`, {
-        type: QueryTypes.SELECT
-      })
+`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       if (roomAvail.length > 0) {
         let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
         let filtered = roomAvail.filter((val, index, self) => {
@@ -204,7 +212,7 @@ module.exports = {
             category,
             notAvailRooms,
             tenant,
-            userTenant
+            userTenant,
           });
         }
 
@@ -217,16 +225,16 @@ module.exports = {
           roomAvail,
           category,
           tenant,
-          userTenant
+          userTenant,
         });
       }
-      let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
+      let notAvail = roomAvail.map((val) => ["t.typeId != " + val.typeId]);
       let bookedRooms = roomAvail.map((val) => ({
-        typeId: val.typeId
-      }))
+        typeId: val.typeId,
+      }));
       let type = await typeModel.findAll({
         where: {
-          [Op.or]: bookedRooms
+          [Op.or]: bookedRooms,
         },
         order: ["price"],
       });
@@ -246,7 +254,7 @@ module.exports = {
         category,
         notAvailRooms,
         tenant,
-        userTenant
+        userTenant,
       });
     } catch (error) {
       console.log(error);
@@ -330,9 +338,13 @@ module.exports = {
   },
   create: async (req, res) => {
     try {
-      const pathName = req.files[0].destination.split("/");
-      const propertyImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
+      await sharp(req.files[0].path)
+        .resize(600, 400, { fit: "fill" })
+        .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+      fs.unlinkSync(req.files[0].path);
 
+      const pathName = req.files[0].destination.split("/");
+      const propertyImg = `/${pathName[pathName.length - 1]}/RH${req.files[0].filename}`;
       const newBody = { ...req.body, image: propertyImg };
       const checkData = await propertyModel.findAll({
         where: {
@@ -359,35 +371,62 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      // akan ditambahkan ketika fitur transaksi sudah di merge
-      // const check = await orderListModel.findAll({
-      //   include: [
-      //     {
-      //       model: transactionModel,
-      //       as: "transaction",
-      //       required: true,
-      //       where: {
-      //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
-      //       },
-      //     },
-      //     {
-      //       model: roomModel,
-      //       as: "room",
-      //       required: true,
-      //       include: {
-      //         model: propertyModel,
-      //         as: "property",
-      //         required: true,
-      //         where: {
-      //           propertyId: req.params.propertyId,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // });
-      let update = await propertyModel.update(req.body, {
+      const { propertyId } = req.params;
+      const checkTransaction = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.or]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: {
+                propertyId: req.params.propertyId,
+              },
+            },
+          },
+        ],
+      });
+      const checkCategory = await propertyModel.findAll({
+        include: {
+          model: categoryModel,
+          as: "category",
+          required: true,
+          where: {
+            isDeleted: false,
+          },
+        },
+        where: { propertyId },
+      });
+
+      if (checkTransaction.length > 0) {
+        return res.status(400).send({
+          success: false,
+          message: `Can not deactivate property because there are ongoing transaction(s)`,
+        });
+      }
+
+      if (checkCategory.length <= 0) {
+        return res.status(400).send({
+          data: checkCategory,
+          success: false,
+          message: `Can not activate property because corresponding category is not active`,
+        });
+      }
+
+      const update = await propertyModel.update(req.body, {
         where: {
-          propertyId: req.params.propertyId,
+          propertyId,
         },
       });
       if (update) {
@@ -422,6 +461,12 @@ module.exports = {
   updateEditData: async (req, res) => {
     try {
       const { propertyId, name, desc, phone, categoryId, address } = req.body;
+      if (req.files[0]) {
+        await sharp(req.files[0].path)
+          .resize(600, 400, { fit: "fill" })
+          .toFile(path.resolve(req.files[0].destination, `RH${req.files[0].filename}`));
+        fs.unlinkSync(req.files[0].path);
+      }
       if (!req.files[0]) {
         req.files[0] = {
           filename: "",
@@ -433,7 +478,8 @@ module.exports = {
       let propertyPicture =
         req.files[0].filename === ""
           ? `${req.body.filename}`
-          : `/propertyImg/${req.files[0].filename}`;
+          : `/propertyImg/RH${req.files[0].filename}`;
+
       let update = await propertyModel.update(
         {
           propertyId,
@@ -462,4 +508,46 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
-}
+  checkData: async (req, res) => {
+    try {
+      const { propertyId } = req.params;
+      const checkStatus = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.or]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: { propertyId },
+            },
+          },
+        ],
+      });
+      if (checkStatus.length > 0) {
+        return res.status(400).send({
+          result: checkStatus,
+          success: false,
+          message: `Can not edit because there are ongoing transaction(s)`,
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+};

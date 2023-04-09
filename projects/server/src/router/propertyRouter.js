@@ -17,6 +17,5 @@ route.patch(
   uploader("/propertyImg", "IMGPROPERTY").array("images", 1),
   propertyController.updateEditData
 );
-
+route.get("/propety/check/:propertyId", propertyController.checkData);
 module.exports = route;
-
