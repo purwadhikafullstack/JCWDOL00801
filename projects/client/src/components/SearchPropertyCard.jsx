@@ -33,7 +33,8 @@ function SearchProperty({
   defaultCity,
   defaultProvinceLabel,
   defaultCityLabel,
-  setPage
+  setPage,
+  setCapacityHandler
 }) {
   ///search
   const [province, setProvince] = React.useState([]);
@@ -64,6 +65,8 @@ function SearchProperty({
   const selectProvinceHandler = (e, triggeredAction) => {
     if (triggeredAction.action == "clear") {
       setCity([]);
+      cityHandler("")
+      setCityLabel("")
       setProvinceLabel("");
       provinceHandler("");
       return setSelectedProvince("");
@@ -119,7 +122,8 @@ function SearchProperty({
   const submitHandler = () => {
     cityHandler(cityLabel);
     provinceHandler(provinceLabel);
-    nameHandler(searchTerm)
+    nameHandler(searchTerm);
+    setCapacityHandler(capacity)
     setPage(0)
     getData(searchTerm, provinceLabel, cityLabel, capacity, true);
   };
@@ -197,6 +201,7 @@ function SearchProperty({
                               pl={1}
                               _hover={{ background: "#F0FFF4", cursor: "pointer" }}
                               onClick={() => {
+                                nameHandler(val.label)
                                 setSearchTerm(val.label);
                                 setOnInputFocus(false);
                               }}
@@ -254,26 +259,25 @@ function SearchProperty({
               <CalendarDateRange />
             </Box>
             <Box>
-              <FormLabel>Capacity</FormLabel>
+              {/* <FormLabel>Capacity</FormLabel>
               <NumberInput
                 w="100px"
                 defaultValue={1}
                 min={1}
                 max={10}
-                onChange={(e) => setCapacity(e.target.value)}
+                onChange={(e) => {setCapacity(e)
+                setCapacityHandler(e)
+                }}
               >
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
-              </NumberInput>
+              </NumberInput> */}
             </Box>
             <Box w="100%">
               <Flex direction={{ base: "column", md: "row" }}>
-                <Button w="100%" colorScheme="green" variant={"outline"} mr={"10%"} mb={5}>
-                  Reset
-                </Button>
                 <Button
                   leftIcon={<SearchIcon />}
                   w="100%"

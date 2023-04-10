@@ -186,8 +186,8 @@ module.exports = {
           "t.typeId = " + val.typeId
         ]))
         let type = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-          AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
-          ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
+          AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) 
+          as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
         where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(" OR ")} GROUP BY t.typeId ORDER BY t.price;`, {type: QueryTypes.SELECT})
         // let type = await typeModel.findAll({
         //   where: {
@@ -197,8 +197,7 @@ module.exports = {
         // });
         if (notAvail.length > 0) {
           let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-            AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
-            ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
+            AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
           where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
             type: QueryTypes.SELECT
           })

@@ -442,4 +442,22 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
+  cancelTenant: async (req, res) =>{
+    try {
+      const cancel = await transactionModel.update({
+        status: "Cancelled"
+      }, {where:{
+        [Op.and]: [{transactionId: req.body.transactionId, status: "Waiting for payment"}]
+      }})
+      return res.status(200).send({
+        success:true,
+        message: "The transaction has been cancelled"
+      })
+    } catch (error) {
+      return res.status(500).send({
+        success:false,
+        message:"Database error"
+      })
+    }
+  }
 };

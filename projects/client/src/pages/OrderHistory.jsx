@@ -154,7 +154,42 @@ function OrderHistory(props) {
     setSelectedOption("");
     onClose();
   };
-
+  const cancelTransactionHandler = (transId) => {
+    Swal.fire({
+      title: "Are you sure you want to cancelled this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#38A169",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+    }).then((response) => {
+      if (response.isConfirmed) {
+        Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/cancel", {
+          transactionId: transId,
+        }).then((res) => {
+          Swal.fire({
+            title: `${res.data.message}`,
+            icon: "success",
+            confirmButtonColor: "#38A169",
+            confirmButtonText: "Yes",
+          }).then(r =>{
+            getTableData()
+          })
+        }).catch(e =>{
+          Swal.fire({
+            title: `${e.response.data.message}`,
+            icon: "success",
+            confirmButtonColor: "#38A169",
+            confirmButtonText: "Yes",
+          })
+        });
+      }
+      else{
+        getTableData()
+      }
+    });
+  };
   const renderTableData = () => {
     if (tableData.length === 0) {
       return (
@@ -225,6 +260,7 @@ function OrderHistory(props) {
                   status === "Cancelled" ||
                   status === "Waiting for confirmation"
                 }
+                onClick={() => cancelTransactionHandler(transaction.transactionId)}
               >
                 Cancel
               </option>
