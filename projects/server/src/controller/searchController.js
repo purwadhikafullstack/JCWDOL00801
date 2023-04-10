@@ -38,7 +38,6 @@ module.exports = {
         sortby,
         capacity
       } = req.query;
-      console.log("CAPACITY",capacity)
       const order = req.query.order || "asc";
       let filterName = "";
       let filterCity = "";

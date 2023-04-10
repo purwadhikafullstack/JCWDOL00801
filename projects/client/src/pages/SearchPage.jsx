@@ -57,7 +57,6 @@ const SearchPage = (props) => {
     if (filterCapacity || capacity) {
       reqQuery += `&capacity=${capacity || filterCapacity}`;
     }
-    console.log(reqQuery)
     try {
       let response = await Axios.post(process.env.REACT_APP_API_BASE_URL + url + reqQuery, {
         startDate,
