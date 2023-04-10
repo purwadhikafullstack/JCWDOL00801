@@ -23,7 +23,7 @@ module.exports = {
   getData: async (req, res) => {
     try {
       const page = req.query.paging ? 0 : parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 2;
+      const limit = parseInt(req.query.limit) || 7;
       const offset = limit * page;
       const {
         startDate,
