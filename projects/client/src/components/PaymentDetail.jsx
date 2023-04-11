@@ -26,6 +26,7 @@ const PaymentDetail = () => {
     specialReq: [],
   });
   const [price, setPrice] = useState(0);
+  const [spPrice, setSpPrice] = useState(0);
   const [otherCheck, setOtherCheck] = useState("");
   const othercheckHandle = (e) => {
     setOtherCheck(e.target.value);
@@ -69,10 +70,14 @@ const PaymentDetail = () => {
         process.env.REACT_APP_API_BASE_URL + `/transaction-detail?id=${searchQuery.get("id")}`,
         {
           typeId: location.state.typeId,
+          startDate: location.state.checkinDate ? location.state.checkinDate : startDate,
+          endDate: location.state.checkoutDate ? location.state.checkoutDate: endDate
         }
       );
       setData(res.data.result[0]);
       setPrice(res.data.result[0].price);
+      setSpPrice(res.data.result[0].nominal);
+      console.log(res.data.result[0])
     } catch (error) {
       console.log(error);
     }
@@ -108,7 +113,7 @@ const PaymentDetail = () => {
                 totalGuest,
                 checkinDate: location.state.checkinDate ? location.state.checkinDate : startDate,
                 checkoutDate: location.state.checkoutDate ? location.state.checkoutDate: endDate,
-                price: price * night,
+                price: spPrice ? spPrice * night : price * night,
                 bankId,
                 bankAccountNum,
                 propertyId: searchQuery.get("id"),

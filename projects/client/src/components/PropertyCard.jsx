@@ -59,13 +59,33 @@ function PropertyCard({ data }) {
           <Text>
             <Icon as={IoLocationSharp} color="blackAlpha.600" /> {data.city}
           </Text>
-          <Flex justify="center" align="end" direction="column">
-            <Text pb="27px" color="blue.600" opacity="0.5" as="s" fontSize="lg">
-              {}
-            </Text>
-            <Text color="blue.600" fontSize="2xl">
-              {parseInt(data.price).toLocaleString("ID", { style: "currency", currency: "idr" })}
-            </Text>
+          <Flex justify="end">
+            {data.nominal ? (
+              <>
+                <Flex direction={"column"} alignItems={"flex-end"}>
+                  {data.nominal < data.price ? (
+                    <Text color="blue.600" textDecoration={"line-through"}>
+                      {parseInt(data.price).toLocaleString("id", {
+                        style: "currency",
+                        currency: "idr",
+                      })}
+                    </Text>
+                  ) : (
+                    ""
+                  )}
+                  <Text color="blue.600" fontSize="2xl">
+                    {parseInt(data.nominal).toLocaleString("id", {
+                      style: "currency",
+                      currency: "idr",
+                    })}
+                  </Text>
+                </Flex>
+              </>
+            ) : (
+              <Text color="blue.600" fontSize="2xl">
+                {parseInt(data.price).toLocaleString("id", { style: "currency", currency: "idr" })}
+              </Text>
+            )}
           </Flex>
         </Stack>
       </CardBody>

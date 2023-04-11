@@ -45,6 +45,7 @@ function RoomCard(props) {
           typeId: props.data.typeId,
         },
       });
+      navigate(0)
       window.scrollTo(0, 0);
     }
   };
@@ -76,12 +77,25 @@ function RoomCard(props) {
           align="center"
           style={{ filter: props.isAvailable ? "" : "grayscale(1)" }}
         >
-          <Text color="blue.600" fontWeight="bold" fontSize="2xl">
+          {props.data.nominal ? <Flex alignItems={"center"} justifyContent={"center"}> 
+            {props.data.nominal < props.data.price ?<Text color="blue.600" textDecoration={"line-through"}>
             {parseInt(props.data.price).toLocaleString("id", {
               style: "currency",
               currency: "IDR",
             })}
-          </Text>
+            </Text> : ""}
+            <Text ml={2} color="blue.600" fontWeight="bold" fontSize="2xl">
+            {parseInt(props.data.nominal).toLocaleString("id", {
+              style: "currency",
+              currency: "IDR",
+            })}
+            </Text>
+          </Flex> :<Text color="blue.600" fontWeight="bold" fontSize="2xl">
+            {parseInt(props.data.price).toLocaleString("id", {
+              style: "currency",
+              currency: "IDR",
+            })}
+          </Text>}
           <Text color="blue.600" fontSize="md">
             /Night
           </Text>

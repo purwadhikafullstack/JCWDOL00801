@@ -305,7 +305,7 @@ function RoomFormEdit(props) {
       <Heading mb={{ base: "30px", md: "5" }} textAlign={{ base: "center", md: "left" }}>
         Edit Your Room
       </Heading>
-      <form onSubmit={handleSubmit}>
+      <form>
         <Flex direction="column" align="center" justify="center" gap={6}>
           <Divider />
           {propData ? (

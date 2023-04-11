@@ -8,6 +8,7 @@ const propertyRouter = require("./propertyRouter");
 const orderListRouter = require("./orderListRouter");
 const userOderRouter = require("./userOrderRouter");
 const reviewRouter = require("./reviewRouter");
+const searchRouter = require("./searchRouter");
 
 module.exports = {
   userRouter,
@@ -20,4 +21,5 @@ module.exports = {
   orderListRouter,
   userOderRouter,
   reviewRouter,
+  searchRouter,
 };

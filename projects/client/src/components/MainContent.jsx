@@ -7,10 +7,12 @@ import PropertyCard from "./PropertyCard";
 import "swiper/css";
 import "swiper/css/pagination";
 import "../styles/swiperKita.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { clearAllDate } from "../actions/dateAction";
 
 function MainContent(props) {
   const [propertyData, setPropertyData] = useState([]);
+  const dispatch = useDispatch();
   const {startDate, endDate} = useSelector(state =>{
     return{
       startDate: state.dateReducer.startDate,
@@ -30,6 +32,7 @@ function MainContent(props) {
   }
   useEffect(() =>{
     getPropertyData()
+    
   },[])
   return (
     <Container maxW={{ base: "container", md: "container.xl" }}>

@@ -106,6 +106,7 @@ roomModel.belongsTo(typeModel, {
 
 propertyModel.hasMany(roomModel, {
   foreignKey: "propertyId",
+  as: "roomProp"
 });
 
 roomModel.belongsTo(propertyModel, {
@@ -115,6 +116,7 @@ roomModel.belongsTo(propertyModel, {
 
 roomModel.hasMany(roomAvailModel, {
   foreignKey: "roomId",
+  as:"roomAvail"
 });
 
 roomAvailModel.belongsTo(roomModel, {
@@ -122,13 +124,13 @@ roomAvailModel.belongsTo(roomModel, {
   foreignKey: "roomId",
 });
 
-roomModel.hasMany(specialPriceModel, {
-  foreignKey: "roomId",
+typeModel.hasMany(specialPriceModel, {
+  foreignKey: "typeId",
 });
 
 specialPriceModel.belongsTo(roomModel, {
-  as: "room",
-  foreignKey: "roomId",
+  as: "type",
+  foreignKey: "typeId",
 });
 
 roomModel.hasMany(roomImageModel, {

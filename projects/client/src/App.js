@@ -41,6 +41,9 @@ import RoomForm from "./components/RoomForm";
 import RoomFormEdit from "./components/RoomFormEdit";
 import RoomPhoto from "./components/RoomPhoto";
 import UserOrder from "./pages/UserOrder";
+import SearchProperty from "./components/SearchPropertyCard";
+import SearchCard from "./components/SearchCard";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -335,7 +338,6 @@ function App() {
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
             <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
-            <Route path="/my-orders" element={<UserOrder />} />
           </Routes>
           <Footer />
         </>
