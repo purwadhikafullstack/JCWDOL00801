@@ -50,8 +50,8 @@ function CalendarDateRange(props) {
 
   const handleChange = (item) => {
     setCalendar([item.selection]);
-    props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
-    props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
+    // props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
+    // props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
     dispatch(
       setDateAction({
         startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
@@ -59,7 +59,7 @@ function CalendarDateRange(props) {
       })
     );
   };
-  
+
   return (
     <div className="calendarWrap">
       <InputGroup>

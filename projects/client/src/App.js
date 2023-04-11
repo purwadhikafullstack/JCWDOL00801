@@ -40,6 +40,7 @@ import RoomCreateMenu from "./pages/RoomCreateMenu";
 import RoomForm from "./components/RoomForm";
 import RoomFormEdit from "./components/RoomFormEdit";
 import RoomPhoto from "./components/RoomPhoto";
+import UserOrder from "./pages/UserOrder";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -70,11 +71,11 @@ function App() {
           }
         );
         if (res.data.tenant) {
-          console.log("get")
+          console.log("get");
           dispatch(setTenantAction(res.data.tenant));
           dispatch(setTenantAction(res.data.bank));
         }
-        console.log("got")
+        console.log("got");
         dispatch(loginAction(res.data.user));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
@@ -90,8 +91,8 @@ function App() {
 
   useEffect(() => {
     keepLogin();
-    if(window.location.pathname != "/payment"){
-      dispatch(clearAllDate())
+    if (window.location.pathname != "/payment") {
+      dispatch(clearAllDate());
     }
   }, [isOpen]);
 
@@ -107,7 +108,7 @@ function App() {
         <>
           <TenantHeader loading={loading} isMobile={isMobile} />
 
-          { isMobile ? (
+          {isMobile ? (
             ""
           ) : (
             <div style={{ display: "flex" }}>
@@ -272,14 +273,13 @@ function App() {
             </Routes>
           </div>
         </>
+      ) : //USER
+      loading ? (
+        <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
+          {" "}
+          <Spinner />{" "}
+        </Flex>
       ) : (
-        //USER
-        loading ? (
-          <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
-            {" "}
-            <Spinner />{" "}
-          </Flex>
-        ) :
         <>
           <Header loading={loading} />
           <Routes>
@@ -332,9 +332,10 @@ function App() {
               }
             /> */}
             <Route path="/*" element={<NotFoundPage />} />
-            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
-            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>
-            <Route path="/payment-proof" element={<PaymentProofPage/>} isMobile={isMobile}/>
+            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
+            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
+            <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
+            <Route path="/my-orders" element={<UserOrder />} />
           </Routes>
           <Footer />
         </>
@@ -344,4 +345,3 @@ function App() {
 }
 
 export default App;
-

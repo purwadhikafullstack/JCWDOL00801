@@ -105,7 +105,7 @@ function Header(props) {
                       <Avatar
                         bg="green.500"
                         size={"sm"}
-                        src={`http://localhost:8000/${profileImg}`}
+                        src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}
@@ -113,11 +113,22 @@ function Header(props) {
                     </HStack>
                   </MenuButton>
                   <MenuList zIndex="dropdown">
-                    <MenuItem onClick={() => {navigate("/profile", { replace: true })
-                  window.scrollTo(0,0)}}>
+                    <MenuItem
+                      onClick={() => {
+                        navigate("/profile", { replace: true });
+                        window.scrollTo(0, 0);
+                      }}
+                    >
                       My Profile
                     </MenuItem>
-                    <MenuItem>My Orders</MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        navigate("/my-orders", { replace: true });
+                        window.scrollTo(0, 0);
+                      }}
+                    >
+                      My Orders
+                    </MenuItem>
                     <MenuDivider />
                     <MenuItem onClick={logoutHandler}>Logout</MenuItem>
                   </MenuList>
@@ -140,16 +151,20 @@ function Header(props) {
                     fontWeight={500}
                     variant={"link"}
                     colorScheme="gray"
-                    onClick={() => {navigate("/signin", { replace: true })
-                    window.scrollTo(0,0)}}
+                    onClick={() => {
+                      navigate("/signin", { replace: true });
+                      window.scrollTo(0, 0);
+                    }}
                   >
                     Sign In
                   </Button>
                   <Button
                     display={{ base: "none", md: "inline-flex" }}
                     colorScheme="green"
-                    onClick={() => {navigate("/signup", { replace: true })
-                    window.scrollTo(0,0)}}
+                    onClick={() => {
+                      navigate("/signup", { replace: true });
+                      window.scrollTo(0, 0);
+                    }}
                   >
                     Register
                   </Button>
@@ -177,8 +192,10 @@ function Header(props) {
                     minW="50%"
                     variant="outline"
                     colorScheme="green"
-                    onClick={() => {navigate("/signin", { replace: true })
-                    window.scrollTo(0,0)}}
+                    onClick={() => {
+                      navigate("/signin", { replace: true });
+                      window.scrollTo(0, 0);
+                    }}
                   >
                     Sign In
                   </Button>
@@ -186,8 +203,10 @@ function Header(props) {
                     minW="50%"
                     variant="solid"
                     colorScheme="green"
-                    onClick={() => {navigate("/signup", { replace: true })
-                    window.scrollTo(0,0)}}
+                    onClick={() => {
+                      navigate("/signup", { replace: true });
+                      window.scrollTo(0, 0);
+                    }}
                   >
                     Register
                   </Button>
@@ -201,8 +220,10 @@ function Header(props) {
                 <HStack
                   spacing={7}
                   _hover={{ cursor: "pointer" }}
-                  onClick={() => {navigate("/profile", { replace: true })
-                  window.scrollTo(0,0)}}
+                  onClick={() => {
+                    navigate("/profile", { replace: true });
+                    window.scrollTo(0, 0);
+                  }}
                 >
                   <Avatar
                     size={"lg"}
