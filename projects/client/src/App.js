@@ -74,11 +74,9 @@ function App() {
           }
         );
         if (res.data.tenant) {
-          console.log("get");
           dispatch(setTenantAction(res.data.tenant));
           dispatch(setTenantAction(res.data.bank));
         }
-        console.log("got");
         dispatch(loginAction(res.data.user));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
