@@ -18,4 +18,5 @@ route.patch(
   propertyController.updateEditData
 );
 route.get("/propety/check/:propertyId", propertyController.checkData);
+route.get("/property/roomlist/:id", propertyController.getRoomList);
 module.exports = route;

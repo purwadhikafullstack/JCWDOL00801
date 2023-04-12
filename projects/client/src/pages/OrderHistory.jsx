@@ -152,6 +152,7 @@ function OrderHistory(props) {
 
   const handleClose = () => {
     setSelectedOption("");
+    setClicked(false);
     onClose();
   };
   const cancelTransactionHandler = (transId) => {
@@ -167,26 +168,27 @@ function OrderHistory(props) {
       if (response.isConfirmed) {
         Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/cancel", {
           transactionId: transId,
-        }).then((res) => {
-          Swal.fire({
-            title: `${res.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          }).then(r =>{
-            getTableData()
+        })
+          .then((res) => {
+            Swal.fire({
+              title: `${res.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            }).then((r) => {
+              getTableData();
+            });
           })
-        }).catch(e =>{
-          Swal.fire({
-            title: `${e.response.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          })
-        });
-      }
-      else{
-        getTableData()
+          .catch((e) => {
+            Swal.fire({
+              title: `${e.response.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            });
+          });
+      } else {
+        getTableData();
       }
     });
   };
@@ -210,7 +212,10 @@ function OrderHistory(props) {
           <Td>{orderId}</Td>
           <Td>{room.property.name}</Td>
           <Td>{room.type.name}</Td>
-          <Td>{`Rp. ${parseInt(price).toLocaleString("id")}`}</Td>
+          <Td>{`${parseInt(price).toLocaleString("id", {
+            style: "currency",
+            currency: "IDR",
+          })}`}</Td>
           <Td>
             <Tag
               size={"lg"}

@@ -43,6 +43,7 @@ import RoomPhoto from "./components/RoomPhoto";
 import SearchProperty from "./components/SearchPropertyCard";
 import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
+import PropertyAndRoom from "./pages/PropertyAndRoom";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -91,8 +92,8 @@ function App() {
 
   useEffect(() => {
     keepLogin();
-    if(window.location.pathname != "/payment"){
-      dispatch(clearAllDate())
+    if (window.location.pathname != "/payment") {
+      dispatch(clearAllDate());
     }
   }, [isOpen]);
 
@@ -108,7 +109,7 @@ function App() {
         <>
           <TenantHeader loading={loading} isMobile={isMobile} />
 
-          { isMobile ? (
+          {isMobile ? (
             ""
           ) : (
             <div style={{ display: "flex" }}>
@@ -269,18 +270,18 @@ function App() {
               <Route path="/room/new" element={<RoomCreateMenu />} />
               <Route path="/room/new/type" element={<RoomForm />} />
               <Route path="/room/photos" element={<RoomPhoto />} />
+              <Route path="/property-list" element={<PropertyAndRoom />} />
               <Route path="/*" />
             </Routes>
           </div>
         </>
+      ) : //USER
+      loading ? (
+        <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
+          {" "}
+          <Spinner />{" "}
+        </Flex>
       ) : (
-        //USER
-        loading ? (
-          <Flex w={"100vw"} h={"100vh"} justifyContent="center" alignItems="center">
-            {" "}
-            <Spinner />{" "}
-          </Flex>
-        ) :
         <>
           <Header loading={loading} />
           <Routes>
@@ -333,10 +334,10 @@ function App() {
               }
             /> */}
             <Route path="/*" element={<NotFoundPage />} />
-            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile}/>
-            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile}/>
+            <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
+            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
             <Route path="/search" element={<SearchPage />} />
-            <Route path="/payment-proof" element={<PaymentProofPage/>} isMobile={isMobile}/>
+            <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
           </Routes>
           <Footer />
         </>
@@ -346,4 +347,3 @@ function App() {
 }
 
 export default App;
-
