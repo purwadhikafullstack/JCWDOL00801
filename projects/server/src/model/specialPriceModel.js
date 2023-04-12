@@ -15,7 +15,7 @@ const specialPriceModel = dbSequelize.define("specialPrices", {
         allowNull: false
     },
     nominal: {
-        type: DataTypes.STRING,
+        type: DataTypes.DECIMAL(10,2),
         allowNull: false
     },
     startDate: {

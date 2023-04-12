@@ -72,7 +72,7 @@ function CalendarDateRange(props) {
     <div className="calendarWrap">
       <InputGroup>
         <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
-        <Input
+        <Input 
           value={`${format(calendar[0].startDate, "MMM dd, yyy")} - ${format(
             calendar[0].endDate,
             "MMM dd, yyy"

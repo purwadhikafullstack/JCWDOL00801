@@ -7,6 +7,7 @@ const roomRouter = require("./roomRouter");
 const propertyRouter = require("./propertyRouter");
 const orderListRouter = require("./orderListRouter");
 const searchRouter = require("./searchRouter")
+const propReviewRouter = require("./propReviewRouter")
 module.exports = {
   userRouter,
   categoryRouter,
@@ -16,5 +17,6 @@ module.exports = {
   propertyRouter,
   paymentMethodRouter,
   orderListRouter,
-  searchRouter
+  searchRouter,
+  propReviewRouter
 };
