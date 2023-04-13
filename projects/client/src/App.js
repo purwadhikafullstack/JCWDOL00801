@@ -40,6 +40,7 @@ import RoomCreateMenu from "./pages/RoomCreateMenu";
 import RoomForm from "./components/RoomForm";
 import RoomFormEdit from "./components/RoomFormEdit";
 import RoomPhoto from "./components/RoomPhoto";
+import UserOrder from "./pages/UserOrder";
 import SearchProperty from "./components/SearchPropertyCard";
 import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";

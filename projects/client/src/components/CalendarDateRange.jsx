@@ -12,12 +12,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { setDateAction } from "../actions/dateAction";
 
 function CalendarDateRange(props) {
-  const {currentStartDate, currentEndDate} = useSelector(state =>{
-    return{
+  const { currentStartDate, currentEndDate } = useSelector((state) => {
+    return {
       currentStartDate: state.dateReducer.startDate,
-      currentEndDate: state.dateReducer.endDate
-    }
-  })
+      currentEndDate: state.dateReducer.endDate,
+    };
+  });
   //state untuk menyimpan date
   const [calendar, setCalendar] = React.useState([
     {
@@ -56,9 +56,9 @@ function CalendarDateRange(props) {
 
   const handleChange = (item) => {
     setCalendar([item.selection]);
-    if(props.checkinHandler && props.checkoutHandler){
-      props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime())
-      props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime())
+    if (props.checkinHandler && props.checkoutHandler) {
+      props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime());
+      props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime());
     }
     dispatch(
       setDateAction({
@@ -67,7 +67,7 @@ function CalendarDateRange(props) {
       })
     );
   };
-  
+
   return (
     <div className="calendarWrap">
       <InputGroup>

@@ -340,14 +340,19 @@ function OrderHistory(props) {
             </Flex>
             <Flex justify="space-between">
               <Text>Price :</Text>
-              <Text fontSize="2xl">Rp. {parseInt(price).toLocaleString("id")}</Text>
+              <Text fontSize="2xl">
+                {parseInt(price).toLocaleString("id", { style: "currency", currency: "IDR" })}
+              </Text>
             </Flex>
             {transaction.payProofImg ? (
               <Flex direction="column" gap={5}>
                 <Divider />
                 <Heading size="sm">Payment:</Heading>
                 <Flex alignItems="center" justifyContent="center">
-                  <Image height="500px" src={transaction.payProofImg} />
+                  <Image
+                    height="500px"
+                    src={process.env.REACT_APP_API_BASE_IMG_URL + transaction.payProofImg}
+                  />
                 </Flex>
               </Flex>
             ) : null}

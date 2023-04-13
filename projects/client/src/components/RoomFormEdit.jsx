@@ -78,7 +78,7 @@ function RoomFormEdit(props) {
           setChosenType(res.data.type);
           setDefaultType(res.data.type);
           setCategory(res.data.category);
-          setFieldValue("image",res.data.type.typeImg)
+          setFieldValue("image", res.data.type.typeImg);
           setDefaultImage(res.data.type.typeImg);
           setChosenImage(res.data.type.typeImg);
         } else {
@@ -125,7 +125,6 @@ function RoomFormEdit(props) {
       setAddTypes(false);
       setChosenType(res.data.result);
       setChosenImage(res.data.result.typeImg);
-      
     } catch (error) {
       console.log(error);
     }
@@ -257,7 +256,7 @@ function RoomFormEdit(props) {
             "File extension is not supported",
             (value) => value && SUPPORTED_FORMATS.includes(value.type)
           )
-      :  yup.string(),
+      : yup.string(),
     name: addType ? yup.string().required("Please input your type name") : yup.string(),
     price: addType
       ? yup
@@ -292,13 +291,13 @@ function RoomFormEdit(props) {
       return;
     }
     if (typeof values.image !== "string") {
-        const objectUrl = URL.createObjectURL(values.image);
-        setPreview(objectUrl);
-  
-        return () => URL.revokeObjectURL(objectUrl);
-      } else {
-        setPreview(`http://localhost:8000/${values.image}`);
-      }
+      const objectUrl = URL.createObjectURL(values.image);
+      setPreview(objectUrl);
+
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      setPreview(`http://localhost:8000/${values.image}`);
+    }
   }, [values.image, addType]);
 
   return (
