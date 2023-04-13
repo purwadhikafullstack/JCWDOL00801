@@ -9,38 +9,22 @@ import {
   Td,
   TableCaption,
   TableContainer,
-  Switch,
   FormControl,
   FormLabel,
   Select,
   Text,
   IconButton,
   Image,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Tag,
-  Stack,
 } from "@chakra-ui/react";
-import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
-import { useToast } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
-import { differenceInDays, format } from "date-fns";
 
 function PropertyAndRoom(props) {
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [propertyData, setPropertyData] = React.useState([]);
-  const toast = useToast();
   const { tenantId } = useSelector((state) => {
     return {
       tenantId: state.tenantReducer.tenantId,
@@ -61,8 +45,6 @@ function PropertyAndRoom(props) {
   const [searchCity, setSearchCity] = React.useState("");
   const [searchAddress, setSearchAddress] = React.useState("");
   const [roomList, setRoomList] = React.useState([]);
-  const [modalData, setModalData] = React.useState("");
-  const [clicked, setClicked] = React.useState(false);
 
   const getPropertyData = async () => {
     let url = `/property?tenant=${tenantId}&limit=${limit}&page=${page}`;
@@ -98,7 +80,7 @@ function PropertyAndRoom(props) {
   const getRoomList = async () => {
     try {
       let response = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + `/property/roomlist/${tenantId}`
+        process.env.REACT_APP_API_BASE_URL + `/property/roomlist/count/${tenantId}`
       );
       setRoomList(response.data.data);
     } catch (error) {
@@ -129,7 +111,7 @@ function PropertyAndRoom(props) {
       );
     }
     return propertyData.map((property, idx) => {
-      const { name, address, isDeleted, propertyId, category } = property;
+      const { name, address, propertyId, category } = property;
       let filterRoom = [];
       if (roomList.length > 0) {
         filterRoom = roomList.filter((val) => {
@@ -140,9 +122,7 @@ function PropertyAndRoom(props) {
         <Tr
           key={idx}
           _hover={{ bg: "gray.100", cursor: "pointer" }}
-          onClick={
-            filterRoom.length > 0 ? () => onBtnDetails(filterRoom) : () => onBtnDetails(property)
-          }
+          onClick={() => navigate(`/property-list/room?${propertyId}`, { replace: true })}
         >
           <Td>
             <Flex mr={5} pr={5} align="center" gap={3}>
@@ -164,143 +144,6 @@ function PropertyAndRoom(props) {
     });
   };
 
-  const renderModalData = () => {
-    if (clicked) {
-      if (Array.isArray(modalData)) {
-        const { name, image, phone, desc, address, category } = modalData[0].property;
-        return (
-          <ModalBody>
-            <Heading mt={3} size="lg">
-              {name}
-            </Heading>
-            <Flex mt={5} gap={2}>
-              <Image boxSize={150} src={process.env.REACT_APP_API_BASE_IMG_URL + image} />
-              <Stack>
-                <Flex justify="space-between">
-                  <Text>{phone}</Text>
-                </Flex>
-                <Flex justify="space-between">
-                  <Text>{address}</Text>
-                </Flex>
-                <Flex justify="space-between">
-                  <Text>
-                    {category.province} - {category.city}
-                  </Text>
-                </Flex>
-              </Stack>
-            </Flex>
-            <Flex mt={3} direction="column">
-              <Text>Description:</Text>
-              <Text>{desc ? desc : "none"}</Text>
-            </Flex>
-            <Table mt={10} variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Room Name</Th>
-                  <Th>Price</Th>
-                  <Th>Capacity</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {modalData.map((val, idx) => {
-                  const {
-                    type: { name, typeImg, price, capacity },
-                  } = val;
-                  return (
-                    <Tr key={idx}>
-                      <Td>
-                        <Flex align="center" gap={3}>
-                          <Image
-                            rounded={5}
-                            boxSize={{ base: "50px", md: "65px" }}
-                            src={process.env.REACT_APP_API_BASE_IMG_URL + typeImg}
-                          />
-                          <Text>{name}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>{`${parseInt(price).toLocaleString("id", {
-                        style: "currency",
-                        currency: "IDR",
-                      })}`}</Td>
-                      <Td>{capacity}</Td>
-                      <Td>{}</Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </ModalBody>
-        );
-      } else {
-        const { image, name, phone, desc, address, category } = modalData;
-        return (
-          <ModalBody>
-            <Heading mt={3} size="lg">
-              {name}
-            </Heading>
-            <Flex mt={5} gap={2}>
-              <Image boxSize={150} src={process.env.REACT_APP_API_BASE_IMG_URL + image} />
-              <Stack>
-                <Flex justify="space-between">
-                  <Text>{phone}</Text>
-                </Flex>
-                <Flex justify="space-between">
-                  <Text>{address}</Text>
-                </Flex>
-                <Flex justify="space-between">
-                  <Text>
-                    {category.province} - {category.city}
-                  </Text>
-                </Flex>
-              </Stack>
-            </Flex>
-            <Flex mt={3} direction="column">
-              <Text>Description:</Text>
-              <Text>{desc ? desc : "none"}</Text>
-            </Flex>
-            <Divider my={3} />
-            <Heading textAlign="center" size="md">
-              This property has no rooms
-            </Heading>
-          </ModalBody>
-        );
-      }
-    }
-  };
-
-  const onBtnDetails = (data) => {
-    setModalData(data);
-    setClicked(true);
-    onOpen();
-  };
-
-  const handleClose = () => {
-    setClicked(false);
-    onClose();
-  };
-
-  const handleEdit = async (propertyId) => {
-    try {
-      let response = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + `/propety/check/${propertyId}`
-      );
-      if (response.data.success) {
-        navigate(`/property/edit?${propertyId}`, { replace: true });
-      }
-    } catch (error) {
-      console.log(error);
-      if (!error.response.data.success) {
-        Swal.fire({
-          icon: "error",
-          title: error.response.data.message,
-          confirmButtonColor: "#38A169",
-          confirmButtonText: "OK",
-        });
-      }
-    }
-  };
-
   const onBtnSearch = (e) => {
     e.preventDefault();
     setPage(0);
@@ -312,81 +155,6 @@ function PropertyAndRoom(props) {
   const handleSort = (data) => {
     setSortData(data);
     setDesc(!desc);
-  };
-
-  const onBtnSwitch = async (id, isDeleted) => {
-    let changeStatus = !isDeleted;
-    if (!isDeleted) {
-      Swal.fire({
-        title: "Are you sure you want to set this property as not active?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#38A169",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-        reverseButtons: true,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            let response = await Axios.patch(
-              process.env.REACT_APP_API_BASE_URL + `/property/update/${id}`,
-              {
-                isDeleted: changeStatus,
-              }
-            );
-            if (response.data.success) {
-              toast({
-                title: response.data.message,
-                status: "success",
-                isClosable: true,
-                duration: 2500,
-                position: "top",
-              });
-              getPropertyData();
-            }
-          } catch (error) {
-            console.log(error);
-            if (!error.response.data.success) {
-              Swal.fire({
-                icon: "error",
-                title: error.response.data.message,
-                confirmButtonColor: "#38A169",
-                confirmButtonText: "OK",
-              });
-            }
-          }
-        }
-      });
-    } else {
-      try {
-        let response = await Axios.patch(
-          process.env.REACT_APP_API_BASE_URL + `/property/update/${id}`,
-          {
-            isDeleted: changeStatus,
-          }
-        );
-        if (response.data.success) {
-          toast({
-            title: response.data.message,
-            status: "success",
-            isClosable: true,
-            duration: 2500,
-            position: "top",
-          });
-          getPropertyData();
-        }
-      } catch (error) {
-        console.log(error);
-        if (!error.response.data.success) {
-          Swal.fire({
-            icon: "error",
-            title: error.response.data.message,
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "OK",
-          });
-        }
-      }
-    }
   };
 
   const onBtnReset = () => {
@@ -543,16 +311,6 @@ function PropertyAndRoom(props) {
           </Flex>
         )}
       </Flex>
-      <Modal size="full" scrollBehavior="inside" onClose={handleClose} isOpen={isOpen} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          {renderModalData()}
-          <ModalFooter>
-            <Button onClick={handleClose}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Box>
   );
 }

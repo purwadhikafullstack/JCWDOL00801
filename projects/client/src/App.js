@@ -44,6 +44,7 @@ import SearchProperty from "./components/SearchPropertyCard";
 import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
 import PropertyAndRoom from "./pages/PropertyAndRoom";
+import PropertyAndRoomList from "./pages/PropertyAndRoomList";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -271,6 +272,7 @@ function App() {
               <Route path="/room/new/type" element={<RoomForm />} />
               <Route path="/room/photos" element={<RoomPhoto />} />
               <Route path="/property-list" element={<PropertyAndRoom />} />
+              <Route path="/property-list/room" element={<PropertyAndRoomList />} />
               <Route path="/*" />
             </Routes>
           </div>
