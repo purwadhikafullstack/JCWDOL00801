@@ -29,10 +29,9 @@ function LandingBanner(props) {
             <SwiperSlide key={idx}>
               <Skeleton isLoaded={loading}>
                 <Image
-                  height={{ base: "200px", md: "450px" }}
+                  height={{ base: "200px", md: "500px" }}
                   width="100%"
                   src={banner}
-                  objectFit="cover"
                   fallbackSrc="https://via.placeholder.com/500"
                   alt="Landing Banner"
                   onLoad={() => setLoading(true)}

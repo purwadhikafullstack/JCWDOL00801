@@ -4,21 +4,17 @@ import { Box, Button, Flex, Hide, Show, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import bannerImage1 from "../assets/landingBanner/banner-1.jpg";
-import bannerImage2 from "../assets/landingBanner/banner-2.jpg";
-import bannerImage3 from "../assets/landingBanner/banner-3.jpg";
-import bannerImage4 from "../assets/landingBanner/banner-4.jpg";
-import "../styles/imageGallery.css"
+import bannerImage from "../assets/landingBanner";
+import "../styles/imageGallery.css";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@chakra-ui/icons";
 import { Select as Select2 } from "chakra-react-select";
-const RoomPhoto = () =>{
-    const navigate = useNavigate();
-    const [propData, setPropData] = useState([]);
-    const [chosenProp, setChosenPropData] = useState([]);
-    const [propCity, setPropCity] = useState([]);
-    const [isPropAvail, setIsPropAvail] = useState(true)
-    const [bannerImage, setBannerImage] = useState([bannerImage1, bannerImage2, bannerImage3, bannerImage4])
+const RoomPhoto = () => {
+  const navigate = useNavigate();
+  const [propData, setPropData] = useState([]);
+  const [chosenProp, setChosenPropData] = useState([]);
+  const [propCity, setPropCity] = useState([]);
+  const [isPropAvail, setIsPropAvail] = useState(true);
   const images = bannerImage.map((image, idx) => {
     return {
       original: image,
@@ -59,10 +55,11 @@ const RoomPhoto = () =>{
       console.log(e);
       setIsPropAvail(false);
     }
-  };const getPropChosenData = async (e, triggeredAction) => {
+  };
+  const getPropChosenData = async (e, triggeredAction) => {
     try {
       if (triggeredAction.action === "clear") {
-        setPropCity(null)
+        setPropCity(null);
         return setChosenPropData(null);
       }
       const propId = e.value;
@@ -88,13 +85,21 @@ const RoomPhoto = () =>{
     document.title = "Renthaven || Add Photos";
   }, []);
   return (
-    <Box style={{margin: "5%"}}>
-        <Box mb={4}>
-            <Text fontSize="24px" fontWeight={"600"} mb={3}>Select Property</Text>
-        <Select2 options={propData} isClearable isSearchable placeholder="Choose the property" onChange={(e, triggeredAction) =>{
-            getPropChosenData(e, triggeredAction)
-        }}></Select2>
-        </Box>
+    <Box style={{ margin: "5%" }}>
+      <Box mb={4}>
+        <Text fontSize="24px" fontWeight={"600"} mb={3}>
+          Select Property
+        </Text>
+        <Select2
+          options={propData}
+          isClearable
+          isSearchable
+          placeholder="Choose the property"
+          onChange={(e, triggeredAction) => {
+            getPropChosenData(e, triggeredAction);
+          }}
+        ></Select2>
+      </Box>
       <Hide above="sm" below="md">
         <ImageGallery
           items={images}
@@ -115,23 +120,20 @@ const RoomPhoto = () =>{
         />
       </Show>
       <Flex mt={5} align="center" justify="space-between">
-          <Button
-            colorScheme="gray"
-            variant="ghost"
-            onClick={() => navigate("/room/new", { replace: true })}
-            leftIcon={<ArrowLeftIcon boxSize={3} />}
-          >
-            Back
-          </Button>
-          <Button
-            type="submit"
-            colorScheme="green"
-          >
-            Add Photo
-          </Button>
-        </Flex>
+        <Button
+          colorScheme="gray"
+          variant="ghost"
+          onClick={() => navigate("/room/new", { replace: true })}
+          leftIcon={<ArrowLeftIcon boxSize={3} />}
+        >
+          Back
+        </Button>
+        <Button type="submit" colorScheme="green">
+          Add Photo
+        </Button>
+      </Flex>
     </Box>
   );
-}
+};
 
 export default RoomPhoto;
