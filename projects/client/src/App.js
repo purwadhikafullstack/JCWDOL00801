@@ -341,6 +341,8 @@ function App() {
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
+            <Route path="/my-orders" element={<UserOrder />} isMobile={isMobile} />
+            <Route path="/search" element={<SearchPage />} isMobile={isMobile} />
           </Routes>
           <Footer />
         </>
