@@ -44,6 +44,7 @@ import UserOrder from "./pages/UserOrder";
 import SearchProperty from "./components/SearchPropertyCard";
 import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
+import Report from "./pages/Report";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -270,6 +271,7 @@ function App() {
               <Route path="/room/new" element={<RoomCreateMenu />} />
               <Route path="/room/new/type" element={<RoomForm />} />
               <Route path="/room/photos" element={<RoomPhoto />} />
+              <Route path="/report" element={<Report />} />
               <Route path="/*" />
             </Routes>
           </div>
