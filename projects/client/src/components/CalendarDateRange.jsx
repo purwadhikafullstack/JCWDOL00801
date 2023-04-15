@@ -66,6 +66,7 @@ function CalendarDateRange(props) {
         endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
       })
     );
+    console.log(new Date(format(item.selection.startDate, "MM/dd/yyyy")))
   };
 
   return (
