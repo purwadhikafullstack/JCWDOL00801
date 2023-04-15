@@ -127,7 +127,7 @@ function PropertyDetail(props) {
         {renderRoom()}
         {notAvailableRoom.length > 0 ? renderNotAvailRoom() : ""}
       </Flex>
-      <Flex direction={"column"}>
+      <Flex direction={"column"} mb={"20px"}>
         <Text fontWeight={"700"} fontSize="18px">Reviews</Text>
           {!noReview? reviewsData.map((val,idx) =>{
             return <Reviews data={val} key={idx} />

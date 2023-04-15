@@ -27,7 +27,7 @@ module.exports = {
     createReview: async (req, res) =>{
         try {
             const user = await userModel.findAll({where:{
-                email: req.body.email
+                email: req.decrypt.email
             }})
             if(user.length > 0){
                 const createReview = await reviewModel.create({
@@ -55,16 +55,42 @@ module.exports = {
     },
     checkReviews : async (req, res) =>{
         try {
-            const reviews = reviewModel.findAll({
+            const reviews = await reviewModel.findAll({
                 where:{
                     transactionId: req.body.transactionId
                 }
             })
-            if(reviews.length > 0){
-                
-            }
+            return res.status(200).send({
+                success: true,
+                result: reviews
+            })
         } catch (error) {
-            
+            console.log(error);
+            return res.status(500).send({
+                success: false,
+                message: "Database error"
+            })
+        }
+    },
+    updateReview : async (req, res) =>{
+        try {
+            const review =await reviewModel.update({
+                desc: req.body.desc
+            }, {
+                where:{
+                    transactionId: req.body.id
+                }
+            })
+            return res.status(200).send({
+                success: true,
+                message: "Review updated!"
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({
+                success: false,
+                message: "Database error"
+            })
         }
     }
 }

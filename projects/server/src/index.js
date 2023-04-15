@@ -26,14 +26,16 @@ app.use(express.json());
 const {
   userRouter,
   categoryRouter,
-  tenantRouter, 
+  tenantRouter,
   transactionRouter,
   roomRouter,
   propertyRouter,
   paymentMethodRouter,
   orderListRouter,
   searchRouter,
-  propReviewRouter
+  propReviewRouter,
+  userOderRouter,
+  reviewRouter
 } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 const { transactionController } = require("./controller");
@@ -45,6 +47,8 @@ app.use("/api", transactionRouter);
 app.use("/api", roomRouter);
 app.use("/api", paymentMethodRouter);
 app.use("/api", orderListRouter);
+app.use("/api", userOderRouter);
+app.use("/api", reviewRouter);
 app.use("/api", searchRouter);
 app.use("/api", propReviewRouter);
 
@@ -89,6 +93,6 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
-transactionController.changeStatus()
+transactionController.changeStatus();
 // dbSequelize.sync();
 dbCheckConnection();

@@ -18,7 +18,7 @@ const Reviews = ({data}) => {
       </CardHeader>
       <CardBody>
         <Flex justifyContent={"space-between"}>
-          <Text fontWeight={"600"} color={"green"}>Room: {data.roomName}</Text>
+          <Text pl={1} pr={1} fontWeight={"600"} color={"green"} background={"green.100"} rounded={"md"}>Room: {data.roomName}</Text>
           <Text>{time.toString().substring(0, 15)}</Text>
         </Flex>
         <Text mt={5}>{data.desc}</Text>
