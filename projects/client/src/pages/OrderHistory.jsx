@@ -175,6 +175,7 @@ function OrderHistory(props) {
             confirmButtonText: "Yes",
           }).then(r =>{
             getTableData()
+            setSelectedOption("");
           })
         }).catch(e =>{
           Swal.fire({
@@ -187,6 +188,7 @@ function OrderHistory(props) {
       }
       else{
         getTableData()
+        setSelectedOption("");
       }
     });
   };

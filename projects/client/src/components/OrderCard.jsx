@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Image,
@@ -36,6 +36,7 @@ function OrderCard(props) {
   const [isReview, setIsReview] = React.useState(false);
   const [reviews, setReviews] = React.useState("");
   const [currentReviews, setCurrentReviews] = React.useState("");
+  const [selectedOption, setSelectedOption] = useState("");
   const navigate = useNavigate();
 
   const getReview = async () => {
@@ -53,66 +54,117 @@ function OrderCard(props) {
       console.log(error);
     }
   };
-  const createReview = async () =>{
+  const createReview = async () => {
     try {
-      const getLocalStorage = localStorage.getItem("renthaven1")
-      if(getLocalStorage){
-        const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/reviews/new",{
-          transactionId,
-          desc: currentReviews
-        },{
-          headers:{
-            "Authorization": `Bearer ${getLocalStorage}`
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/reviews/new",
+          {
+            transactionId,
+            desc: currentReviews,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
           }
-        })
-        onClose()
+        );
+        onClose();
         Swal.fire({
           icon: "success",
           title: res.data.message,
           confirmButtonText: "OK",
           confirmButtonColor: "#48BB78",
-          timer: 3000
-        }).then(response =>{
+          timer: 3000,
+        }).then((response) => {
           props.getData();
-        })
+        });
       }
     } catch (error) {
       console.log(error);
-      onClose()
+      onClose();
       Swal.fire({
         icon: "error",
         title: error.response.data.message,
         confirmButtonText: "OK",
         confirmButtonColor: "#48BB78",
-        timer: 3000
-      })
+        timer: 3000,
+      });
     }
-  }
+  };
+  const cancelHandler = async () => {
+    Swal.fire({
+      icon: "info",
+      title: "Are you sure you want to cancel?",
+      showCancelButton: true,
+      cancelButtonColor: "red",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#48BB78",
+    })
+      .then((res) => {
+        if (res.isConfirmed) {
+          const getLocalStorage = localStorage.getItem("renthaven1");
+          if(getLocalStorage){
+            Axios.patch(
+              process.env.REACT_APP_API_BASE_URL + "/orderlist-user/cancel",
+              {
+                transactionId,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${getLocalStorage}`,
+                },
+              }
+            )
+              .then((response) => {
+                Swal.fire({
+                  icon: "success",
+                  title: response.data.message,
+                  confirmButtonText: "OK",
+                  confirmButtonColor: "#48BB78",
+                  timer: 3000,
+                }).then(resp => {
+                  props.getData();
+                  setSelectedOption("")
+                });
+              })
+              .catch((e) => {
+                console.log(e);
+                setSelectedOption("");
+              });
+
+          }
+        }
+        setSelectedOption("");
+      })
+      .catch((e) => console.log(e));
+  };
   const editHandler = async () => {
     try {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/reviews/update", {
+      const res = await Axios.patch(process.env.REACT_APP_API_BASE_URL + "/reviews/update", {
         id: transactionId,
         desc: currentReviews,
       });
-      onClose()
+      onClose();
       Swal.fire({
         icon: "success",
         title: res.data.message,
         confirmButtonText: "OK",
         confirmButtonColor: "#48BB78",
-        timer: 3000
-      }).then(response =>{
+        timer: 3000,
+      }).then((response) => {
         props.getData();
-      })
+      });
     } catch (error) {
-      onClose()
+      onClose();
       Swal.fire({
         icon: "error",
         title: error.response.data.message,
         confirmButtonText: "OK",
         confirmButtonColor: "#48BB78",
-        timer: 3000
-      })
+        timer: 3000,
+      });
     }
   };
 
@@ -199,12 +251,16 @@ function OrderCard(props) {
             {parseInt(price).toLocaleString("ID", { style: "currency", currency: "IDR" })}
           </Text>
           {status === "Waiting for payment" ? (
-            <Select>
-              <option hidden>Action</option>
+            <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
+              <option hidden value={""}>
+                Action
+              </option>
               <option onClick={() => navigate(`/payment-proof?id=${transactionId}`)}>
                 Proceed to payment
               </option>
-              <option>Cancel</option>
+              <option value="Cancel" onClick={cancelHandler}>
+                Cancel
+              </option>
             </Select>
           ) : status === "Confirmed" && new Date() > new Date(checkoutDate) ? (
             <Flex gap={3}>
@@ -313,13 +369,15 @@ function OrderCard(props) {
               </Button>
             </Flex>
           ) : (
-            <Button
-              variant="solid"
-              onClick={() => props.btnDetails(props.order)}
-              colorScheme="green"
-            >
-              {"Details"}
-            </Button>
+            <>
+              <Button
+                variant="solid"
+                onClick={() => props.btnDetails(props.order)}
+                colorScheme="green"
+              >
+                {"Details"}
+              </Button>
+            </>
           )}
         </Flex>
       </CardFooter>
