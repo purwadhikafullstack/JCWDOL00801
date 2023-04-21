@@ -8,6 +8,7 @@ const {
   tenantModel,
   orderListModel,
   transactionModel,
+  specialPriceModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
 const { dbSequelize } = require("../config/db");
@@ -178,17 +179,24 @@ module.exports = {
         }
       );
       if (roomAvail.length > 0) {
-        let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
+        let notAvail = roomAvail.map((val) => ["t.typeId != " + val.typeId]);
         let filtered = roomAvail.filter((val, index, self) => {
           return index === self.findIndex((t) => t.typeId === val.typeId);
         });
-        let bookedRooms = filtered.map((val) => ([
-          "t.typeId = " + val.typeId
-        ]))
-        let type = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-          AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) 
+        let bookedRooms = filtered.map((val) => ["t.typeId = " + val.typeId]);
+        let type = await dbSequelize.query(
+          `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+          AND (${dbSequelize.escape(
+            startDate
+          )} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(
+            endDate
+          )} BETWEEN sp.startDate AND sp.endDate)) 
           as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
-        where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(" OR ")} GROUP BY t.typeId ORDER BY t.price;`, {type: QueryTypes.SELECT})
+        where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(
+            " OR "
+          )} GROUP BY t.typeId ORDER BY t.price;`,
+          { type: QueryTypes.SELECT }
+        );
         // let type = await typeModel.findAll({
         //   where: {
         //     [Op.or]: bookedRooms
@@ -196,11 +204,20 @@ module.exports = {
         //   order: ["price"],
         // });
         if (notAvail.length > 0) {
-          let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-            AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
-          where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-            type: QueryTypes.SELECT
-          })
+          let notAvailRooms = await dbSequelize.query(
+            `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+            AND (${dbSequelize.escape(
+              startDate
+            )} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(
+              startDate
+            )} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
+          where p.propertyId = ${property.propertyId} AND ${notAvail.join(
+              " AND "
+            )} GROUP BY t.typeId ORDER BY t.price;`,
+            {
+              type: QueryTypes.SELECT,
+            }
+          );
           return res.status(200).send({
             success: true,
             message: "roomAvail.length > 0",
@@ -237,12 +254,19 @@ module.exports = {
         },
         order: ["price"],
       });
-      let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+      let notAvailRooms = await dbSequelize.query(
+        `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
         AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
-        ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
-          where p.propertyId = ${property.propertyId} ${notAvail.length > 0 ? " AND " : ""} ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-        type: QueryTypes.SELECT
-      })
+        ${dbSequelize.escape(
+          endDate
+        )} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+          where p.propertyId = ${property.propertyId} ${
+          notAvail.length > 0 ? " AND " : ""
+        } ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       return res.status(200).send({
         success: true,
         message: "roomAvail.length > 0",
@@ -542,6 +566,72 @@ module.exports = {
       } else {
         return res.status(200).send({
           success: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: {
+          [Op.and]: [
+            { roomId: req.params.roomId },
+            { propertyId: req.params.id },
+            { isDeleted: false },
+          ],
+        },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getAllRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: { [Op.and]: [{ isDeleted: false }, { propertyId: req.params.id }] },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
         });
       }
     } catch (error) {

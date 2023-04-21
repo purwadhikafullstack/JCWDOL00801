@@ -1,0 +1,231 @@
+import React, { useEffect } from "react";
+import { Box, Heading, Text, Flex } from "@chakra-ui/react";
+import { format, eachDayOfInterval, subDays, subYears, isWithinInterval } from "date-fns";
+import { Calendar } from "react-date-range";
+import { Select as Select2 } from "chakra-react-select";
+import Axios from "axios";
+
+function ReportCalendar(props) {
+  const [propData, setPropData] = React.useState(null);
+  const [roomData, setRoomData] = React.useState(null);
+  const [roomOption, setRoomOption] = React.useState(null);
+  const [propId, setPropId] = React.useState(0);
+  const [selectedRoom, setSelectedRoom] = React.useState(false);
+  const getPropData = async () => {
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.get(
+          process.env.REACT_APP_API_BASE_URL + "/rooms/prop-availability",
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
+          }
+        );
+        if (res.data.result.length > 0) {
+          const optionPropData = res.data.result.map((val, idx) => {
+            return { value: val.propertyId, label: val.name };
+          });
+          setPropData(optionPropData);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getRoomData = async () => {
+    try {
+      if (propId) {
+        let response = await Axios.get(
+          process.env.REACT_APP_API_BASE_URL + `/property/room/${propId}`
+        );
+        const roomOptionData = response.data.data.map((val) => {
+          return { value: val.roomId, label: val.type.name };
+        });
+        setRoomOption(roomOptionData);
+      } else {
+        setRoomOption(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getOneRoomData = async (roomId) => {
+    try {
+      if (propId) {
+        let response = await Axios.get(
+          process.env.REACT_APP_API_BASE_URL + `/property/room/${propId}/${roomId}`
+        );
+        setRoomData(response.data.data[0]);
+      } else {
+        setRoomData(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSelectProp = (e, action) => {
+    if (action.action === "clear") {
+      setPropId("");
+      setSelectedRoom(false);
+      return;
+    }
+    setPropId(e.value);
+  };
+
+  const handleSelectRoom = async (e, action) => {
+    if (action.action === "clear") {
+      setSelectedRoom(false);
+      return;
+    }
+    await getOneRoomData(e.value);
+    setSelectedRoom(true);
+  };
+
+  useEffect(() => {
+    getRoomData();
+  }, [propId]);
+
+  useEffect(() => {
+    getPropData();
+  }, []);
+
+  const isWithinRanges = (date, ranges) => {
+    return ranges.some((range) => isWithinInterval(date, { start: range[0], end: range[1] }));
+  };
+
+  const customDayContent = (day) => {
+    let price = "";
+    let content = null;
+    if (selectedRoom) {
+      if (day >= subDays(new Date(roomData.createdAt), 1)) {
+        const specialPrice = roomData.type.specialPrice;
+        if (specialPrice.length > 0) {
+          const disabledRanges = specialPrice.map((val) => {
+            return [subDays(new Date(val.startDate), 1), new Date(val.endDate)];
+          });
+
+          if (isWithinRanges(day, disabledRanges)) {
+            const price = specialPrice.filter((val) => {
+              return isWithinInterval(day, {
+                start: subDays(new Date(val.startDate), 1),
+                end: new Date(val.endDate),
+              });
+            });
+
+            content = (
+              <Text
+                zIndex={"overlay"}
+                position={"absolute"}
+                top={"50%"}
+                transform={"auto"}
+                translateX={"-50%"}
+                color={"orange"}
+                fontSize={"sm"}
+              >
+                {price[0].nominal.slice(0, -6)}
+              </Text>
+            );
+          } else {
+            price = roomData.type.price;
+            content = (
+              <Text
+                zIndex={"overlay"}
+                position={"absolute"}
+                top={"50%"}
+                transform={"auto"}
+                translateX={"-50%"}
+                fontSize={"sm"}
+              >
+                {price.slice(0, -6)}
+              </Text>
+            );
+          }
+        } else {
+          price = roomData.type.price;
+          content = (
+            <Text
+              zIndex={"overlay"}
+              position={"absolute"}
+              top={"50%"}
+              transform={"auto"}
+              translateX={"-50%"}
+              fontSize={"sm"}
+            >
+              {price.slice(0, -6)}
+            </Text>
+          );
+        }
+        return (
+          <Box>
+            {content}
+            <span>{format(day, "d")}</span>
+          </Box>
+        );
+      }
+    }
+  };
+
+  return (
+    <Box border="1px" p={5} borderRadius={5} borderColor={"#ccc"}>
+      <Flex direction="column">
+        <Heading size={"sm"} mb={3}>
+          Room Availability and Price
+        </Heading>
+        <Flex direction={"column"} gap={"32px"}>
+          <Flex direction="column" gap={3}>
+            <Select2
+              isSearchable
+              isClearable
+              options={propData}
+              onChange={(e, action) => handleSelectProp(e, action)}
+              placeholder="Choose Property"
+            ></Select2>
+            {roomOption ? (
+              <Select2
+                isSearchable
+                isClearable
+                options={roomOption}
+                onChange={(e, action) => handleSelectRoom(e, action)}
+                placeholder="Choose Room Type"
+              ></Select2>
+            ) : null}
+          </Flex>
+          <Flex direction={"column"} gap={1} align={"start"}>
+            <Calendar
+              date={new Date()}
+              disabledDates={
+                selectedRoom
+                  ? roomData.roomAvail.length > 0
+                    ? roomData.roomAvail.flatMap((val) => {
+                        return eachDayOfInterval({
+                          start: new Date(val.startDate),
+                          end: new Date(val.endDate),
+                        });
+                      })
+                    : []
+                  : []
+              }
+              minDate={selectedRoom ? new Date(roomData.createdAt) : subYears(new Date(), 50)}
+              dayContentRenderer={customDayContent}
+              className="static-calendar"
+              color="#38A169"
+            />
+            <Text fontSize={"sm"} color={"blue.600"}>
+              *Prices are in IDR times 100
+            </Text>
+            <Text fontSize={"sm"} color={"blue.600"}>
+              *Grayed out dates: not available
+            </Text>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Box>
+  );
+}
+
+export default ReportCalendar;
