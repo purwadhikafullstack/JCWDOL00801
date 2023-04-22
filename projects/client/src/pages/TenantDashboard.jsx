@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
+import LineChart from "../components/LineChart";
 const {
   Box,
   Input,
@@ -66,21 +67,25 @@ const TenantDashboardPage = ({ isMobile }) => {
       console.log(error);
     }
   };
-  const getTransactionData = async() =>{
+  const getTransactionData = async () => {
     try {
       const getLocalStorage = localStorage.getItem("renthaven1");
       if (getLocalStorage) {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/tenant/transaction", {},{
-        headers:{
-          Authorization: `Bearer ${getLocalStorage}`
-        }
-      })
-      setTransactionData(res.data.result)
-    }
+        const res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/tenant/transaction",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
+          }
+        );
+        setTransactionData(res.data.result);
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const labels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const data = {
     labels,
@@ -119,18 +124,21 @@ const TenantDashboardPage = ({ isMobile }) => {
                   <Th textAlign="center">STATUS</Th>
                 </Thead>
                 <Tbody>
-                  {transactionData.map((val, idx)=>{
-                    return <Tr>
-                    <Td textAlign="center">
-                      <Link _hover={{ color: "blue", textDecoration: "none" }}>{val.transactionId}</Link>
-                    </Td>
-                    <Td textAlign="center">{val.guestName}</Td>
-                    <Td textAlign="center">{val.name}</Td>
-                    <Td textAlign="center">{val.payProofImg ? "See now" : "No proof Yet"}</Td>
-                    <Td textAlign="center">{val.status}</Td>
-                  </Tr>
+                  {transactionData.map((val, idx) => {
+                    return (
+                      <Tr>
+                        <Td textAlign="center">
+                          <Link _hover={{ color: "blue", textDecoration: "none" }}>
+                            {val.transactionId}
+                          </Link>
+                        </Td>
+                        <Td textAlign="center">{val.guestName}</Td>
+                        <Td textAlign="center">{val.name}</Td>
+                        <Td textAlign="center">{val.payProofImg ? "See now" : "No proof Yet"}</Td>
+                        <Td textAlign="center">{val.status}</Td>
+                      </Tr>
+                    );
                   })}
-                  
                 </Tbody>
               </Table>
             </TableContainer>
@@ -163,11 +171,13 @@ const TenantDashboardPage = ({ isMobile }) => {
                   <Tbody>
                     {propertyData.map((val, idx) => {
                       if (idx <= 2) {
-                        return <Tr>
-                          <Td textAlign="center">{idx + 1}</Td>
-                          <Td textAlign="center">{val.name}</Td>
-                          <Td textAlign="center">{!val.isDeleted ? "Active" : "Deactivated"}</Td>
-                        </Tr>;
+                        return (
+                          <Tr>
+                            <Td textAlign="center">{idx + 1}</Td>
+                            <Td textAlign="center">{val.name}</Td>
+                            <Td textAlign="center">{!val.isDeleted ? "Active" : "Deactivated"}</Td>
+                          </Tr>
+                        );
                       }
                     })}
                   </Tbody>

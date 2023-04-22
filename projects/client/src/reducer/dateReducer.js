@@ -14,6 +14,8 @@ const INITIAL_STATE = {
   dob: "",
   searchStartDate: "",
   searchEndDate: "",
+  chartStartDate: "",
+  chartEndDate: "",
 };
 
 export const dateReducer = (state = INITIAL_STATE, action) => {
@@ -24,6 +26,8 @@ export const dateReducer = (state = INITIAL_STATE, action) => {
       return { ...state, dob: "" };
     case "CLEAR_ALLDATE":
       return (state = INITIAL_STATE);
+    case "CLEAR_CHART_DATE":
+      return { ...state, chartStartDate: "", chartEndDate: "" };
     default:
       return state;
   }

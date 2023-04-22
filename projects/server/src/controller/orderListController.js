@@ -442,22 +442,122 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
-  cancelTenant: async (req, res) =>{
+  cancelTenant: async (req, res) => {
     try {
-      const cancel = await transactionModel.update({
-        status: "Cancelled"
-      }, {where:{
-        [Op.and]: [{transactionId: req.body.transactionId, status: "Waiting for payment"}]
-      }})
+      const cancel = await transactionModel.update(
+        {
+          status: "Cancelled",
+        },
+        {
+          where: {
+            [Op.and]: [{ transactionId: req.body.transactionId, status: "Waiting for payment" }],
+          },
+        }
+      );
       return res.status(200).send({
-        success:true,
-        message: "The transaction has been cancelled"
-      })
+        success: true,
+        message: "The transaction has been cancelled",
+      });
     } catch (error) {
       return res.status(500).send({
-        success:false,
-        message:"Database error"
-      })
+        success: false,
+        message: "Database error",
+      });
     }
-  }
+  },
+  getDataForChart: async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      if (req.query.type === "property") {
+        const filterData = [{ tenantId: req.query.tenant }, { propertyId: req.query.property }];
+        if (startDate) {
+          filterData.push({
+            createdAt: {
+              [Op.gte]: startDate,
+            },
+          });
+        }
+        if (endDate) {
+          filterData.push({
+            createdAt: {
+              [Op.lte]: endDate,
+            },
+          });
+        }
+        const data = await propertyModel.findAll({
+          include: {
+            model: roomModel,
+            as: "roomProp",
+            required: true,
+            include: {
+              model: orderListModel,
+              as: "order",
+              require: true,
+            },
+          },
+          where: { [Op.and]: filterData },
+          order: [["createdAt", "ASC"]],
+        });
+        return res.status(200).send({
+          data,
+        });
+      } else if (req.query.type === "transaction") {
+        const filterData = [];
+        if (startDate) {
+          filterData.push({
+            createdAt: {
+              [Op.gte]: startDate,
+            },
+          });
+        }
+        if (endDate) {
+          filterData.push({
+            createdAt: {
+              [Op.lte]: endDate,
+            },
+          });
+        }
+        const data = await orderListModel.findAll({
+          include: [
+            {
+              model: transactionModel,
+              as: "transaction",
+              required: true,
+              include: {
+                model: userModel,
+                as: "user",
+                required: true,
+              },
+            },
+            {
+              model: roomModel,
+              as: "room",
+              required: true,
+              include: [
+                {
+                  model: propertyModel,
+                  as: "property",
+                  required: true,
+                  where: { tenantId: req.query.tenant },
+                },
+                {
+                  model: typeModel,
+                  as: "type",
+                  required: true,
+                },
+              ],
+            },
+          ],
+          where: { [Op.and]: filterData },
+          order: [["createdAt", "ASC"]],
+        });
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
 };

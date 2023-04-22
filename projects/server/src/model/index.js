@@ -88,6 +88,7 @@ orderListModel.belongsTo(transactionModel, {
 
 roomModel.hasMany(orderListModel, {
   foreignKey: "roomId",
+  as: "order",
 });
 
 orderListModel.belongsTo(roomModel, {
@@ -106,7 +107,7 @@ roomModel.belongsTo(typeModel, {
 
 propertyModel.hasMany(roomModel, {
   foreignKey: "propertyId",
-  as: "roomProp"
+  as: "roomProp",
 });
 
 roomModel.belongsTo(propertyModel, {
@@ -116,7 +117,7 @@ roomModel.belongsTo(propertyModel, {
 
 roomModel.hasMany(roomAvailModel, {
   foreignKey: "roomId",
-  as:"roomAvail"
+  as: "roomAvail",
 });
 
 roomAvailModel.belongsTo(roomModel, {
@@ -126,6 +127,7 @@ roomAvailModel.belongsTo(roomModel, {
 
 typeModel.hasMany(specialPriceModel, {
   foreignKey: "typeId",
+  as: "specialPrice",
 });
 
 specialPriceModel.belongsTo(roomModel, {
@@ -165,15 +167,15 @@ paymentMethodModel.hasMany(tenantModel, {
 });
 tenantModel.belongsTo(paymentMethodModel, {
   as: "bank",
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 paymentMethodModel.hasMany(transactionModel, {
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 transactionModel.belongsTo(paymentMethodModel, {
   as: "bank",
-  foreignKey: "bankId"
-})
+  foreignKey: "bankId",
+});
 module.exports = {
   userModel,
   tenantModel,
