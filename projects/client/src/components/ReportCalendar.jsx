@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { Box, Heading, Text, Flex } from "@chakra-ui/react";
-import { format, eachDayOfInterval, subDays, subYears, isWithinInterval } from "date-fns";
+import { format, eachDayOfInterval, subDays, isWithinInterval } from "date-fns";
 import { Calendar } from "react-date-range";
 import { Select as Select2 } from "chakra-react-select";
+import { useSelector } from "react-redux";
 import Axios from "axios";
 
 function ReportCalendar(props) {
@@ -11,6 +12,11 @@ function ReportCalendar(props) {
   const [roomOption, setRoomOption] = React.useState(null);
   const [propId, setPropId] = React.useState(0);
   const [selectedRoom, setSelectedRoom] = React.useState(false);
+  const { createdAt } = useSelector((state) => {
+    return {
+      createdAt: state.userReducer.createdAt,
+    };
+  });
   const getPropData = async () => {
     try {
       const getLocalStorage = localStorage.getItem("renthaven1");
@@ -210,7 +216,7 @@ function ReportCalendar(props) {
                     : []
                   : []
               }
-              minDate={selectedRoom ? new Date(roomData.createdAt) : subYears(new Date(), 50)}
+              minDate={selectedRoom ? new Date(roomData.createdAt) : new Date(createdAt)}
               dayContentRenderer={customDayContent}
               className="static-calendar"
               color="#38A169"
@@ -219,7 +225,7 @@ function ReportCalendar(props) {
               *Prices are in IDR times 100
             </Text>
             <Text fontSize={"sm"} color={"blue.600"}>
-              *Grayed out dates: not available
+              *Grayed out dates are not available
             </Text>
           </Flex>
         </Flex>
