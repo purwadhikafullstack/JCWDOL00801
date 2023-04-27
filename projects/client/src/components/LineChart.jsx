@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
-import { addDays, eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import { addDays, eachDayOfInterval, format, isSameDay, setDate, subDays } from "date-fns";
 import { Select as Select2 } from "chakra-react-select";
 import {
   Chart as ChartJS,
@@ -15,13 +15,23 @@ import {
   Title,
   Tooltip,
   Legend,
+  SubTitle,
 } from "chart.js";
 import CalendarChartStart from "./CalendarChartStart";
 import CalendarChartEnd from "./CalendarChartEnd";
 import { clearChartDate } from "../actions/dateAction";
 
 function LineChart(props) {
-  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    SubTitle
+  );
   const dispatch = useDispatch();
   const { tenantId, chartStartDate, chartEndDate } = useSelector((state) => {
     return {
@@ -38,20 +48,9 @@ function LineChart(props) {
   const [propId, setPropId] = React.useState(0);
   const [startDate, setStartDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const [totalIncome, setTotalIncome] = React.useState(0);
+  const [userList, setUserList] = React.useState(null);
+  const [selectedUser, setSelectedUser] = React.useState("");
 
   const getPropData = async () => {
     try {
@@ -66,10 +65,31 @@ function LineChart(props) {
           }
         );
         if (res.data.result.length > 0) {
-          const optionPropData = res.data.result.map((val, idx) => {
+          const optionData = res.data.result.map((val, idx) => {
             return { value: val.propertyId, label: val.name };
           });
-          setPropData(optionPropData);
+          setPropData(optionData);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getUserData = async () => {
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/orderlist/user", {
+          headers: {
+            Authorization: `Bearer ${getLocalStorage}`,
+          },
+        });
+        if (res.data.result.length > 0) {
+          const optionData = res.data.result.map((val, idx) => {
+            return { value: val.userId, label: val.name };
+          });
+          setUserList(optionData);
         }
       }
     } catch (e) {
@@ -78,12 +98,13 @@ function LineChart(props) {
   };
 
   const getData = async () => {
-    let url = `/orderlist/chart?tenant=${tenantId}`;
+    let url = `/orderlist/chart?tenant=${tenantId}&type=${dataType}`;
     let query = "";
     if (propId) {
-      query += `&type=${dataType}&property=${propId}`;
-    } else {
-      query += `&type=${dataType}`;
+      query += `&property=${propId}`;
+    }
+    if (selectedUser) {
+      query += `&user=${selectedUser}`;
     }
     if (startDate) {
       query += `&startDate=${startDate}`;
@@ -123,10 +144,16 @@ function LineChart(props) {
             return { x: format(date, "d MMM yy"), y: roomTotal, month: idx };
           });
         } else {
-          chart = months.map((month, idx) => {
+          let startDate = setDate(new Date(), 1);
+          let endDate = addDays(startDate, 30);
+          let dates = {
+            start: startDate,
+            end: endDate,
+          };
+          chart = eachDayOfInterval(dates).map((date, idx) => {
             const roomTotal = response.data.data[0].roomProp.reduce((acc, room) => {
               let total = room.order.reduce((acc, val) => {
-                if (month === format(new Date(val.createdAt), "MMMM")) {
+                if (isSameDay(date, new Date(val.createdAt))) {
                   return acc + parseInt(val.price);
                 } else {
                   return acc;
@@ -134,7 +161,7 @@ function LineChart(props) {
               }, 0);
               return acc + total;
             }, 0);
-            return { x: month, y: roomTotal, month: idx };
+            return { x: format(date, "d MMM yy"), y: roomTotal, month: idx };
           });
         }
       } else if (dataType === "transaction") {
@@ -167,18 +194,77 @@ function LineChart(props) {
             };
           });
         } else {
-          chart = months.map((month, idx) => {
+          let startDate = setDate(new Date(), 1);
+          let endDate = addDays(startDate, 30);
+          let dates = {
+            start: startDate,
+            end: endDate,
+          };
+          chart = eachDayOfInterval(dates).map((date, idx) => {
             const total = response.data.data.reduce((acc, val) => {
-              if (month === format(new Date(val.createdAt), "MMMM")) {
+              if (isSameDay(date, new Date(val.createdAt))) {
                 return acc + parseInt(val.price);
               } else {
                 return acc;
               }
             }, 0);
-            return { x: month, y: total, month: idx };
+            return { x: format(date, "d MMM yy"), y: total, month: idx };
+          });
+        }
+      } else if (dataType === "user" && selectedUser) {
+        if (startDate || endDate) {
+          let rangeStart = subDays(new Date(endDate), 30);
+          let rangeEnd = addDays(new Date(startDate), 30);
+          if (startDate) {
+            rangeStart = new Date(startDate);
+          }
+          if (endDate) {
+            rangeEnd = new Date(endDate);
+          }
+
+          let dates = {
+            start: rangeStart,
+            end: rangeEnd,
+          };
+          chart = eachDayOfInterval(dates).map((date, idx) => {
+            const total = response.data.data.reduce((acc, val) => {
+              if (isSameDay(date, new Date(val.createdAt))) {
+                return acc + parseInt(val.price);
+              } else {
+                return acc;
+              }
+            }, 0);
+            return {
+              x: format(date, "d MMM yy"),
+              y: total,
+              month: idx,
+            };
+          });
+        } else {
+          let startDate = setDate(new Date(), 1);
+          let endDate = addDays(startDate, 30);
+          let dates = {
+            start: startDate,
+            end: endDate,
+          };
+          chart = eachDayOfInterval(dates).map((date, idx) => {
+            const total = response.data.data.reduce((acc, val) => {
+              if (isSameDay(date, new Date(val.createdAt))) {
+                return acc + parseInt(val.price);
+              } else {
+                return acc;
+              }
+            }, 0);
+            return { x: format(date, "d MMM yy"), y: total, month: idx };
           });
         }
       }
+
+      setTotalIncome(
+        chart.reduce((acc, val) => {
+          return acc + parseInt(val.y);
+        }, 0)
+      );
 
       if (sortByIncome) {
         setData(chart.sort((a, b) => b.y - a.y));
@@ -212,6 +298,16 @@ function LineChart(props) {
       legend: {
         position: "top",
       },
+      subtitle: {
+        display: totalIncome,
+        text: `Total Income: ${totalIncome.toLocaleString("id", {
+          style: "currency",
+          currency: "IDR",
+        })}`,
+        align: "start",
+        font: { weight: "bold" },
+        color: "#3182ce",
+      },
       tooltip: {
         callbacks: {
           label: function (context) {
@@ -241,6 +337,80 @@ function LineChart(props) {
       },
     },
   };
+
+  let crosshair;
+  const crosshairLabel = {
+    id: "crosshairLabel",
+    //draw lines
+    afterDatasetsDraw(chart, args) {
+      const {
+        ctx,
+        chartArea: { left, right, top, bottom },
+        scales: { x, y },
+      } = chart;
+      if (crosshair) {
+        ctx.save();
+        ctx.beginPath();
+        crosshair.forEach((line, index) => {
+          ctx.moveTo(line.startX, line.startY);
+          ctx.lineTo(line.endX, line.endY);
+          ctx.stroke();
+        });
+        // draw rectangle
+        ctx.fillStyle = "grey";
+        ctx.fillRect(0, crosshair[0].startY - 10, left, 20);
+
+        ctx.font = "bold 12px sans-serif";
+        // font options
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        // draw text
+        ctx.fillText(
+          y
+            .getValueForPixel(crosshair[0].startY)
+            .toLocaleString("id", { style: "currency", currency: "IDR" }),
+          left / 2,
+          crosshair[0].startY
+        );
+      }
+    },
+    //detect mouse movement
+    afterEvent(chart, args) {
+      const {
+        ctx,
+        chartArea: { left, right, top, bottom },
+      } = chart;
+      const xCoor = args.event.x;
+      const yCoor = args.event.y;
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgb(108, 122, 137)";
+
+      if (!args.inChartArea && crosshair) {
+        crosshair = undefined;
+        args.changed = true;
+      } else if (args.inChartArea) {
+        crosshair = [
+          {
+            startX: left,
+            startY: yCoor,
+            endX: right,
+            endY: yCoor,
+          },
+          {
+            startX: xCoor,
+            startY: top,
+            endX: xCoor,
+            endY: bottom,
+          },
+        ];
+
+        args.changed = true;
+      }
+    },
+  };
+
+  const plugins = [crosshairLabel];
 
   const handleSort = (val) => {
     if (val === "income") {
@@ -272,6 +442,15 @@ function LineChart(props) {
     setPropId(e.value);
   };
 
+  const handleSelectUser = (e, action) => {
+    if (action.action === "clear") {
+      setSelectedUser("");
+      onBtnReset();
+      return;
+    }
+    setSelectedUser(e.value);
+  };
+
   const onBtnFilter = (e) => {
     e.preventDefault();
     setStartDate(chartStartDate);
@@ -284,14 +463,16 @@ function LineChart(props) {
     setEndDate("");
     setSortByDate(false);
     setSortByIncome(false);
+    setDataType("transaction");
   };
 
   useEffect(() => {
     getData();
-  }, [sortByIncome, sortByDate, dataType, propId, startDate, endDate]);
+  }, [sortByIncome, sortByDate, dataType, propId, startDate, endDate, selectedUser]);
 
   useEffect(() => {
     getPropData();
+    getUserData();
   }, []);
 
   return (
@@ -305,19 +486,23 @@ function LineChart(props) {
           isClearable
           options={[
             {
+              value: "transaction",
+              label: "Total Transaction",
+            },
+            {
               value: "property",
               label: "Property",
             },
             {
-              value: "transaction",
-              label: "Total Transaction",
+              value: "user",
+              label: "User",
             },
           ]}
           onChange={(e, action) => handleSelectType(e, action)}
           placeholder="Choose Type"
         ></Select2>
         <Text fontSize={"xs"} color={"gray.500"}>
-          Default is by Total Income
+          Default is by Total Transaction
         </Text>
         {dataType === "property" ? (
           <Select2
@@ -326,6 +511,14 @@ function LineChart(props) {
             options={propData}
             onChange={(e, action) => handleSelectProp(e, action)}
             placeholder="Choose Property"
+          ></Select2>
+        ) : dataType === "user" ? (
+          <Select2
+            isSearchable
+            isClearable
+            options={userList}
+            onChange={(e, action) => handleSelectUser(e, action)}
+            placeholder="Choose User"
           ></Select2>
         ) : null}
       </Flex>
@@ -340,7 +533,7 @@ function LineChart(props) {
         </Button>
       </Flex>
       <Text fontSize={"xs"} color={"gray.500"}>
-        Max Range is 30 days
+        Max range is 30 days
       </Text>
       <Flex mt={3} gap={3} align={"center"}>
         <Text>Sort by:</Text>
@@ -353,7 +546,7 @@ function LineChart(props) {
       </Flex>
       <Divider mt={3} mb={2} />
       <Flex justify={"center"} width={"100%"} height={"400px"}>
-        <Line options={options} data={dataset} />
+        <Line options={options} plugins={plugins} data={dataset} />
       </Flex>
     </Box>
   );
