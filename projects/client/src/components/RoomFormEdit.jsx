@@ -296,7 +296,7 @@ function RoomFormEdit(props) {
 
       return () => URL.revokeObjectURL(objectUrl);
     } else {
-      setPreview(`http://localhost:8000/${values.image}`);
+      setPreview(process.env.REACT_APP_API_BASE_IMG_URL + `${values.image}`);
     }
   }, [values.image, addType]);
 

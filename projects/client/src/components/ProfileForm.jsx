@@ -74,6 +74,11 @@ function ProfileForm(props) {
             title: error.response.data.message,
             confirmButtonText: "OK",
             confirmButtonColor: "#48BB78",
+          }).then(() => {
+            setFieldValue("oldPass", "", false);
+            setFieldValue("password", "", false);
+            setFieldValue("confirmPassword", "", false);
+            window.location.reload();
           });
         }
       }

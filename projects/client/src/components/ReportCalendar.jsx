@@ -122,7 +122,7 @@ function ReportCalendar(props) {
                 end: new Date(val.endDate),
               });
             });
-
+            // tampilan ketika special price
             content = (
               <Text
                 zIndex={"overlay"}
@@ -137,6 +137,7 @@ function ReportCalendar(props) {
               </Text>
             );
           } else {
+            //tampilan ketika tidak ada special price
             price = roomData.type.price;
             content = (
               <Text
@@ -152,6 +153,7 @@ function ReportCalendar(props) {
             );
           }
         } else {
+          //tampilan default
           price = roomData.type.price;
           content = (
             <Text
@@ -222,7 +224,7 @@ function ReportCalendar(props) {
               color="#38A169"
             />
             <Text fontSize={"sm"} color={"blue.600"}>
-              *Prices are in IDR times 100
+              *Prices are in IDR x100
             </Text>
             <Text fontSize={"sm"} color={"blue.600"}>
               *Grayed out dates are not available

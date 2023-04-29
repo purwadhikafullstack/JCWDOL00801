@@ -236,23 +236,7 @@ function App() {
                 path="/property/new"
                 element={
                   <VerifyChecker loading={loading}>
-                    <PropertyCreateMenu />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building"
-                element={
-                  <VerifyChecker loading={loading}>
                     <AddProperty />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building-room"
-                element={
-                  <VerifyChecker loading={loading}>
-                    <AddPropertyRoom />
                   </VerifyChecker>
                 }
               />

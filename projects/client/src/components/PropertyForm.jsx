@@ -205,7 +205,7 @@ function PropertyForm(props) {
           <Button
             colorScheme="gray"
             variant="ghost"
-            onClick={() => navigate("/property/new", { replace: true })}
+            onClick={() => navigate("/property", { replace: true })}
             leftIcon={<ArrowLeftIcon boxSize={3} />}
           >
             Back
