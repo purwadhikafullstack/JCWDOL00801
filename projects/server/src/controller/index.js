@@ -9,6 +9,8 @@ const orderListController = require("./orderListController");
 const userOrderController = require("./userOrderController");
 const reviewController = require("./reviewController");
 const searchController = require("./searchController");
+const roomAvailabilityController = require("./roomAvailabilityController");
+const specialPriceController = require("./specialPriceController");
 
 module.exports = {
   userController,
@@ -22,4 +24,6 @@ module.exports = {
   userOrderController,
   reviewController,
   searchController,
+  roomAvailabilityController,
+  specialPriceController
 };

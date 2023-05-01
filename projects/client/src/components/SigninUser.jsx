@@ -68,9 +68,13 @@ const SigninUserPage = (props) => {
         });
       })
       .catch((e) => {
-        console.log(e)
-        setAlert(`${e.response.data.message}`)
-        setGoogleLoading(false);
+        if(e.code === "auth/popup-closed-by-user"){
+          setGoogleLoading(false)
+        }else if(e.response){
+          setAlert(`${e.response.data.message}`)
+          setGoogleLoading(false);
+        }
+        setGoogleLoading(false)
       });
   };
   const handleLoginFacebook = () => {
@@ -107,9 +111,14 @@ const SigninUserPage = (props) => {
         });
       })
       .catch((e) => {
-        console.log(e)
-        setAlert(`${e.response.data.message}`)
-        setFacebookLoading(false)});
+        if(e.code === "auth/popup-closed-by-user"){
+          setGoogleLoading(false)
+        }else if(e.response){
+          setAlert(`${e.response.data.message}`)
+          setGoogleLoading(false);
+        }
+        setGoogleLoading(false)
+      });
   };
   const handleEmailLogin = () => {
     setLoginLoading(true);

@@ -299,7 +299,19 @@ function RoomFormEdit(props) {
       setPreview(`http://localhost:8000/${values.image}`);
     }
   }, [values.image, addType]);
-
+  useEffect(() =>{
+    if(!location.state){
+      Swal.fire({
+        icon: "error",
+        title: `Something went wrong.`,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 3000,
+      }).then(resp =>{
+        navigate("/room", {replace: true})
+      })
+    }
+  }, [])
   return (
     <Box px={{ base: "0", md: "20" }} pb={5} m={{ base: "15px", md: "" }}>
       <Heading mb={{ base: "30px", md: "5" }} textAlign={{ base: "center", md: "left" }}>
@@ -498,6 +510,7 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
+                  focusBorderColor="#48BB78"
                   onChange={(e) => setGuest(e.target.value)}
                 >
                   <NumberInputField />
@@ -604,6 +617,7 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
+                  focusBorderColor="#48BB78"
                   onChange={(e) => setGuest(e.target.value)}
                 >
                   <NumberInputField />

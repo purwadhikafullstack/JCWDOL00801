@@ -161,43 +161,6 @@ const Sidebar = ({ propW, setAppWidth }) => {
         </Box>
         {orderIsOpen ? (
           <div>
-            <Box rounded="md" h={5} pl={2} pr={2} ml={"30px"} className="menu-list">
-              <Text
-                fontSize={"13px"}
-                fontWeight={"600"}
-                color="gray"
-                display={"flex"}
-                flexDirection="row"
-                alignItems={"center"}
-              >
-                <VscCircleFilled style={{ marginRight: "10px" }} />
-                Booked Request
-              </Text>
-            </Box>
-            <Box rounded="md" h="38px" pl={2} pr={"16px"} mt={1} ml={"30px"} className="menu-list">
-              <Text
-                fontSize={"13px"}
-                fontWeight={"600"}
-                color="gray"
-                display={"flex"}
-                flexDirection="row"
-                alignItems={"center"}
-              >
-                <VscCircleFilled style={{ marginRight: "10px" }} />
-                Manage Booked
-              </Text>
-              <Text
-                fontSize={"13px"}
-                fontWeight={"600"}
-                color="gray"
-                display={"flex"}
-                flexDirection="row"
-                alignItems={"center"}
-                ml="23px"
-              >
-                Room
-              </Text>
-            </Box>
             <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"30px"} className="menu-list">
               <Text
                 fontSize={"13px"}

@@ -88,6 +88,20 @@ function RoomForm(props) {
     } catch (e) {
       console.log(e);
       setIsPropAvail(false);
+      Swal.fire({
+        icon: "error",
+        title: `${e.response.data.message}`,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        showDenyButton: true,
+        denyButtonColor: "red",
+        denyButtonText: "CANCEL",
+      }).then(res =>{
+        if(res.isConfirmed){
+          navigate("/property/new", {replace: true, state:{data: propData}})
+          window.scrollTo(0,0);
+        }
+      })
     }
   };
   const getTypeData = async (propId) => {
@@ -466,7 +480,8 @@ function RoomForm(props) {
                   min={2}
                   max={10}
                   w={"100px"}
-                  onChange={(e) => setGuest(e.target.value)}
+                  focusBorderColor="#48BB78"
+                  onChange={(e) => setGuest(e)}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

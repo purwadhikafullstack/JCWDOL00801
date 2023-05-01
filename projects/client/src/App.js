@@ -265,15 +265,15 @@ function App() {
                   </VerifyChecker>
                 }
               />
-              <Route path="/manage-categories" element={<ManageCategories />} />
-              <Route path="/orderlist" element={<OrderHistory />} />
-              <Route path="/room" element={<RoomListPage />} />
-              <Route path="/room/edit" element={<RoomFormEdit />} />
-              <Route path="/room/new" element={<RoomCreateMenu />} />
-              <Route path="/room/new/type" element={<RoomForm />} />
-              <Route path="/room/photos" element={<RoomPhoto />} />
-              <Route path="/property-list" element={<PropertyAndRoom />} />
-              <Route path="/property-list/room" element={<PropertyAndRoomList />} />
+              <Route path="/manage-categories" element={<VerifyChecker loading={loading}><ManageCategories /></VerifyChecker>} />
+              <Route path="/orderlist" element={<VerifyChecker loading={loading}><OrderHistory /></VerifyChecker>} />
+              <Route path="/room" element={<VerifyChecker loading={loading}><RoomListPage /></VerifyChecker>} />
+              <Route path="/room/edit" element={<VerifyChecker loading={loading}><RoomFormEdit /></VerifyChecker>} />
+              <Route path="/room/new" element={<VerifyChecker loading={loading}><RoomCreateMenu /></VerifyChecker>} />
+              <Route path="/room/new/type" element={<VerifyChecker loading={loading}><RoomForm /></VerifyChecker>} />
+              <Route path="/room/photos" element={<VerifyChecker loading={loading}><RoomPhoto /></VerifyChecker>} />
+              <Route path="/property-list" element={<VerifyChecker loading={loading}><PropertyAndRoom /></VerifyChecker>} />
+              <Route path="/property-list/room" element={<VerifyChecker loading={loading}><PropertyAndRoomList isMobile={isMobile} /></VerifyChecker>} />
               <Route path="/*" />
             </Routes>
           </div>

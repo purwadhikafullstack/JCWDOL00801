@@ -26,8 +26,8 @@ const specialPriceModel = dbSequelize.define("specialPrices", {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  isPercentage: {
-    type: DataTypes.BOOLEAN,
+  percentage: {
+    type: DataTypes.INTEGER,
     allowNull: true,
     defaultValue: false,
   },

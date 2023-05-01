@@ -575,31 +575,38 @@ module.exports = {
   update: async (req, res) => {
     try {
       // akan ditambahkan ketika fitur transaksi sudah di merge
-      // const check = await orderListModel.findAll({
-      //   include: [
-      //     {
-      //       model: transactionModel,
-      //       as: "transaction",
-      //       required: true,
-      //       where: {
-      //         [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
-      //       },
-      //     },
-      //     {
-      //       model: roomModel,
-      //       as: "room",
-      //       required: true,
-      //       include: {
-      //         model: propertyModel,
-      //         as: "property",
-      //         required: true,
-      //         where: {
-      //           propertyId: req.params.propertyId,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // });
+      const check = await orderListModel.findAll({
+        include: [
+          {
+            model: transactionModel,
+            as: "transaction",
+            required: true,
+            where: {
+              [Op.and]: [{ status: "Waiting for payment" }, { status: "Waiting for confirmation" }],
+            },
+          },
+          {
+            model: roomModel,
+            as: "room",
+            required: true,
+            include: {
+              model: propertyModel,
+              as: "property",
+              required: true,
+              where: {
+                propertyId: req.params.propertyId,
+              },
+            },
+          },
+        ],
+      });
+      if (check.length > 0) {
+        return res.status(400).send({
+          result: checkStatus,
+          success: false,
+          message: `Can not deactivate this category because there are ongoing transaction(s)`,
+        });
+      }
       let update = await roomModel.update(req.body, {
         where: {
           roomId: req.params.roomId,

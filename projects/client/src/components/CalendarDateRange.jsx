@@ -70,7 +70,7 @@ function CalendarDateRange(props) {
 
   return (
     <div className="calendarWrap">
-      <InputGroup>
+      <InputGroup order={props.direction ? 2 : 1}>
         <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
         <Input
           value={`${format(calendar[0].startDate, "MMM dd, yyy")} - ${format(
@@ -81,7 +81,7 @@ function CalendarDateRange(props) {
           onClick={() => setOpen((open) => !open)}
         />
       </InputGroup>
-      <div ref={refOne}>
+      <div ref={refOne} style={{order: props.direction ? 1 : 2}}>
         {open && (
           <DateRange
             onChange={(item) => handleChange(item)}

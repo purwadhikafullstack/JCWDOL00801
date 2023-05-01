@@ -35,6 +35,8 @@ const {
   userOderRouter,
   reviewRouter,
   searchRouter,
+  roomAvailabilityRouter,
+  specialPriceRouter
 } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 const { transactionController } = require("./controller");
@@ -49,6 +51,8 @@ app.use("/api", orderListRouter);
 app.use("/api", userOderRouter);
 app.use("/api", reviewRouter);
 app.use("/api", searchRouter);
+app.use("/api", roomAvailabilityRouter);
+app.use("/api", specialPriceRouter);
 
 // ===========================
 

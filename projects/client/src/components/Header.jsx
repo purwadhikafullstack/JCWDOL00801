@@ -18,6 +18,7 @@ import {
   Container,
   Divider,
   Spinner,
+  Text
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo.png";
@@ -27,7 +28,7 @@ import { logoutAction } from "../actions/userAction";
 import { tenantLogout } from "../actions/tenantAction";
 import {clearAllDate} from "../actions/dateAction"
 
-const Links = ["Home", "Contact"];
+const Links = ["Home", "My Profile", "My Orders"];
 
 const NavLink = ({ children }) => (
   <Link
@@ -38,7 +39,6 @@ const NavLink = ({ children }) => (
       textDecoration: "none",
       bg: "gray.200",
     }}
-    href={"/"}
   >
     {children}
   </Link>
@@ -84,9 +84,7 @@ function Header(props) {
                 <Heading size="md">Renthaven</Heading>
               </HStack>
               <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-                {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
-                ))}
+                <Link href="/">Home</Link>
               </HStack>
             </HStack>
             {/* ini tampilan kalau sudah login */}
@@ -187,9 +185,15 @@ function Header(props) {
           {isOpen && !email ? (
             <Box pb={4} display={{ md: "none" }}>
               <Stack as={"nav"} spacing={4}>
-                {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
-                ))}
+                <Link
+                px={2}
+                py={1}
+                rounded={"md"}
+                _hover={{
+                  textDecoration: "none",
+                  bg: "gray.200",
+                }}
+                href="/">Home</Link>
                 <Flex justify="space-between" gap={3}>
                   <Button
                     minW="50%"
@@ -229,17 +233,24 @@ function Header(props) {
                   }}
                 >
                   <Avatar
+                  bg="green.500"
                     size={"lg"}
-                    src={
-                      "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                    }
+                    src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
                   />
                   <Heading size="md" textTransform="capitalize">
                     {name.split(" ")[0]}
                   </Heading>
                 </HStack>
                 {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
+                  <Link 
+                  px={2}
+                  py={1}
+                  rounded={"md"}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: "gray.200",
+                  }}
+                  href={link === "Home" ? "/" : link === "My Profile" ? "/profile" : link === "My Orders" ? "/my-orders" : "/"} key={link}>{link}</Link>
                 ))}
                 <Flex justify="space-between" gap={3}>
                   <Button minW="100%" variant="outline" colorScheme="green" onClick={logoutHandler}>

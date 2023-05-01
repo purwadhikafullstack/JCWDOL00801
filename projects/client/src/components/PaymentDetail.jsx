@@ -97,6 +97,7 @@ const PaymentDetail = () => {
           denyButtonText: "Cancel",
           confirmButtonText: "Continue to payment",
           confirmButtonColor: "#48BB78",
+          reverseButtons: true
         }).then((response) => {
           if (response.isConfirmed) {
             Axios.post(

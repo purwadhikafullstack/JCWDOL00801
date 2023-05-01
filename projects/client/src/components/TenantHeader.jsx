@@ -126,7 +126,7 @@ function TenantHeader(props) {
                       <Avatar
                         bg="green.500"
                         size={"sm"}
-                        src={`http://localhost:8000/${profileImg}`}
+                        src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}
@@ -222,7 +222,7 @@ function TenantHeader(props) {
                   _hover={{ cursor: "pointer" }}
                   onClick={() => navigate("/profile", { replace: true })}
                 >
-                  <Avatar bg="green.500" size={"xl"} src={`http://localhost:8000/${profileImg}`} />
+                  <Avatar bg="green.500" size={"xl"} src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg} />
                   <Heading size="md" textTransform="capitalize" style={{ marginLeft: "0px" }}>
                     {name.split(" ")[0]}
                   </Heading>
@@ -275,6 +275,7 @@ function TenantHeader(props) {
                       pl={2}
                       pr={2}
                       className="menu-list"
+                      onClick={() => navigate("/property", { replace: true })}
                     >
                       <Text
                         fontSize={"13px"}
@@ -306,6 +307,7 @@ function TenantHeader(props) {
                         display={"flex"}
                         flexDirection="row"
                         alignItems={"center"}
+                        onClick={() => navigate("/room", { replace: true })}
                       >
                         Manage Rooms
                       </Text>
@@ -321,6 +323,7 @@ function TenantHeader(props) {
                       pr={2}
                       mt={1}
                       className="menu-list"
+                      onClick={() => navigate("/manage-categories", { replace: true })}
                     >
                       <Text
                         fontSize={"13px"}
@@ -331,6 +334,30 @@ function TenantHeader(props) {
                         alignItems={"center"}
                       >
                         Manage Categories
+                      </Text>
+                    </Box>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={2}
+                      mt={1}
+                      className="menu-list"
+                      onClick={() => navigate("/property-list", { replace: true })}
+                    >
+                      <Text
+                        fontSize={"13px"}
+                        fontWeight={"600"}
+                        color="gray"
+                        display={"flex"}
+                        flexDirection="row"
+                        alignItems={"center"}
+                      >
+                        Property List
                       </Text>
                     </Box>
                   </div>
@@ -365,59 +392,6 @@ function TenantHeader(props) {
                     }}
                   >
                     <Box
-                      display={"flex"}
-                      flexDirection="column"
-                      alignItems="center"
-                      rounded="md"
-                      h={5}
-                      pl={2}
-                      pr={2}
-                      w="100%"
-                      className="menu-list"
-                    >
-                      <Text
-                        fontSize={"13px"}
-                        fontWeight={"600"}
-                        color="gray"
-                        display={"flex"}
-                        flexDirection="row"
-                        alignItems={"center"}
-                      >
-                        Booked Request
-                      </Text>
-                    </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      alignItems="center"
-                      w="100%"
-                      rounded="md"
-                      h={5}
-                      pl={2}
-                      pr={"16px"}
-                      mt={1}
-                      className="menu-list"
-                    >
-                      <Text
-                        fontSize={"13px"}
-                        fontWeight={"600"}
-                        color="gray"
-                        display={"flex"}
-                        flexDirection="row"
-                        alignItems={"center"}
-                      >
-                        Manage Booked Room
-                      </Text>
-                      <Text
-                        fontSize={"13px"}
-                        fontWeight={"600"}
-                        color="gray"
-                        display={"flex"}
-                        flexDirection="row"
-                        alignItems={"center"}
-                      ></Text>
-                    </Box>
-                    <Box
                       display="flex"
                       flexDirection="column"
                       alignItems="center"
@@ -428,6 +402,7 @@ function TenantHeader(props) {
                       pr={2}
                       mt={1}
                       className="menu-list"
+                      onClick={() => navigate("/orderlist", { replace: true })}
                     >
                       <Text
                         fontSize={"13px"}

@@ -120,9 +120,20 @@ module.exports = {
       ) AS min_prices ON p.propertyId = min_prices.propertyId 
       INNER JOIN rooms AS r ON min_prices.propertyId = r.propertyId
       AND (
-        (min_prices.min_nominal IS NOT NULL AND min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)) OR 
-        (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId))
-      )
+        (min_prices.min_nominal IS NOT NULL AND 
+          (
+            min_prices.min_nominal < min_prices.min_price AND
+            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)
+          )
+        ) OR (
+          min_prices.min_nominal IS NOT NULL AND 
+          (
+            min_prices.min_nominal > min_prices.min_price AND
+            min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)
+          )
+        ) OR 
+        (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)
+        ))
       INNER JOIN types AS t ON r.typeId = t.typeId
       ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
     GROUP BY 
@@ -176,9 +187,20 @@ module.exports = {
           ) AS min_prices ON p.propertyId = min_prices.propertyId 
           INNER JOIN rooms AS r ON min_prices.propertyId = r.propertyId
           AND (
-            (min_prices.min_nominal IS NOT NULL AND min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)) OR 
-            (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId))
-          )
+            (min_prices.min_nominal IS NOT NULL AND 
+              (
+                min_prices.min_nominal < min_prices.min_price AND
+                min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)
+              )
+            ) OR (
+              min_prices.min_nominal IS NOT NULL AND 
+              (
+                min_prices.min_nominal > min_prices.min_price AND
+                min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)
+              )
+            ) OR 
+            (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)          
+            ))
           INNER JOIN types AS t ON r.typeId = t.typeId
           ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
         GROUP BY 

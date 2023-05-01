@@ -197,7 +197,13 @@ function RoomList(props) {
               getRoomData();
             }
           } catch (error) {
-            console.log(error);
+            Swal.fire({
+              title: `${error.response.data.message}`,
+              icon: "error",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Confirm",
+              time: 5000
+            })
           }
         }
       });
