@@ -13,6 +13,7 @@ import EditUserGenBtn from "./EditUserGenBtn";
 import EditUserEmailBtn from "./EditUserEmailBtn";
 import EditBankNameBtn from "./EditBankNameBtn";
 import EditAccountNumBtn from "./EditAccountNumBtn";
+import { format } from "date-fns";
 
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -120,22 +121,14 @@ function ProfileForm(props) {
     <Flex gap={3} pt={6} direction="column" mb={3} minW="50%">
       <Heading size="md">Profile</Heading>
       <Flex direction="column" gap={8}>
-        <Flex direction="row" gap={4}>
+        <Flex direction={"row"} gap={4}>
           <Text minW="35%">Name</Text>
-          <Text>{name}</Text>
+          <Text noOfLines={1}>{name}</Text>
           <EditUserNameBtn name={name} />
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Date of Birth</Text>
-          <Text>
-            {dob === null
-              ? `not set yet`
-              : new Date(dob).toLocaleDateString("id", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-          </Text>
+          <Text>{dob === null ? `not set yet` : format(new Date(dob), "MMMM dd, yyyy")}</Text>
           <EditUserDobBtn />
         </Flex>
         <Flex direction="row" gap={4}>
@@ -145,7 +138,7 @@ function ProfileForm(props) {
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Email</Text>
-          <Text>{email}</Text>
+          <Text noOfLines={1}>{email}</Text>
           {provider !== "common" ? null : <EditUserEmailBtn email={email} />}
         </Flex>
       </Flex>

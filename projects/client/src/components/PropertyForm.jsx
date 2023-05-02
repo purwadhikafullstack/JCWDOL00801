@@ -112,7 +112,7 @@ function PropertyForm(props) {
   }, [values.image]);
 
   return (
-    <Box px={{ base: "0", md: "20" }} pb={5}>
+    <Box px={{ base: "5", md: "20" }} pb={5}>
       <Heading mb="5">Add Your Property</Heading>
       <form onSubmit={handleSubmit}>
         <Flex direction="column" align="center" justify="center" gap={6}>
