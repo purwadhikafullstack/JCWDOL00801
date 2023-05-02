@@ -267,6 +267,7 @@ function PropertyAndRoomList(props) {
                       denyButtonText: "Cancel",
                       confirmButtonText: "Confirm",
                       icon: "question",
+                      reverseButtons: true
                     }).then((response) => {
                       if (response.isConfirmed) {
                         if (
@@ -555,6 +556,7 @@ function PropertyAndRoomList(props) {
                                               showDenyButton: true,
                                               confirmButtonColor: "#48BB78",
                                               confirmButtonText: "Confirm",
+                                              reverseButtons: true
                                             }).then((response) => {
                                               Axios.patch(
                                                 process.env.REACT_APP_API_BASE_URL +
@@ -666,6 +668,7 @@ function PropertyAndRoomList(props) {
                                               showDenyButton: true,
                                               confirmButtonColor: "#48BB78",
                                               confirmButtonText: "Confirm",
+                                              reverseButtons: true
                                             }).then(res =>{
                                               Axios.patch(process.env.REACT_APP_API_BASE_URL + "/special-price/delete", {
                                                 email,
