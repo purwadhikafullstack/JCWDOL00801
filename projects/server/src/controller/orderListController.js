@@ -13,7 +13,6 @@ const { format, differenceInDays, setDate, addDays, eachDayOfInterval } = requir
 const schedule = require("node-schedule");
 const { transport } = require("../config/nodemailer");
 const { dbSequelize } = require("../config/db");
-const { formatInTimeZone, toDate } = require("date-fns-tz");
 
 schedule.scheduleJob("0 8 * * *", async () => {
   const today = new Date();
