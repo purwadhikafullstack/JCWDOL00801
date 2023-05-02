@@ -186,6 +186,7 @@ const TenantDashboardPage = ({ isMobile }) => {
             </Box>
           </Flex>
         </Flex>
+        <LineChart />
       </Box>
     </Box>
   );
