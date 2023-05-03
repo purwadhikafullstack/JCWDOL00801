@@ -112,7 +112,6 @@ function LineChart(props) {
     if (endDate) {
       query += `&endDate=${endDate}`;
     }
-    console.log(url + query);
     try {
       let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + query);
       let chart = null;

@@ -12,7 +12,6 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
-import LineChart from "../components/LineChart";
 const {
   Box,
   Input,
@@ -186,7 +185,6 @@ const TenantDashboardPage = ({ isMobile }) => {
             </Box>
           </Flex>
         </Flex>
-        <LineChart />
       </Box>
     </Box>
   );
