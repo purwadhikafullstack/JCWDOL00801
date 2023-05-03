@@ -156,7 +156,7 @@ function OrderHistory(props) {
   };
   const cancelTransactionHandler = (transId) => {
     Swal.fire({
-      title: "Are you sure you want to cancelled this order?",
+      title: "Are you sure you want to cancel this order?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#38A169",
@@ -167,26 +167,29 @@ function OrderHistory(props) {
       if (response.isConfirmed) {
         Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/cancel", {
           transactionId: transId,
-        }).then((res) => {
-          Swal.fire({
-            title: `${res.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          }).then(r =>{
-            getTableData()
+        })
+          .then((res) => {
+            Swal.fire({
+              title: `${res.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            }).then((r) => {
+              onBtnReset();
+            });
           })
-        }).catch(e =>{
-          Swal.fire({
-            title: `${e.response.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          })
-        });
-      }
-      else{
-        getTableData()
+          .catch((e) => {
+            Swal.fire({
+              title: `${e.response.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            }).then((r) => {
+              onBtnReset();
+            });
+          });
+      } else {
+        onBtnReset();
       }
     });
   };

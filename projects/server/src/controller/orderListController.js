@@ -472,15 +472,16 @@ module.exports = {
       const { startDate, endDate } = req.query;
       if (req.query.type === "property") {
         const filterData = [{ tenantId: req.query.tenant }, { propertyId: req.query.property }];
+        const filterDate = [];
         if (startDate) {
-          filterData.push({
+          filterDate.push({
             createdAt: {
               [Op.gte]: startDate,
             },
           });
         }
         if (endDate) {
-          filterData.push({
+          filterDate.push({
             createdAt: {
               [Op.lte]: endDate,
             },
@@ -495,6 +496,7 @@ module.exports = {
               model: orderListModel,
               as: "order",
               require: true,
+              where: { [Op.and]: filterDate },
             },
           },
           where: { [Op.and]: filterData },

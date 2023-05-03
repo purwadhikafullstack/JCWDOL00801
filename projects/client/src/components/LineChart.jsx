@@ -112,9 +112,14 @@ function LineChart(props) {
     if (endDate) {
       query += `&endDate=${endDate}`;
     }
+    console.log(url + query);
     try {
       let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + query);
       let chart = null;
+      if (response.data.data.length === 0) {
+        setData([]);
+        return;
+      }
       if (dataType === "property" && propId) {
         if (startDate || endDate) {
           let rangeStart = subDays(new Date(endDate), 30);
@@ -338,6 +343,7 @@ function LineChart(props) {
     },
   };
 
+  //crosshair plugin
   let crosshair;
   const crosshairLabel = {
     id: "crosshairLabel",
@@ -409,8 +415,32 @@ function LineChart(props) {
       }
     },
   };
+  // end of crosshair plugin
 
-  const plugins = [crosshairLabel];
+  // no data plugin
+  const noData = {
+    id: "noData",
+    afterDatasetsDraw: (chart, args, plugins) => {
+      const {
+        ctx,
+        data,
+        chartArea: { top, left, width, height },
+      } = chart;
+      ctx.save();
+
+      if (data.datasets[0].data.length === 0) {
+        ctx.fillStyle = "#EDF2F7";
+        ctx.fillRect(left, top, width, height);
+
+        ctx.font = "bold 20px sans-serif";
+        ctx.fillStyle = "#1A202C";
+        ctx.textAlign = "center";
+        ctx.fillText("No Data Available", left + width / 2, top + height / 2);
+      }
+    },
+  };
+
+  const plugins = [crosshairLabel, noData];
 
   const handleSort = (val) => {
     if (val === "income") {

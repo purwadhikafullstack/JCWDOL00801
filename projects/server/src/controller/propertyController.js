@@ -178,17 +178,24 @@ module.exports = {
         }
       );
       if (roomAvail.length > 0) {
-        let notAvail = roomAvail.map(val => (["t.typeId != " + val.typeId]))
+        let notAvail = roomAvail.map((val) => ["t.typeId != " + val.typeId]);
         let filtered = roomAvail.filter((val, index, self) => {
           return index === self.findIndex((t) => t.typeId === val.typeId);
         });
-        let bookedRooms = filtered.map((val) => ([
-          "t.typeId = " + val.typeId
-        ]))
-        let type = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-          AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) 
+        let bookedRooms = filtered.map((val) => ["t.typeId = " + val.typeId]);
+        let type = await dbSequelize.query(
+          `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+          AND (${dbSequelize.escape(
+            startDate
+          )} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(
+            endDate
+          )} BETWEEN sp.startDate AND sp.endDate)) 
           as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
-        where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(" OR ")} GROUP BY t.typeId ORDER BY t.price;`, {type: QueryTypes.SELECT})
+        where p.propertyId = ${property.propertyId} AND ${bookedRooms.join(
+            " OR "
+          )} GROUP BY t.typeId ORDER BY t.price;`,
+          { type: QueryTypes.SELECT }
+        );
         // let type = await typeModel.findAll({
         //   where: {
         //     [Op.or]: bookedRooms
@@ -196,11 +203,20 @@ module.exports = {
         //   order: ["price"],
         // });
         if (notAvail.length > 0) {
-          let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-            AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
-          where p.propertyId = ${property.propertyId} AND ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-            type: QueryTypes.SELECT
-          })
+          let notAvailRooms = await dbSequelize.query(
+            `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+            AND (${dbSequelize.escape(
+              startDate
+            )} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(
+              startDate
+            )} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId
+          where p.propertyId = ${property.propertyId} AND ${notAvail.join(
+              " AND "
+            )} GROUP BY t.typeId ORDER BY t.price;`,
+            {
+              type: QueryTypes.SELECT,
+            }
+          );
           return res.status(200).send({
             success: true,
             message: "roomAvail.length > 0",
@@ -237,12 +253,19 @@ module.exports = {
         },
         order: ["price"],
       });
-      let notAvailRooms = await dbSequelize.query(`select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+      let notAvailRooms = await dbSequelize.query(
+        `select t.typeId, t.name, t.price, t.desc, t.capacity, t.typeImg, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
         AND (${dbSequelize.escape(startDate)} BETWEEN sp.startDate AND sp.endDate OR
-        ${dbSequelize.escape(endDate)} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
-          where p.propertyId = ${property.propertyId} ${notAvail.length > 0 ? " AND " : ""} ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`, {
-        type: QueryTypes.SELECT
-      })
+        ${dbSequelize.escape(
+          endDate
+        )} BETWEEN sp.startDate AND sp.endDate)) as nominal from types as t INNER JOIN rooms as r on t.typeId = r.typeId INNER JOIN properties as p on r.propertyId = p.propertyId 
+          where p.propertyId = ${property.propertyId} ${
+          notAvail.length > 0 ? " AND " : ""
+        } ${notAvail.join(" AND ")} GROUP BY t.typeId ORDER BY t.price;`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
       return res.status(200).send({
         success: true,
         message: "roomAvail.length > 0",
@@ -371,6 +394,23 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { propertyId } = req.params;
+      const { isDeleted } = req.body;
+      if (!isDeleted) {
+        const update = await propertyModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { propertyId },
+          }
+        );
+        if (update) {
+          return res.status(200).send({
+            success: true,
+            message: `Data has been updated`,
+          });
+        }
+      }
       const checkTransaction = await orderListModel.findAll({
         include: [
           {
@@ -413,26 +453,36 @@ module.exports = {
           success: false,
           message: `Can not deactivate property because there are ongoing transaction(s)`,
         });
-      }
-
-      if (checkCategory.length <= 0) {
+      } else if (checkCategory.length <= 0) {
         return res.status(400).send({
           data: checkCategory,
           success: false,
           message: `Can not activate property because corresponding category is not active`,
         });
-      }
+      } else {
+        const updateRoom = await roomModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
 
-      const update = await propertyModel.update(req.body, {
-        where: {
-          propertyId,
-        },
-      });
-      if (update) {
-        return res.status(200).send({
-          success: true,
-          message: `Data Updated Successfully`,
-        });
+        const updateProperty = await propertyModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
+        if (updateProperty) {
+          return res.status(200).send({
+            success: true,
+            message: `Data Updated Successfully`,
+          });
+        }
       }
     } catch (error) {
       console.log(error);
