@@ -131,6 +131,20 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 Manage Categories
               </Text>
             </Box>
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+                onClick={() => navigate("/property-list", { replace: true })}
+              >
+                <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                Property List
+              </Text>
+            </Box>
           </div>
         ) : (
           ""

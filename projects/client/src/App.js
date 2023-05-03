@@ -44,6 +44,8 @@ import UserOrder from "./pages/UserOrder";
 import SearchProperty from "./components/SearchPropertyCard";
 import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
+import PropertyAndRoom from "./pages/PropertyAndRoom";
+import PropertyAndRoomList from "./pages/PropertyAndRoomList";
 import Report from "./pages/Report";
 
 function App() {
@@ -255,6 +257,8 @@ function App() {
               <Route path="/room/new" element={<RoomCreateMenu />} />
               <Route path="/room/new/type" element={<RoomForm />} />
               <Route path="/room/photos" element={<RoomPhoto />} />
+              <Route path="/property-list" element={<PropertyAndRoom />} />
+              <Route path="/property-list/room" element={<PropertyAndRoomList />} />
               <Route path="/report" element={<Report />} />
               <Route path="/*" />
             </Routes>
@@ -321,6 +325,7 @@ function App() {
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
             <Route path="/my-orders" element={<UserOrder />} isMobile={isMobile} />
             <Route path="/search" element={<SearchPage />} isMobile={isMobile} />

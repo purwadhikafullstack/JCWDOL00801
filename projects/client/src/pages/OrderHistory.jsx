@@ -152,6 +152,7 @@ function OrderHistory(props) {
 
   const handleClose = () => {
     setSelectedOption("");
+    setClicked(false);
     onClose();
   };
   const cancelTransactionHandler = (transId) => {
@@ -211,7 +212,7 @@ function OrderHistory(props) {
           <Td>{orderId}</Td>
           <Td>{room.property.name}</Td>
           <Td>{room.type.name}</Td>
-          <Td>{`${parseInt(price).toLocaleString("ID", {
+          <Td>{`${parseInt(price).toLocaleString("id", {
             style: "currency",
             currency: "IDR",
           })}`}</Td>

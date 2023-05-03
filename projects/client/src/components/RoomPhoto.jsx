@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import bannerImage from "../assets/landingBanner";
-
 import "../styles/imageGallery.css";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@chakra-ui/icons";

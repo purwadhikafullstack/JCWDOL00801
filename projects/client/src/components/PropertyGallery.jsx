@@ -2,8 +2,8 @@ import { Hide, Show } from "@chakra-ui/react";
 import React, { useState } from "react";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import bannerImage from "../assets/landingBanner";
 import "../styles/imageGallery.css";
+import bannerImage from "../assets/landingBanner";
 
 function PropertyGallery(props) {
   const images = bannerImage.map((image, idx) => {
