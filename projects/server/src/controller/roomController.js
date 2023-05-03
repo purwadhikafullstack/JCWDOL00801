@@ -7,6 +7,8 @@ const {
   userModel,
   categoryModel,
   typeModel,
+  orderListModel,
+  transactionModel,
 } = require("../model");
 const sharp = require("sharp");
 const fs = require("fs");
@@ -594,7 +596,7 @@ module.exports = {
               as: "property",
               required: true,
               where: {
-                propertyId: req.params.propertyId,
+                propertyId: req.body.propertyId,
               },
             },
           },
@@ -607,7 +609,23 @@ module.exports = {
           message: `Can not deactivate this category because there are ongoing transaction(s)`,
         });
       }
-      let update = await roomModel.update(req.body, {
+      const checkActive = await propertyModel.findAll({
+        where: {
+          propertyId: req.body.propertyId
+        }
+      })
+      if(checkActive.length > 0 && checkActive[0].isDeleted === true && req.body.isDeleted === false){
+        const updates = await roomModel.update({
+          isDeleted: 1
+        }, {where: {
+          propertyId: req.body.propertyId
+        }})
+        return res.status(401).send({
+          success: false,
+          message: "Property is deactivated, please activate it first"
+        });
+      }
+      const update = await roomModel.update({isDeleted: req.body.isDeleted}, {
         where: {
           roomId: req.params.roomId,
         },

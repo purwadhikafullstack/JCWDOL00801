@@ -79,8 +79,9 @@ function RoomForm(props) {
             confirmButtonText: "OK",
             confirmButtonColor: "#48BB78",
             timer: 3000,
+            reverseButtons: true
           }).then((res) => {
-            navigate("/property/new", { replace: true, state: { data: propData } });
+            navigate("/property/new/building", { replace: true, state: { data: propData } });
             window.scrollTo(0, 0);
           });
         }
@@ -93,14 +94,10 @@ function RoomForm(props) {
         title: `${e.response.data.message}`,
         confirmButtonText: "OK",
         confirmButtonColor: "#48BB78",
-        showDenyButton: true,
-        denyButtonColor: "red",
-        denyButtonText: "CANCEL",
+        timer: 5000
       }).then(res =>{
-        if(res.isConfirmed){
-          navigate("/property/new", {replace: true, state:{data: propData}})
+          navigate("/property/new/building", {replace: true, state:{data: propData}})
           window.scrollTo(0,0);
-        }
       })
     }
   };

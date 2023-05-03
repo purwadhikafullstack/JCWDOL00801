@@ -7,10 +7,11 @@ const {
   typeModel,
   roomAvailModel,
 } = require("../model");
-const { Op } = require("sequelize");
+const { Op, QueryTypes } = require("sequelize");
 const { format, differenceInDays } = require("date-fns");
 const schedule = require("node-schedule");
 const { transport } = require("../config/nodemailer");
+const { dbSequelize } = require("../config/db");
 
 schedule.scheduleJob("0 8 * * *", async () => {
   const today = new Date();
@@ -442,22 +443,74 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
-  cancelTenant: async (req, res) =>{
+  cancelTenant: async (req, res) => {
     try {
-      const cancel = await transactionModel.update({
-        status: "Cancelled"
-      }, {where:{
-        [Op.and]: [{transactionId: req.body.transactionId, status: "Waiting for payment"}]
-      }})
+      const cancel = await transactionModel.update(
+        {
+          status: "Cancelled",
+        },
+        {
+          where: {
+            [Op.and]: [{ transactionId: req.body.transactionId, status: "Waiting for payment" }],
+          },
+        }
+      );
       return res.status(200).send({
-        success:true,
-        message: "The transaction has been cancelled"
-      })
+        success: true,
+        message: "The transaction has been cancelled",
+      });
     } catch (error) {
       return res.status(500).send({
-        success:false,
-        message:"Database error"
+        success: false,
+        message: "Database error",
+      });
+    }
+  },
+  getTenantLineChart: async (req, res) => {
+    try {
+      const today = new Date().getDay();
+      const startDateDiff = today == 0 ? 0 : 1 - today;
+      const endDateDiff = 7 - today;
+      const startDate = new Date(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() + 86400000 * startDateDiff
+      ).getTime();
+      const endDate = new Date(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() + 86400000 * endDateDiff
+      ).getTime();
+      const filterData = [
+        {
+          startDate: {
+            [Op.and]: {[Op.gte]: startDate,
+            }
+          },
+        },
+        {
+          endDate: {
+            [Op.lte]: endDate,
+          },
+        },
+      ];
+      const data = await dbSequelize.query(`
+        SELECT o.createdAt, SUM(o.price) FROM orderlists as o
+        INNER JOIN transactions as tran ON o.transactionId = tran.transactionId
+        INNER JOIN rooms as r ON r.roomId = o.roomId
+        INNER JOIN properties as p ON r.propertyId = p.propertyId
+        INNER JOIN tenants as ten ON ten.tenantId = p.tenantId
+        INNER JOIN users as u ON u.userId = ten.userId
+        WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((${dbSequelize.escape(new Date(startDate))} BETWEEN tran.checkinDate AND tran.checkoutDate) OR (${dbSequelize.escape(new Date(endDate))} BETWEEN tran.checkinDate AND tran.checkoutDate))
+        group by o.createdAt ;  
+      `, {type: QueryTypes.SELECT});
+      //
+      return res.status(200).send({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({
+        success: false,
+        message: "Database Error."
       })
     }
-  }
+  },
 };

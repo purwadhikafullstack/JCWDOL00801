@@ -56,8 +56,8 @@ module.exports = {
             SELECT ra.roomId 
             FROM roomavailabilities AS ra
             WHERE 
-            ${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
-            OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate
+            (${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
+            OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate)
             )
         GROUP BY 
           r.propertyId
@@ -79,6 +79,7 @@ module.exports = {
         (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)          
         ))
       INNER JOIN types AS t ON r.typeId = t.typeId
+      WHERE p.isDeleted = 0 AND r.isDeleted = 0
     GROUP BY 
       p.propertyId, 
       p.name, 

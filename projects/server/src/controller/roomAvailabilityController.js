@@ -13,15 +13,44 @@ module.exports = {
     checkAvailability: async (req, res) => {
         try {
             const page = parseInt(req.query.page) || 0;
-            const limit = parseInt(req.query.limit) || 5;
+            const limit = parseInt(req.query.limit) || 3;
             const offset = limit * page;
+            let filter = "";
+            let sortBy = "";
+            console.log("QUERY",req.query)
+            if(req.query.startDate && req.query.endDate){
+                if(parseInt(req.query.startDate) == parseInt(req.query.endDate)){
+                    filter = `AND (
+                        ra.startDate >= ${dbSequelize.escape(new Date(parseInt(req.query.startDate)))} OR ra.endDate >= ${dbSequelize.escape(new Date(parseInt(req.query.startDate)))}
+                    )`
+                }else{
+                    filter = `AND ((${dbSequelize.escape(new Date(parseInt(req.query.startDate)))} BETWEEN ra.startDate AND ra.endDate) 
+                    OR(${dbSequelize.escape(new Date(parseInt(req.query.endDate)))} BETWEEN ra.startDate AND ra.endDate))`
+                }
+            }else{
+                filter = `AND (
+                    ra.startDate > ${dbSequelize.escape(new Date())} OR ra.endDate > ${dbSequelize.escape(new Date())}
+                )`
+            }
+            if(req.query.sort){
+                if(req.query.sort === "startDate"){
+                    sortBy = `
+                    ORDER BY
+                        ra.startDate ${req.query.order}
+                `
+                }  
+            }else{
+                sortBy = ""
+            }
             const roomAvailTotal = await dbSequelize.query(`
             SELECT * from roomavailabilities AS ra WHERE
-            ra.roomId = ${req.query.id} AND (ra.startDate > ${dbSequelize.escape(new Date())} OR ra.endDate > ${dbSequelize.escape(new Date())});
+            ra.roomId = ${req.query.id} ${filter}
+            ${sortBy};
             `, {type: QueryTypes.SELECT})
             const roomAvail = await dbSequelize.query(`
             SELECT * from roomavailabilities AS ra WHERE
-            ra.roomId = ${req.query.id} AND (ra.startDate > ${dbSequelize.escape(new Date())} OR ra.endDate > ${dbSequelize.escape(new Date())})
+            ra.roomId = ${req.query.id} ${filter}
+            ${sortBy}
             LIMIT ${limit}
             OFFSET ${offset};
             `, {type: QueryTypes.SELECT})

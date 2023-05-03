@@ -206,7 +206,7 @@ module.exports = {
       let data2 = await dbSequelize.query(
         `SELECT t.transactionId, t.payProofImg, u.name as guestName, ty.name, t.status from transactions as t INNER JOIN users as u on t.userId = u.userId
             INNER JOIN orderlists as o on t.transactionId = o.transactionId INNER JOIN rooms as r on o.roomId = r.roomId INNER JOIN types as ty on r.typeId = ty.typeId 
-            INNER JOIN properties as p on r.propertyId = p.propertyId INNER JOIN tenants as ten on p.tenantId = ten.tenantId where ten.tenantId = ${data0[0].tenantId};`,
+            INNER JOIN properties as p on r.propertyId = p.propertyId INNER JOIN tenants as ten on p.tenantId = ten.tenantId where ten.tenantId = ${data0[0].tenantId} limit 2;`,
         { type: QueryTypes.SELECT }
       );
       return res.status(200).send({

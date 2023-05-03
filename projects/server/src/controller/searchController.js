@@ -45,25 +45,25 @@ module.exports = {
       let filterCapacity = "";
       let sortData = "";
       if (name) {
-        filterName += `p.name LIKE '%${name}%'`
+        filterName += `AND p.name LIKE '%${name}%'`
       }
       if (province) {
         if (filterName === "" && filterCity === "") {
-          filterName += `c.province = '${province}'`
+          filterName += `AND c.province = '${province}'`
         } else {
           filterName += ` AND c.province = '${province}'`
         }
       }
       if (city) {
         if (filterName === "") {
-          filterCity += `c.city = '${city}'`
+          filterCity += `AND c.city = '${city}'`
         } else {
           filterCity += ` AND c.city = '${city}'`
         }
       }
       if (capacity) {
         if (filterName === "" && filterCity === "" && filterProvince === "") {
-          filterCapacity += `t.capacity >= '${capacity}'`
+          filterCapacity += `AND t.capacity >= '${capacity}'`
         } else {
           filterCapacity += ` AND t.capacity >= '${capacity}'`
         }
@@ -135,7 +135,7 @@ module.exports = {
         (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)
         ))
       INNER JOIN types AS t ON r.typeId = t.typeId
-      ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
+      WHERE p.isDeleted = 0 AND r.isDeleted = 0 ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
     GROUP BY 
       p.propertyId, 
       p.name, 
@@ -179,8 +179,9 @@ module.exports = {
                 SELECT ra.roomId 
                 FROM roomavailabilities AS ra
                 WHERE 
-                ${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
-                OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate
+                (${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
+                OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate)
+                AND (r.isDeleted = 0 OR r.isDeleted = false)
                 )
             GROUP BY 
               r.propertyId
@@ -202,7 +203,7 @@ module.exports = {
             (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)          
             ))
           INNER JOIN types AS t ON r.typeId = t.typeId
-          ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
+          WHERE p.isDeleted = 0 AND r.isDeleted = 0 ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
         GROUP BY 
           p.propertyId, 
           p.name, 

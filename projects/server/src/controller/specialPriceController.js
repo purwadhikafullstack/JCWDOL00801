@@ -6,34 +6,62 @@ module.exports = {
     getSpecialPrice: async (req, res) =>{
         try {
             const page = parseInt(req.query.page) || 0;
-            const limit = parseInt(req.query.limit) || 5;
+            const limit = parseInt(req.query.limit) || 3;
             const offset = limit * page;
+            let filter = "";
+            let sortBy = "";
+            if(req.query.startDate && req.query.endDate){
+                if(parseInt(req.query.startDate) === parseInt(req.query.endDate)){
+                    filter = `AND (
+                        sp.startDate >= ${dbSequelize.escape(new Date(parseInt(req.query.startDate)))} OR sp.endDate >= ${dbSequelize.escape(new Date(parseInt(req.query.startDate)))}
+                    )`
+                }else{
+                    filter = `AND ((${dbSequelize.escape(new Date(parseInt(req.query.startDate)))} BETWEEN sp.startDate AND sp.endDate) 
+                    OR(${dbSequelize.escape(new Date(parseInt(req.query.endDate)))} BETWEEN sp.startDate AND sp.endDate))`
+                }
+            }else{
+                filter = `AND (
+                    sp.startDate > ${dbSequelize.escape(new Date())} OR sp.endDate > ${dbSequelize.escape(new Date())}
+                )`
+            }
+            if(req.query.sort){
+                if(req.query.sort === "startDate"){
+                    sortBy = `
+                    ORDER BY
+                        sp.startDate ${req.query.order}
+                `
+                }else if(req.query.sort === "nominal"){
+                    sortBy = `
+                    ORDER BY
+                        sp.nominal ${req.query.order}
+                `
+                }   
+            }else{
+                sortBy = ""
+            }
             const necessaryData = await dbSequelize.query(`
-            SELECT * from types as t 
-            INNER JOIN rooms as r ON r.typeId = t.typeId
-            WHERE t.typeId = ${req.query.id}
+            SELECT * from types
+            WHERE typeId = ${req.query.id}
             `, {type: QueryTypes.SELECT})
             const spAll = await dbSequelize.query(`
             SELECT t.name, sp.nominal, sp.startDate, sp.endDate, t.createdAt, sp.percentage, sp.spId FROM specialprices AS sp
             INNER JOIN types AS t ON sp.typeId = t.typeId
             INNER JOIN rooms AS r ON r.typeId = t.typeId
-            WHERE t.typeId = ${req.query.id} AND (
-                sp.startDate > ${dbSequelize.escape(new Date())} OR sp.endDate > ${dbSequelize.escape(new Date())}
-            )
+            WHERE t.typeId = ${req.query.id} ${filter}
             group by sp.spId
+            ${sortBy}
             `, {type: QueryTypes.SELECT})
             const sp = await dbSequelize.query(`
             SELECT t.name, sp.nominal, sp.startDate, sp.endDate, t.createdAt, sp.percentage, sp.spId FROM specialprices AS sp
             INNER JOIN types AS t ON sp.typeId = t.typeId
             INNER JOIN rooms AS r ON r.typeId = t.typeId
-            WHERE t.typeId = ${req.query.id} AND (
-                sp.startDate > ${dbSequelize.escape(new Date())} OR sp.endDate > ${dbSequelize.escape(new Date())}
-            )
+            WHERE t.typeId = ${req.query.id} ${filter}
             group by sp.spId
+            ${sortBy}
             LIMIT ${limit}
             OFFSET ${offset};
             `, {type: QueryTypes.SELECT});
-            console.log("SP",sp)
+            console.log("SP",necessaryData)
             const totalPage = Math.ceil(sp.length / limit);
 
             if (sp.length > 0) {

@@ -36,6 +36,7 @@ function RoomList(props) {
     };
   });
   const [city, setCity] = React.useState([]);
+  const [propData, setPropData] = React.useState([]);
   const [filterName, setFilterName] = React.useState("");
   const [filterCity, setFilterCity] = React.useState("");
   const [filterAddress, setFilterAddress] = React.useState("");
@@ -50,7 +51,37 @@ function RoomList(props) {
   const [searchName, setSearchName] = React.useState("");
   const [searchCity, setSearchCity] = React.useState("");
   const [searchAddress, setSearchAddress] = React.useState("");
-
+  const getPropData = async () =>{
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1")
+      if(getLocalStorage){
+        const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/rooms/prop-availability", {
+          headers: {
+            "Authorization": `Bearer ${getLocalStorage}`
+          }
+        })
+        if(res.data.result.length >0){
+          setPropData(res.data.result);
+          navigate("/room/new/type", {replace: true, state:{data: res.data.result}})
+        }        
+      }}catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#48BB78",
+          showDenyButton: true,
+          denyButtonColor: "red",
+          denyButtonText: "CANCEL",
+          reverseButtons: true
+        }).then(res =>{
+          if(res.isConfirmed){
+            navigate("/property/new/building", {replace: true, state:{data: propData}})
+            window.scrollTo(0,0);
+          }
+        })
+        console.log(error)    
+    }}
   const getRoomData = async () => {
     let endpoint = [`/rooms/all?tenant=${tenantId}&limit=${limit}&page=${page}&`];
     let reqQuery = [];
@@ -140,7 +171,7 @@ function RoomList(props) {
             <Switch
               isChecked={!isDeleted}
               colorScheme="green"
-              onChange={() => onBtnSwitch(room.roomId, isDeleted)}
+              onChange={() => onBtnSwitch(room.roomId, isDeleted, room.propertyId)}
             />
           </Td>
           <Td>
@@ -166,7 +197,7 @@ function RoomList(props) {
     setDesc(!desc);
   };
 
-  const onBtnSwitch = async (id, isDeleted) => {
+  const onBtnSwitch = async (id, isDeleted, propertyId) => {
     let changeStatus = !isDeleted;
     if (!isDeleted) {
       Swal.fire({
@@ -184,6 +215,7 @@ function RoomList(props) {
               process.env.REACT_APP_API_BASE_URL + `/rooms/update/${id}`,
               {
                 isDeleted: changeStatus,
+                propertyId
               }
             );
             if (response.data.success) {
@@ -213,6 +245,7 @@ function RoomList(props) {
           process.env.REACT_APP_API_BASE_URL + `/rooms/update/${id}`,
           {
             isDeleted: changeStatus,
+            propertyId
           }
         );
         if (response.data.success) {
@@ -226,7 +259,13 @@ function RoomList(props) {
           getRoomData();
         }
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          title: `${error.response.data.message}`,
+          icon: "error",
+          confirmButtonColor: "#38A169",
+          confirmButtonText: "Confirm",
+          time: 5000
+        })
       }
     }
   };
@@ -269,7 +308,7 @@ function RoomList(props) {
             colorScheme="green"
             variant="outline"
             onClick={() => {
-              navigate("/room/new", { replace: true });
+              getPropData();
             }}
           >
             <AddIcon boxSize={3} mr={2} />
