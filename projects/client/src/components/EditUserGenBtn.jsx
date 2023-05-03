@@ -17,6 +17,7 @@ import {
   FormHelperText,
 } from "@chakra-ui/react";
 import Swal from "sweetalert2";
+import { setTenantAction } from "../actions/tenantAction";
 
 function EditUserGenBtn(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +54,11 @@ function EditUserGenBtn(props) {
                 },
               }
             );
-            dispatch(loginAction(res.data.result));
+            if (res.data.tenant) {
+              dispatch(setTenantAction(res.data.tenant));
+              dispatch(setTenantAction(res.data.bank));
+            }
+            dispatch(loginAction(res.data.user));
             localStorage.setItem("renthaven1", res.data.token);
             setEditGender("");
           }

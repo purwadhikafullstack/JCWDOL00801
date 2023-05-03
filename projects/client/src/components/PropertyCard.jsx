@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, CardFooter, Icon, Box } from "@chakra-ui/react";
+import { Card, CardBody, CardFooter, Icon, Box, Tooltip } from "@chakra-ui/react";
 import { Image, Stack, Heading, Text, Flex } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { IoLocationSharp } from "react-icons/io5";
@@ -46,16 +46,19 @@ function PropertyCard({ data }) {
       <Image src={process.env.REACT_APP_API_BASE_IMG_URL + data.image} borderTopRadius="lg" />
       <CardBody>
         <Stack spacing="3">
-          <Heading
-            size="md"
-            onClick={() => {
-              navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
-              window.scrollTo(0, 0);
-            }}
-            _hover={{ cursor: "pointer" }}
-          >
-            {data.name}
-          </Heading>
+          <Tooltip label={data.name}>
+            <Heading
+              size="md"
+              onClick={() => {
+                navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
+                window.scrollTo(0, 0);
+              }}
+              _hover={{ cursor: "pointer" }}
+              noOfLines={1}
+            >
+              {data.name}
+            </Heading>
+          </Tooltip>
           <Text>
             <Icon as={IoLocationSharp} color="blackAlpha.600" /> {data.city}
           </Text>
@@ -64,7 +67,12 @@ function PropertyCard({ data }) {
               <>
                 <Flex direction={"column"} alignItems={"flex-end"}>
                   {data.nominal < data.price ? (
-                    <Text color="blue.600" textDecoration={"line-through"}>
+                    <Text
+                      color="blue.600"
+                      opacity="0.5"
+                      fontSize="sm"
+                      textDecoration={"line-through"}
+                    >
                       {parseInt(data.price).toLocaleString("id", {
                         style: "currency",
                         currency: "idr",
@@ -82,8 +90,11 @@ function PropertyCard({ data }) {
                 </Flex>
               </>
             ) : (
-              <Text color="blue.600" fontSize="2xl">
-                {parseInt(data.price).toLocaleString("id", { style: "currency", currency: "idr" })}
+              <Text pt="24px" color="blue.600" fontSize="2xl">
+                {parseInt(data.price).toLocaleString("id", {
+                  style: "currency",
+                  currency: "idr",
+                })}
               </Text>
             )}
           </Flex>

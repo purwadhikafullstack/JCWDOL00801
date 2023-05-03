@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { profileSchema } from "../schemas/profileValidator";
+import { setTenantAction } from "../actions/tenantAction";
 
 function EditUserNameBtn(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,7 +65,11 @@ function EditUserNameBtn(props) {
                 },
               }
             );
-            dispatch(loginAction(res.data.result));
+            if (res.data.tenant) {
+              dispatch(setTenantAction(res.data.tenant));
+              dispatch(setTenantAction(res.data.bank));
+            }
+            dispatch(loginAction(res.data.user));
             localStorage.setItem("renthaven1", res.data.token);
           }
         } catch (error) {

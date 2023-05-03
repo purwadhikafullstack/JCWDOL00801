@@ -130,7 +130,7 @@ typeModel.hasMany(specialPriceModel, {
   as: "specialPrice",
 });
 
-specialPriceModel.belongsTo(roomModel, {
+specialPriceModel.belongsTo(typeModel, {
   as: "type",
   foreignKey: "typeId",
 });

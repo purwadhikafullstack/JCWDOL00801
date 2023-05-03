@@ -47,7 +47,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
       overflowX="hidden"
       overFlowY="scroll"
       transition="ease-in-out width .2s"
-      style={{top: 0, bottom: 0}}
+      style={{ top: 0, bottom: 0 }}
     >
       <Container mt={4} display="flex" alignItems="center" flexDirection="column">
         {/* <Button variant="ghost" colorScheme="green" w="100%" leftIcon={<IoCloseOutline />} onClick={setAppWidth}>Close Sidebar</Button> */}
@@ -95,7 +95,16 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 Manage Properties
               </Text>
             </Box>
-            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list" onClick={() => navigate("/room", { replace: true })}>
+            <Box
+              rounded="md"
+              h={5}
+              pl={2}
+              pr={2}
+              mt={1}
+              ml={"40px"}
+              className="menu-list"
+              onClick={() => navigate("/room", { replace: true })}
+            >
               <Text
                 fontSize={"13px"}
                 fontWeight={"600"}
@@ -120,6 +129,20 @@ const Sidebar = ({ propW, setAppWidth }) => {
               >
                 <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                 Manage Categories
+              </Text>
+            </Box>
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+                onClick={() => navigate("/property-list", { replace: true })}
+              >
+                <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                Property List
               </Text>
             </Box>
           </div>
@@ -213,6 +236,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 display={"flex"}
                 flexDirection="row"
                 alignItems={"center"}
+                onClick={() => navigate(`/report`, { replace: true })}
               >
                 <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                 View Reports

@@ -8,6 +8,7 @@ const {
   tenantModel,
   orderListModel,
   transactionModel,
+  specialPriceModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
 const { dbSequelize } = require("../config/db");
@@ -16,6 +17,7 @@ const moment = require("moment-timezone");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
+const { log } = require("console");
 
 module.exports = {
   getPropertyData: async (req, res) => {
@@ -592,6 +594,149 @@ module.exports = {
       } else {
         return res.status(200).send({
           success: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getRoomList: async (req, res) => {
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 5;
+    const offset = limit * page;
+    try {
+      const data = await roomModel.findAndCountAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+          },
+          {
+            model: propertyModel,
+            as: "property",
+            required: true,
+            include: {
+              model: categoryModel,
+              as: "category",
+              required: true,
+            },
+          },
+        ],
+        where: { propertyId: parseInt(req.query.propertyId) },
+        offset: offset,
+        limit: limit,
+      });
+      const totalPage = Math.ceil(data.count / limit);
+      if (data.count > 0) {
+        return res.status(200).send({
+          data: data.rows,
+          page,
+          limit,
+          totalRows: data.count,
+          totalPage,
+        });
+      } else {
+        return res.status(404).send({
+          data: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  countRoom: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+          },
+          {
+            model: propertyModel,
+            as: "property",
+            required: true,
+            where: { tenantId: req.params.id },
+          },
+        ],
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
+        });
+      } else {
+        return res.status(404).send({
+          data: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: {
+          [Op.and]: [
+            { roomId: req.params.roomId },
+            { propertyId: req.params.id },
+            { isDeleted: false },
+          ],
+        },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getAllRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: { [Op.and]: [{ isDeleted: false }, { propertyId: req.params.id }] },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
         });
       }
     } catch (error) {
