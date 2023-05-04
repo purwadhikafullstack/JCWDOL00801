@@ -66,13 +66,14 @@ function CalendarDateRange(props) {
         endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
       })
     );
+    console.log(new Date(format(item.selection.startDate, "MM/dd/yyyy")))
   };
 
   return (
     <div className="calendarWrap">
       <InputGroup order={props.direction ? 2 : 1}>
         <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
-        <Input
+        <Input 
           value={`${format(calendar[0].startDate, "MMM dd, yyy")} - ${format(
             calendar[0].endDate,
             "MMM dd, yyy"

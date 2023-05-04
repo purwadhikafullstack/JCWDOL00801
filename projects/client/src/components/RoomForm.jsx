@@ -386,7 +386,7 @@ function RoomForm(props) {
                   Type Detail
                 </Text>
                 <Image
-                  src={process.env.REACT_APP_API_BASE_IMG_URL + chosenType.typeImg}
+                  src={process.env.REACT_APP_BASE_IMG_URL + chosenType.typeImg}
                   w="300px"
                   h="150px"
                   objectFit={"cover"}

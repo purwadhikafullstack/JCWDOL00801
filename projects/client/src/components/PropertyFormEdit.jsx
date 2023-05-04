@@ -123,7 +123,7 @@ function PropertyFormEdit(props) {
 
       return () => URL.revokeObjectURL(objectUrl);
     } else {
-      setPreview(process.env.REACT_APP_API_BASE_IMG_URL + values.image);
+      setPreview(process.env.REACT_APP_BASE_IMG_URL + values.image);
     }
   }, [values.image]);
 

@@ -8,5 +8,6 @@ route.patch("/orderlist/cancel", orderListController.cancelTenant);
 route.get("/orderlist/chart", orderListController.getDataForChart);
 route.get("/orderlist/user", tokenVerify, orderListController.getUserForChart);
 route.get("/orderlist/tenant-chart", tokenVerify, orderListController.getTenantLineChart);
+route.patch("/orderlist-user/cancel", tokenVerify, orderListController.cancelOrder);
 
 module.exports = route;

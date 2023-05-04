@@ -110,7 +110,7 @@ function PropertyList(props) {
               <Image
                 rounded={5}
                 boxSize={{ base: "50px", md: "65px" }}
-                src={process.env.REACT_APP_API_BASE_IMG_URL + property.image}
+                src={process.env.REACT_APP_BASE_IMG_URL + property.image}
               />
               <Text>{name}</Text>
             </Flex>

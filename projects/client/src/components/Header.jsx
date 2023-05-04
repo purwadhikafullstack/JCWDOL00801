@@ -106,7 +106,7 @@ function Header(props) {
                       <Avatar
                         bg="green.500"
                         size={"sm"}
-                        src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
+                        src={process.env.REACT_APP_BASE_IMG_URL + profileImg}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}
@@ -235,7 +235,7 @@ function Header(props) {
                   <Avatar
                   bg="green.500"
                     size={"lg"}
-                    src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
+                    src={process.env.REACT_APP_BASE_IMG_URL + profileImg}
                   />
                   <Heading size="md" textTransform="capitalize">
                     {name.split(" ")[0]}

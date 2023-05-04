@@ -44,7 +44,7 @@ function PropertyCard({ data }) {
         transitionDuration: "0.15s",
       }}
     >
-      <Image src={process.env.REACT_APP_API_BASE_IMG_URL + data.image} borderTopRadius="lg" />
+      <Image src={process.env.REACT_APP_BASE_IMG_URL + data.image} borderTopRadius="lg" />
       <CardBody>
         <Stack spacing="3">
           <Tooltip label={data.name}>

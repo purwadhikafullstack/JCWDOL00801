@@ -296,7 +296,7 @@ function RoomFormEdit(props) {
 
       return () => URL.revokeObjectURL(objectUrl);
     } else {
-      setPreview(process.env.REACT_APP_API_BASE_IMG_URL + `${values.image}`);
+      setPreview(process.env.REACT_APP_BASE_IMG_URL + `${values.image}`);
     }
   }, [values.image, addType]);
   useEffect(() =>{
@@ -423,7 +423,7 @@ function RoomFormEdit(props) {
                   )}
                 </Flex>
                 <Image
-                  src={process.env.REACT_APP_API_BASE_IMG_URL + chosenImage}
+                  src={process.env.REACT_APP_BASE_IMG_URL + chosenImage}
                   w="300px"
                   h="150px"
                   objectFit={"cover"}

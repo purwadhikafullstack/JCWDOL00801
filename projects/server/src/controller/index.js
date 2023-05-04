@@ -11,7 +11,7 @@ const reviewController = require("./reviewController");
 const searchController = require("./searchController");
 const roomAvailabilityController = require("./roomAvailabilityController");
 const specialPriceController = require("./specialPriceController");
-
+const propReviewsController = require("./propReviewsController")
 module.exports = {
   userController,
   categoryController,
@@ -21,6 +21,8 @@ module.exports = {
   propertyController,
   paymentMethodController,
   orderListController,
+  searchController,
+  propReviewsController,
   userOrderController,
   reviewController,
   searchController,

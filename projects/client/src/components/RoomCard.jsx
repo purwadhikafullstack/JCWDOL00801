@@ -55,7 +55,7 @@ function RoomCard(props) {
         style={{ filter: props.isAvailable ? "" : "grayscale(1)" }}
         objectFit="cover"
         maxW={{ base: "100%", sm: "200px" }}
-        src={process.env.REACT_APP_API_BASE_IMG_URL + props.data.typeImg}
+        src={process.env.REACT_APP_BASE_IMG_URL + props.data.typeImg}
         alt="Caffe Latte"
       />
       <CardBody>

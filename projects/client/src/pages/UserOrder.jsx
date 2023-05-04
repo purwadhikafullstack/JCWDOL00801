@@ -137,8 +137,12 @@ function UserOrder(props) {
             transaction={data.transaction}
             property={data.room.property}
             type={data.room.type}
+            selectedStatus={selectedStatus}
+            page={page}
             btnDetails={onBtnDetails}
             key={idx}
+            getData={getUserData}
+            userData={userData}
           />
         );
       })
@@ -216,7 +220,7 @@ function UserOrder(props) {
                 <Flex alignItems="center" justifyContent="center">
                   <Image
                     height="500px"
-                    src={process.env.REACT_APP_API_BASE_IMG_URL + transaction.payProofImg}
+                    src={process.env.REACT_APP_BASE_IMG_URL + transaction.payProofImg}
                   />
                 </Flex>
               </Flex>

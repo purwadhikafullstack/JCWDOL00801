@@ -112,7 +112,7 @@ function ProfileCard(props) {
           border="1px"
           borderColor="#ccc"
           boxSize="200px"
-          src={process.env.REACT_APP_API_BASE_IMG_URL + profileImg}
+          src={process.env.REACT_APP_BASE_IMG_URL + profileImg}
           alt={"User Avatar"}
           fallbackSrc={fallBackAvatar}
         />

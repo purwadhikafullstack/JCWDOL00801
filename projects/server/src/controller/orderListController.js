@@ -682,4 +682,35 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
+  cancelOrder: async(req, res) =>{
+    try {
+        const user = await userModel.findAll({
+            where: {
+                email: req.decrypt.email
+            }
+        })
+        if(user.length > 0){
+            const cancel = await transactionModel.update({
+                status: "Cancelled"
+            }, {
+                where: {
+                    transactionId: req.body.transactionId
+                }
+            })
+            return res.status(200).send({
+                success: true,
+                message: "Book cancelled!"
+            })
+        }
+        return res.status(401).send({
+            success: false,
+            message: "Unauthorized Action"
+        })
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: "Database error"
+        })
+    }
+},
 };

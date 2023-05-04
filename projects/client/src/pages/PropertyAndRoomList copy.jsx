@@ -115,7 +115,7 @@ function PropertyAndRoomList(props) {
       return (
         <>
           <Flex mt={5} gap={5}>
-            <Image boxSize={150} src={process.env.REACT_APP_API_BASE_IMG_URL + image} />
+            <Image boxSize={150} src={process.env.REACT_APP_BASE_IMG_URL + image} />
             <Stack>
               <Heading size="md">{name}</Heading>
               <Flex justify="space-between">
@@ -446,7 +446,7 @@ function PropertyAndRoomList(props) {
                       <Image
                         rounded={5}
                         boxSize={{ base: "50px", md: "65px" }}
-                        src={process.env.REACT_APP_API_BASE_IMG_URL + typeImg}
+                        src={process.env.REACT_APP_BASE_IMG_URL + typeImg}
                       />
                       <Text>{name}</Text>
                     </Flex>

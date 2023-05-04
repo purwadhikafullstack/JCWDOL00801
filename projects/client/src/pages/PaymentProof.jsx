@@ -196,7 +196,7 @@ const PaymentProofPage = (props) => {
         <ModalContent>
           <ModalCloseButton/>
           <ModalBody mt={7} mb={5}>
-            <Image src={`http://localhost:8000${data.payProofImg}`}/>
+            <Image src={`${process.env.REACT_APP_BASE_IMG_URL}${data.payProofImg}`}/>
           </ModalBody> </ModalContent> </Modal> : ""}
           {isExpired ? (
             ""

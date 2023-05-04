@@ -32,9 +32,10 @@ const {
   propertyRouter,
   paymentMethodRouter,
   orderListRouter,
+  searchRouter,
+  propReviewRouter,
   userOderRouter,
   reviewRouter,
-  searchRouter,
   roomAvailabilityRouter,
   specialPriceRouter
 } = require("./router");
@@ -51,6 +52,7 @@ app.use("/api", orderListRouter);
 app.use("/api", userOderRouter);
 app.use("/api", reviewRouter);
 app.use("/api", searchRouter);
+app.use("/api", propReviewRouter);
 app.use("/api", roomAvailabilityRouter);
 app.use("/api", specialPriceRouter);
 

@@ -43,7 +43,7 @@ const SearchCard = ({ data }) => {
       <Image
         objectFit="cover"
         maxW={{ base: "100%", sm: "200px" }}
-        src={process.env.REACT_APP_API_BASE_IMG_URL + data.image}
+        src={process.env.REACT_APP_BASE_IMG_URL + data.image}
         alt="Caffe Latte"
       />
 

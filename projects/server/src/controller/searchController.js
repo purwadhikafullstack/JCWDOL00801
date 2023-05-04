@@ -31,6 +31,7 @@ module.exports = {
       } = req.body;
       const newStartDate = startDate ? new Date(startDate) : new Date()
       const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000)
+      console.log(newStartDate, newEndDate)
       const {
         name,
         city,

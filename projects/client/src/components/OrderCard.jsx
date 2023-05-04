@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Image,
@@ -12,17 +12,31 @@ import {
   Tag,
   Icon,
   Select,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Textarea,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { AiOutlineUser } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
+import Swal from "sweetalert2";
 
 function OrderCard(props) {
   const { orderId, price, createdAt } = props.order;
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { status, totalGuest, checkinDate, checkoutDate, transactionId } = props.transaction;
   const { tenant, name, image } = props.property;
-  const [isReview, setIsReview] = React.useState();
+  const [isReview, setIsReview] = React.useState(false);
+  const [reviews, setReviews] = React.useState("");
+  const [currentReviews, setCurrentReviews] = React.useState("");
+  const [selectedOption, setSelectedOption] = useState("");
   const navigate = useNavigate();
 
   const getReview = async () => {
@@ -30,15 +44,132 @@ function OrderCard(props) {
       let response = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + `/review/check?id=${transactionId}`
       );
-      setIsReview(response.data.data.length);
+      if (response.data.data.length > 0) {
+        setIsReview(true);
+        setReviews(response.data.data[0].desc);
+        setCurrentReviews(response.data.data[0].desc);
+      }
     } catch (error) {
       console.log(error);
+    }
+  };
+  const createReview = async () => {
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/reviews/new",
+          {
+            transactionId,
+            desc: currentReviews,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
+          }
+        );
+        onClose();
+        Swal.fire({
+          icon: "success",
+          title: res.data.message,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#48BB78",
+          timer: 3000,
+        }).then((response) => {
+          props.getData();
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      onClose();
+      Swal.fire({
+        icon: "error",
+        title: error.response.data.message,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 3000,
+      });
+    }
+  };
+  const cancelHandler = async () => {
+    Swal.fire({
+      icon: "info",
+      title: "Are you sure you want to cancel?",
+      showCancelButton: true,
+      cancelButtonColor: "red",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#48BB78",
+    })
+      .then((res) => {
+        if (res.isConfirmed) {
+          const getLocalStorage = localStorage.getItem("renthaven1");
+          if(getLocalStorage){
+            Axios.patch(
+              process.env.REACT_APP_API_BASE_URL + "/orderlist-user/cancel",
+              {
+                transactionId,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${getLocalStorage}`,
+                },
+              }
+            )
+              .then((response) => {
+                Swal.fire({
+                  icon: "success",
+                  title: response.data.message,
+                  confirmButtonText: "OK",
+                  confirmButtonColor: "#48BB78",
+                  timer: 3000,
+                }).then(resp => {
+                  props.getData();
+                  setSelectedOption("")
+                });
+              })
+              .catch((e) => {
+                console.log(e);
+                setSelectedOption("");
+              });
+
+          }
+        }
+        setSelectedOption("");
+      })
+      .catch((e) => console.log(e));
+  };
+  const editHandler = async () => {
+    try {
+      const res = await Axios.patch(process.env.REACT_APP_API_BASE_URL + "/reviews/update", {
+        id: transactionId,
+        desc: currentReviews,
+      });
+      onClose();
+      Swal.fire({
+        icon: "success",
+        title: res.data.message,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 3000,
+      }).then((response) => {
+        props.getData();
+      });
+    } catch (error) {
+      onClose();
+      Swal.fire({
+        icon: "error",
+        title: error.response.data.message,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 3000,
+      });
     }
   };
 
   useEffect(() => {
     getReview();
-  }, []);
+  }, [props.userData, props.selectedStatus, props.page]);
 
   return (
     <Card overflow="hidden">
@@ -112,7 +243,7 @@ function OrderCard(props) {
           <Flex gap={3}>
             <Image
               boxSize={{ base: "100px", md: "150px" }}
-              src={process.env.REACT_APP_API_BASE_IMG_URL + image}
+              src={process.env.REACT_APP_BASE_IMG_URL + image}
               fallbackSrc="https://via.placeholder.com/150"
             />
             <Flex direction="column">
@@ -130,19 +261,114 @@ function OrderCard(props) {
             {parseInt(price).toLocaleString("ID", { style: "currency", currency: "IDR" })}
           </Text>
           {status === "Waiting for payment" ? (
-            <Select>
-              <option hidden>Action</option>
+            <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
+              <option hidden value={""}>
+                Action
+              </option>
               <option onClick={() => navigate(`/payment-proof?id=${transactionId}`)}>
                 Proceed to payment
               </option>
-              <option>Cancel</option>
+              <option value="Cancel" onClick={cancelHandler}>
+                Cancel
+              </option>
             </Select>
           ) : status === "Confirmed" && new Date() > new Date(checkoutDate) ? (
             <Flex gap={3}>
-              {isReview ? null : (
-                <Button variant="outline" colorScheme="green">
-                  {"Write a review"}
-                </Button>
+              {isReview ? (
+                <>
+                  <Button variant="outline" colorScheme="green" onClick={onOpen}>
+                    {"Edit review"}
+                  </Button>
+                  <Modal
+                    closeOnEsc={false}
+                    closeOnOverlayClick={false}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    size={"md"}
+                    isCentered
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Edit Review</ModalHeader>
+                      <ModalCloseButton
+                        onClick={() => {
+                          setCurrentReviews(reviews);
+                          onClose();
+                        }}
+                      />
+                      <ModalBody>
+                        <Text mb={5}>Edit your review</Text>
+                        <Textarea
+                          resize={"vertical"}
+                          size="md"
+                          value={currentReviews}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 255) {
+                              setCurrentReviews(e.target.value);
+                            }
+                          }}
+                        />
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          variant={"link"}
+                          colorScheme="black"
+                          mr={3}
+                          onClick={() => {
+                            setCurrentReviews(reviews);
+                            onClose();
+                          }}
+                        >
+                          Close
+                        </Button>
+                        <Button variant="solid" colorScheme="green" onClick={editHandler}>
+                          Confirm
+                        </Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" colorScheme="green" onClick={onOpen} size={"md"}>
+                    {"Write a review"}
+                  </Button>
+                  <Modal
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    isCentered
+                    closeOnOverlayClick={false}
+                    closeOnEsc={false}
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Write review</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <Text>Please tell us your thoughts</Text>
+                        <Textarea
+                          value={currentReviews}
+                          resize={"vertical"}
+                          size={"md"}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 255) {
+                              setCurrentReviews(e.target.value);
+                            }
+                          }}
+                        />
+                      </ModalBody>
+
+                      <ModalFooter>
+                        <Button variant={"link"} colorScheme="black" mr={3} onClick={onClose}>
+                          Close
+                        </Button>
+                        <Button variant="solid" colorScheme="green" onClick={createReview}>
+                          Confirm
+                        </Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
+                </>
               )}
               <Button
                 variant="solid"
@@ -153,13 +379,15 @@ function OrderCard(props) {
               </Button>
             </Flex>
           ) : (
-            <Button
-              variant="solid"
-              onClick={() => props.btnDetails(props.order)}
-              colorScheme="green"
-            >
-              {"Details"}
-            </Button>
+            <>
+              <Button
+                variant="solid"
+                onClick={() => props.btnDetails(props.order)}
+                colorScheme="green"
+              >
+                {"Details"}
+              </Button>
+            </>
           )}
         </Flex>
       </CardFooter>
