@@ -126,7 +126,7 @@ function TenantHeader(props) {
                       <Avatar
                         bg="green.500"
                         size={"sm"}
-                        src={`http://localhost:8000/${profileImg}`}
+                        src={process.env.REACT_APP_API_BASE_IMG_URL + `${profileImg}`}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}
@@ -222,7 +222,11 @@ function TenantHeader(props) {
                   _hover={{ cursor: "pointer" }}
                   onClick={() => navigate("/profile", { replace: true })}
                 >
-                  <Avatar bg="green.500" size={"xl"} src={`http://localhost:8000/${profileImg}`} />
+                  <Avatar
+                    bg="green.500"
+                    size={"xl"}
+                    src={process.env.REACT_APP_API_BASE_IMG_URL + `${profileImg}`}
+                  />
                   <Heading size="md" textTransform="capitalize" style={{ marginLeft: "0px" }}>
                     {name.split(" ")[0]}
                   </Heading>

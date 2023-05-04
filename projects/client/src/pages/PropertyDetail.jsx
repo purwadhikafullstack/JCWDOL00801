@@ -106,7 +106,7 @@ function PropertyDetail(props) {
       </Flex>
       <PropertyGallery />
       <Flex align="center" gap={3} mt={5}>
-        <Avatar src={`http://localhost:8000/${userTenant.profileImg}`} bg="green.500" size="md" />
+        <Avatar src={process.env.REACT_APP_API_BASE_IMG_URL +`${userTenant.profileImg}`} bg="green.500" size="md" />
         <Heading size="md">{userTenant.name}</Heading>
       </Flex>
       <Divider my={5} />
