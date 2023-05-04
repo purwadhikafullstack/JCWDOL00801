@@ -217,19 +217,23 @@ const TenantDashboardPage = ({ isMobile }) => {
       console.log(error);
     }
   };
-  const getTransactionData = async() =>{
+  const getTransactionData = async () => {
     try {
       const getLocalStorage = localStorage.getItem("renthaven1");
       if (getLocalStorage) {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/tenant/transaction", {},{
-        headers:{
-          Authorization: `Bearer ${getLocalStorage}`
-        }
-      })
-      setTransactionData(res.data.result)
-    }
+        const res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/tenant/transaction",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
+          }
+        );
+        setTransactionData(res.data.result);
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
   
@@ -270,7 +274,6 @@ const TenantDashboardPage = ({ isMobile }) => {
                     <Td textAlign="center">{val.status}</Td>
                   </Tr>
                   })}
-                  
                 </Tbody>
               </Table>
             </TableContainer>

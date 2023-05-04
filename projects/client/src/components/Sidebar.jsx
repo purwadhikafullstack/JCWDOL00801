@@ -199,6 +199,7 @@ const Sidebar = ({ propW, setAppWidth }) => {
                 display={"flex"}
                 flexDirection="row"
                 alignItems={"center"}
+                onClick={() => navigate(`/report`, { replace: true })}
               >
                 <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                 View Reports

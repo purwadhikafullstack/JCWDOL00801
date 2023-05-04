@@ -7,12 +7,12 @@ import { useDispatch } from "react-redux";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-import { Input, InputGroup, InputLeftElement, Box } from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
-import { addDays } from "date-fns";
+import { differenceInDays, subDays } from "date-fns";
 import { useSelector } from "react-redux";
 
-function CalendarEndDate(props) {
+function CalendarChartStart(props) {
   const [calendar, setCalendar] = React.useState("");
 
   //state untuk mengontrol buka tutup calendar
@@ -20,10 +20,10 @@ function CalendarEndDate(props) {
 
   const [minDate, setMinDate] = React.useState("");
   const [maxDate, setMaxDate] = React.useState("");
-  const { searchEndDate, searchStartDate, createdAt } = useSelector((state) => {
+  const { chartStartDate, createdAt, chartEndDate } = useSelector((state) => {
     return {
-      searchEndDate: state.dateReducer.searchEndDate,
-      searchStartDate: state.dateReducer.searchStartDate,
+      chartStartDate: state.dateReducer.chartStartDate,
+      chartEndDate: state.dateReducer.chartEndDate,
       createdAt: state.userReducer.createdAt,
     };
   });
@@ -33,7 +33,7 @@ function CalendarEndDate(props) {
 
   const handleSelect = (date) => {
     setCalendar(date);
-    dispatch(setDateAction({ searchEndDate: format(date, "MM/dd/yyyy") }));
+    dispatch(setDateAction({ chartStartDate: format(date, "MM/dd/yyyy") }));
   };
 
   const hideOnEscape = (e) => {
@@ -59,32 +59,36 @@ function CalendarEndDate(props) {
   }, []);
 
   return (
-    <Box w={"100%"}>
-      <div className="calendarWrap">
-        <InputGroup>
-          <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
-          <Input
-            placeholder="Order End Date"
-            value={searchEndDate}
-            readOnly
-            onClick={() => setOpen((open) => !open)}
+    <div className="calendarWrap">
+      <InputGroup>
+        <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
+        <Input
+          placeholder="Start Date"
+          value={chartStartDate}
+          readOnly
+          onClick={() => setOpen((open) => !open)}
+        />
+      </InputGroup>
+      <div ref={refOne}>
+        {open && (
+          <Calendar
+            date={calendar === "" ? new Date() : calendar}
+            minDate={
+              chartEndDate === ""
+                ? minDate
+                : differenceInDays(minDate, subDays(new Date(chartEndDate), 30)) > 0
+                ? minDate
+                : subDays(new Date(chartEndDate), 30)
+            }
+            maxDate={chartEndDate === "" ? maxDate : subDays(new Date(chartEndDate), 1)}
+            onChange={handleSelect}
+            className="calendarElement"
+            color="#38A169"
           />
-        </InputGroup>
-        <div ref={refOne}>
-          {open && (
-            <Calendar
-              date={calendar === "" ? new Date() : calendar}
-              minDate={searchStartDate === "" ? minDate : addDays(new Date(searchStartDate), 1)}
-              maxDate={maxDate}
-              onChange={handleSelect}
-              className="calendarElement"
-              color="#38A169"
-            />
-          )}
-        </div>
+        )}
       </div>
-    </Box>
+    </div>
   );
 }
 
-export default CalendarEndDate;
+export default CalendarChartStart;

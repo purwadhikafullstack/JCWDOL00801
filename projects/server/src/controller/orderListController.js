@@ -6,9 +6,10 @@ const {
   userModel,
   typeModel,
   roomAvailModel,
+  tenantModel,
 } = require("../model");
 const { Op, QueryTypes } = require("sequelize");
-const { format, differenceInDays } = require("date-fns");
+const { format, differenceInDays, setDate, addDays, eachDayOfInterval } = require("date-fns");
 const schedule = require("node-schedule");
 const { transport } = require("../config/nodemailer");
 const { dbSequelize } = require("../config/db");
@@ -461,8 +462,8 @@ module.exports = {
       });
     } catch (error) {
       return res.status(500).send({
-        success: false,
-        message: "Database error",
+        success:  false,
+        message:  "Database error",
       });
     }
   },
@@ -510,7 +511,175 @@ module.exports = {
       res.status(500).send({
         success: false,
         message: "Database Error."
-      })
+      });
+    }
+  },
+  getDataForChart: async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      if (req.query.type === "property") {
+        const filterData = [];
+        if (startDate) {
+          filterData.push({
+            createdAt: {
+              [Op.gte]: startDate,
+            },
+          });
+        }
+        if (endDate) {
+          filterData.push({
+            createdAt: {
+              [Op.lte]: endDate,
+            },
+          });
+        }
+        const data = await propertyModel.findAll({
+          include: {
+            model: roomModel,
+            as: "roomProp",
+            required: true,
+            include: {
+              model: orderListModel,
+              as: "order",
+              require: true,
+              where: { [Op.and]: filterData },
+            },
+          },
+          where: { [Op.and]: [{ tenantId: req.query.tenant }, { propertyId: req.query.property }] },
+          order: [["createdAt", "ASC"]],
+        });
+        return res.status(200).send({
+          data,
+        });
+      } else if (req.query.type === "transaction") {
+        const filterData = [];
+        if (startDate) {
+          filterData.push({
+            createdAt: {
+              [Op.gte]: startDate,
+            },
+          });
+        }
+        if (endDate) {
+          filterData.push({
+            createdAt: {
+              [Op.lte]: endDate,
+            },
+          });
+        }
+        const data = await orderListModel.findAll({
+          include: [
+            {
+              model: transactionModel,
+              as: "transaction",
+              required: true,
+            },
+            {
+              model: roomModel,
+              as: "room",
+              required: true,
+              include: [
+                {
+                  model: propertyModel,
+                  as: "property",
+                  required: true,
+                  where: { tenantId: req.query.tenant },
+                },
+              ],
+            },
+          ],
+          where: { [Op.and]: filterData },
+          order: [["createdAt", "ASC"]],
+        });
+        return res.status(200).send({
+          data,
+        });
+      } else if (req.query.type === "user") {
+        const filterData = [];
+        if (startDate) {
+          filterData.push({
+            createdAt: {
+              [Op.gte]: startDate,
+            },
+          });
+        }
+        if (endDate) {
+          filterData.push({
+            createdAt: {
+              [Op.lte]: endDate,
+            },
+          });
+        }
+        const data = await orderListModel.findAll({
+          include: [
+            {
+              model: transactionModel,
+              as: "transaction",
+              required: true,
+              where: { userId: req.query.user },
+            },
+            {
+              model: roomModel,
+              as: "room",
+              required: true,
+              include: [
+                {
+                  model: propertyModel,
+                  as: "property",
+                  required: true,
+                  where: { tenantId: req.query.tenant },
+                },
+              ],
+            },
+          ],
+          order: [["createdAt", "ASC"]],
+          where: { [Op.and]: filterData },
+        });
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getUserForChart: async (req, res) => {
+    try {
+      const user = await userModel.findAll({
+        where: {
+          email: req.decrypt.email,
+        },
+      });
+      const tenant = await tenantModel.findAll({
+        where: {
+          userId: user[0].userId,
+        },
+      });
+      if (tenant.length > 0) {
+        const userData = await dbSequelize.query(
+          `SELECT DISTINCT u.userId, u.name, u.email 
+          FROM orderlists AS o
+          INNER JOIN transactions AS t
+          ON o.transactionId = t.transactionId
+          INNER JOIN users AS u 
+          ON t.userId = u.userId
+          INNER JOIN rooms AS r
+          ON o.roomId = r.roomId
+          INNER JOIN properties AS p 
+          ON r.propertyId = p.propertyId
+          WHERE p.tenantId = ${tenant[0].tenantId}`,
+          { type: QueryTypes.SELECT }
+        );
+
+        return res.status(200).send({
+          success: true,
+          result: userData,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
     }
   },
 };

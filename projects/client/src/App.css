@@ -47,6 +47,11 @@
   z-index: 999;
 }
 
+.static-calendar {
+  border: 1px solid #ccc;
+  border-radius: 2%;
+}
+
 .gallery-img {
   height: 500px;
 }

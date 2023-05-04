@@ -21,7 +21,7 @@ function LandingSearchForm(props) {
   const getProvinceData = async () => {
     try {
       let response = await Axios.get(
-        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+        "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
       );
 
       const provinceOption = response.data.map((val, idx) => {
@@ -51,7 +51,7 @@ function LandingSearchForm(props) {
     if (province.length !== 0) {
       try {
         let response = await Axios.get(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+          `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
         );
         const cityOption = response.data.map((val, idx) => {
           return { value: val.id, label: val.name };
@@ -126,7 +126,12 @@ function LandingSearchForm(props) {
                 onClick={() => {
                   navigate(`/search`, {
                     replace: true,
-                    state: { province: provinceLabel, city: cityLabel, defaultProvince: selectedProvince, defaultCity: selectedCity },
+                    state: {
+                      province: provinceLabel,
+                      city: cityLabel,
+                      defaultProvince: selectedProvince,
+                      defaultCity: selectedCity,
+                    },
                   });
                 }}
               >

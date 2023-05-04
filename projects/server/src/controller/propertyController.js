@@ -8,6 +8,7 @@ const {
   tenantModel,
   orderListModel,
   transactionModel,
+  specialPriceModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
 const { dbSequelize } = require("../config/db");
@@ -414,6 +415,23 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { propertyId } = req.params;
+      const { isDeleted } = req.body;
+      if (!isDeleted) {
+        const update = await propertyModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { propertyId },
+          }
+        );
+        if (update) {
+          return res.status(200).send({
+            success: true,
+            message: `Data has been updated`,
+          });
+        }
+      }
       const checkTransaction = await orderListModel.findAll({
         include: [
           {
@@ -456,26 +474,36 @@ module.exports = {
           success: false,
           message: `Can not deactivate property because there are ongoing transaction(s)`,
         });
-      }
-
-      if (checkCategory.length <= 0) {
+      } else if (checkCategory.length <= 0) {
         return res.status(400).send({
           data: checkCategory,
           success: false,
           message: `Can not activate property because corresponding category is not active`,
         });
-      }
+      } else {
+        const updateRoom = await roomModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
 
-      const update = await propertyModel.update(req.body, {
-        where: {
-          propertyId,
-        },
-      });
-      if (update) {
-        return res.status(200).send({
-          success: true,
-          message: `Data Updated Successfully`,
-        });
+        const updateProperty = await propertyModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
+        if (updateProperty) {
+          return res.status(200).send({
+            success: true,
+            message: `Data Updated Successfully`,
+          });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -662,6 +690,72 @@ module.exports = {
       } else {
         return res.status(404).send({
           data: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: {
+          [Op.and]: [
+            { roomId: req.params.roomId },
+            { propertyId: req.params.id },
+            { isDeleted: false },
+          ],
+        },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getAllRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: { [Op.and]: [{ isDeleted: false }, { propertyId: req.params.id }] },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
         });
       }
     } catch (error) {

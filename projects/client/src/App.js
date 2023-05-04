@@ -46,6 +46,8 @@ import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
 import PropertyAndRoom from "./pages/PropertyAndRoom";
 import PropertyAndRoomList from "./pages/PropertyAndRoomList";
+import Report from "./pages/Report";
+import PropertyForm from "./components/PropertyForm";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -237,23 +239,7 @@ function App() {
                 path="/property/new"
                 element={
                   <VerifyChecker loading={loading}>
-                    <PropertyCreateMenu />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building"
-                element={
-                  <VerifyChecker loading={loading}>
                     <AddProperty />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building-room"
-                element={
-                  <VerifyChecker loading={loading}>
-                    <AddPropertyRoom />
                   </VerifyChecker>
                 }
               />
@@ -265,15 +251,24 @@ function App() {
                   </VerifyChecker>
                 }
               />
-              <Route path="/manage-categories" element={<VerifyChecker loading={loading}><ManageCategories /></VerifyChecker>} />
-              <Route path="/orderlist" element={<VerifyChecker loading={loading}><OrderHistory /></VerifyChecker>} />
-              <Route path="/room" element={<VerifyChecker loading={loading}><RoomListPage /></VerifyChecker>} />
-              <Route path="/room/edit" element={<VerifyChecker loading={loading}><RoomFormEdit /></VerifyChecker>} />
-              {/* <Route path="/room/new" element={<VerifyChecker loading={loading}><RoomCreateMenu /></VerifyChecker>} /> */}
-              <Route path="/room/new/type" element={<VerifyChecker loading={loading}><RoomForm /></VerifyChecker>} />
-              <Route path="/room/photos" element={<VerifyChecker loading={loading}><RoomPhoto /></VerifyChecker>} />
-              <Route path="/property-list" element={<VerifyChecker loading={loading}><PropertyAndRoom /></VerifyChecker>} />
-              <Route path="/property-list/room" element={<VerifyChecker loading={loading}><PropertyAndRoomList isMobile={isMobile} /></VerifyChecker>} />
+              <Route
+                path="/property/new/building"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <PropertyForm />
+                  </VerifyChecker>
+                }
+              />
+              <Route path="/manage-categories" element={<ManageCategories />} />
+              <Route path="/orderlist" element={<OrderHistory />} />
+              <Route path="/room" element={<RoomListPage />} />
+              <Route path="/room/edit" element={<RoomFormEdit />} />
+              {/* <Route path="/room/new" element={<RoomCreateMenu />} /> */}
+              <Route path="/room/new/type" element={<RoomForm />} />
+              <Route path="/room/photos" element={<RoomPhoto />} />
+              <Route path="/property-list" element={<PropertyAndRoom />} />
+              <Route path="/property-list/room" element={<PropertyAndRoomList />} />
+              <Route path="/report" element={<Report />} />
               <Route path="/*" />
             </Routes>
           </div>
@@ -339,7 +334,6 @@ function App() {
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
             <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
-            <Route path="/search" element={<SearchPage />} />
             <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
             <Route path="/my-orders" element={<UserOrder />} isMobile={isMobile} />
             <Route path="/search" element={<SearchPage />} isMobile={isMobile} />

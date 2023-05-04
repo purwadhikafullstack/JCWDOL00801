@@ -29,7 +29,6 @@ const specialPriceModel = dbSequelize.define("specialPrices", {
   percentage: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    defaultValue: false,
   },
 });
 
