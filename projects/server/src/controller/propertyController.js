@@ -407,6 +407,23 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { propertyId } = req.params;
+      const { isDeleted } = req.body;
+      if (!isDeleted) {
+        const update = await propertyModel.update(
+          {
+            isDeleted,
+          },
+          {
+            where: { propertyId },
+          }
+        );
+        if (update) {
+          return res.status(200).send({
+            success: true,
+            message: `Data has been updated`,
+          });
+        }
+      }
       const checkTransaction = await orderListModel.findAll({
         include: [
           {
@@ -449,26 +466,36 @@ module.exports = {
           success: false,
           message: `Can not deactivate property because there are ongoing transaction(s)`,
         });
-      }
-
-      if (checkCategory.length <= 0) {
+      } else if (checkCategory.length <= 0) {
         return res.status(400).send({
           data: checkCategory,
           success: false,
           message: `Can not activate property because corresponding category is not active`,
         });
-      }
+      } else {
+        const updateRoom = await roomModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
 
-      const update = await propertyModel.update(req.body, {
-        where: {
-          propertyId,
-        },
-      });
-      if (update) {
-        return res.status(200).send({
-          success: true,
-          message: `Data Updated Successfully`,
-        });
+        const updateProperty = await propertyModel.update(
+          { isDeleted },
+          {
+            where: {
+              propertyId,
+            },
+          }
+        );
+        if (updateProperty) {
+          return res.status(200).send({
+            success: true,
+            message: `Data Updated Successfully`,
+          });
+        }
       }
     } catch (error) {
       console.log(error);

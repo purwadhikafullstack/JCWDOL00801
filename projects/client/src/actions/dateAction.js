@@ -14,3 +14,8 @@ export const clearAllDate = () => {
     type: "CLEAR_ALLDATE",
   };
 };
+export const clearChartDate = () => {
+  return {
+    type: "CLEAR_CHART_DATE",
+  };
+};

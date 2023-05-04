@@ -157,7 +157,7 @@ function OrderHistory(props) {
   };
   const cancelTransactionHandler = (transId) => {
     Swal.fire({
-      title: "Are you sure you want to cancelled this order?",
+      title: "Are you sure you want to cancel this order?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#38A169",
@@ -176,7 +176,7 @@ function OrderHistory(props) {
               confirmButtonColor: "#38A169",
               confirmButtonText: "Yes",
             }).then((r) => {
-              getTableData();
+              onBtnReset();
             });
           })
           .catch((e) => {
@@ -185,10 +185,12 @@ function OrderHistory(props) {
               icon: "success",
               confirmButtonColor: "#38A169",
               confirmButtonText: "Yes",
+            }).then((r) => {
+              onBtnReset();
             });
           });
       } else {
-        getTableData();
+        onBtnReset();
       }
     });
   };
