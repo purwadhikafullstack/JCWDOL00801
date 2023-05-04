@@ -84,7 +84,6 @@ function Footer() {
             <Link>Terms of Service</Link>
             <Link>Legal</Link>
             <Link>Privacy Policy</Link>
-            <Link>Satus</Link>
           </Stack>
         </SimpleGrid>
       </Container>

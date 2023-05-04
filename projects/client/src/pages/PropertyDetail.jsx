@@ -65,7 +65,6 @@ function PropertyDetail(props) {
       console.log(error)
     }
   }
-  console.log(types)
   const renderRoom = () =>{
       return types.map((val, idx )=>{
         return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} typeImg={types.typeImg} isAvailable = {true} />
@@ -81,7 +80,6 @@ function PropertyDetail(props) {
       const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + `/reviews/all?id=${searchQuery.get("id")}`)
       if(res.data.result.length > 0){
         setReviewsData(res.data.result)
-        console.log(res.data.result)
       }else{
         setNoReview(true)
       }
@@ -106,7 +104,7 @@ function PropertyDetail(props) {
       </Flex>
       <PropertyGallery />
       <Flex align="center" gap={3} mt={5}>
-        <Avatar src={`http://localhost:8000/${userTenant.profileImg}`} bg="green.500" size="md" />
+        <Avatar src={process.env.REACT_APP_API_BASE_IMG_URL +`${userTenant.profileImg}`} bg="green.500" size="md" />
         <Heading size="md">{userTenant.name}</Heading>
       </Flex>
       <Divider my={5} />

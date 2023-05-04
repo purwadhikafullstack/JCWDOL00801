@@ -7,7 +7,7 @@ const Testimonial = ({ children }) => {
 const TestimonialContent = ({ children }) => {
   return (
     <Stack
-      bg="white"
+      bg="green.200"
       boxShadow={"lg"}
       p={8}
       rounded={"xl"}
@@ -23,7 +23,7 @@ const TestimonialContent = ({ children }) => {
         borderRightWidth: 16,
         borderTop: "solid",
         borderTopWidth: 16,
-        borderTopColor: "white",
+        borderTopColor: "green.200",
         pos: "absolute",
         bottom: "-16px",
         left: "50%",
@@ -67,7 +67,7 @@ const TestimonialAvatar = ({ src, name, title }) => {
 
 function Testimonials(props) {
   return (
-    <Box bg="gray.100">
+    <Box bg="white">
       <Container maxW={"7xl"} py={16} as={Stack} spacing={12}>
         <Stack spacing={0} align={"center"}>
           <Heading>Our Clients Speak</Heading>

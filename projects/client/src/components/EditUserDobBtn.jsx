@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import { loginAction } from "../actions/userAction";
 import CalendarDate from "./CalendarDate";
 import { clearDobAction } from "../actions/dateAction";
+import { setTenantAction } from "../actions/tenantAction";
 
 function EditUserDobBtn(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -54,7 +55,11 @@ function EditUserDobBtn(props) {
                 },
               }
             );
-            dispatch(loginAction(res.data.result));
+            if (res.data.tenant) {
+              dispatch(setTenantAction(res.data.tenant));
+              dispatch(setTenantAction(res.data.bank));
+            }
+            dispatch(loginAction(res.data.user));
             localStorage.setItem("renthaven1", res.data.token);
             dispatch(clearDobAction());
           }

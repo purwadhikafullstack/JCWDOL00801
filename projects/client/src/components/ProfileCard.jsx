@@ -18,6 +18,7 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 import { loginAction } from "../actions/userAction";
 import fallBackAvatar from "../assets/fallback-avatar.jpg";
+import { setTenantAction } from "../actions/tenantAction";
 
 function ProfileCard(props) {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -31,7 +32,6 @@ function ProfileCard(props) {
   });
 
   const onBtnUpdate = async () => {
-    console.log(values.image);
     try {
       let token = localStorage.getItem("renthaven1");
       const formData = new FormData();
@@ -65,7 +65,11 @@ function ProfileCard(props) {
                   },
                 }
               );
-              dispatch(loginAction(res.data.result));
+              if (res.data.tenant) {
+                dispatch(setTenantAction(res.data.tenant));
+                dispatch(setTenantAction(res.data.bank));
+              }
+              dispatch(loginAction(res.data.user));
               localStorage.setItem("renthaven1", res.data.token);
               setFieldValue("image", undefined);
             }

@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftElement, Box } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { addDays } from "date-fns";
 import { useSelector } from "react-redux";
@@ -59,29 +59,31 @@ function CalendarEndDate(props) {
   }, []);
 
   return (
-    <div className="calendarWrap">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
-        <Input
-          placeholder="Order End Date"
-          value={searchEndDate}
-          readOnly
-          onClick={() => setOpen((open) => !open)}
-        />
-      </InputGroup>
-      <div ref={refOne}>
-        {open && (
-          <Calendar
-            date={calendar === "" ? new Date() : calendar}
-            minDate={searchStartDate === "" ? minDate : addDays(new Date(searchStartDate), 1)}
-            maxDate={maxDate}
-            onChange={handleSelect}
-            className="calendarElement"
-            color="#38A169"
+    <Box w={"100%"}>
+      <div className="calendarWrap">
+        <InputGroup>
+          <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
+          <Input
+            placeholder="Order End Date"
+            value={searchEndDate}
+            readOnly
+            onClick={() => setOpen((open) => !open)}
           />
-        )}
+        </InputGroup>
+        <div ref={refOne}>
+          {open && (
+            <Calendar
+              date={calendar === "" ? new Date() : calendar}
+              minDate={searchStartDate === "" ? minDate : addDays(new Date(searchStartDate), 1)}
+              maxDate={maxDate}
+              onChange={handleSelect}
+              className="calendarElement"
+              color="#38A169"
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </Box>
   );
 }
 

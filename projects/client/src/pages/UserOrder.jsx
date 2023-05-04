@@ -205,7 +205,7 @@ function UserOrder(props) {
             </Flex>
             <Flex justify="space-between">
               <Text>Length of Stay :</Text>
-              <Text>{`${checkIn} - ${checkOut} / ${nights} night(s)`}</Text>
+              <Text textAlign={"end"}>{`${checkIn} - ${checkOut} / ${nights} night(s)`}</Text>
             </Flex>
             <Flex justify="space-between">
               <Text>Price :</Text>
@@ -239,24 +239,25 @@ function UserOrder(props) {
     <Container maxW={{ md: "container.lg" }} my="40px">
       <Heading mb={5}>My Orders</Heading>
       <Flex direction="column" p="4" border="1px" borderColor="#ccc" rounded="md">
-        <Flex mb="5" gap={3} align="center">
+        <Flex direction={{ base: "column", md: "row" }} mb="5" gap={3} align="center">
           <Input
-            width="40%"
             placeholder="Search Booking Number"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
           <CalendarStartDate />
-          -
+          <Text display={{ base: "none", md: "block" }}>-</Text>
           <CalendarEndDate />
-          <Button colorScheme="green" onClick={onBtnSearch}>
-            Search
-          </Button>
-          <Button colorScheme="green" onClick={onBtnReset}>
-            Reset
-          </Button>
+          <Flex direction={{ base: "row" }} gap={3}>
+            <Button colorScheme="green" onClick={onBtnSearch}>
+              Search
+            </Button>
+            <Button colorScheme="green" onClick={onBtnReset}>
+              Reset
+            </Button>
+          </Flex>
         </Flex>
-        <Flex mb={4} gap={3} align="center">
+        <Flex mb={4} gap={3} align={{ md: "center" }} direction={{ base: "column", md: "row" }}>
           Status:
           <Button
             colorScheme="twitter"
@@ -363,7 +364,13 @@ function UserOrder(props) {
           </Flex>
         )}
       </Flex>
-      <Modal size="xl" scrollBehavior="inside" onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal
+        size={{ base: "full", md: "xl" }}
+        scrollBehavior="inside"
+        onClose={onClose}
+        isOpen={isOpen}
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Order Details</ModalHeader>

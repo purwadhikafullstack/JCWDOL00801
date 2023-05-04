@@ -48,7 +48,6 @@ function OrderCard(props) {
         setReviews(response.data.data[0].desc);
         setCurrentReviews(response.data.data[0].desc);
       }
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -127,32 +126,32 @@ function OrderCard(props) {
           <Flex gap={3}>
             <Flex direction="row" gap={1}>
               <Heading size="xs" fontWeight="500">
-                Booking Number:
+                Booking Number :
               </Heading>
               <Heading size="xs">{orderId}</Heading>
             </Flex>
-            <Flex direction="row" gap={1}>
+            <Flex display={{ base: "none", md: "flex" }} direction="row" gap={1}>
               <Heading size="xs" fontWeight="500">
-                Order Date
+                Order Date :
               </Heading>
               <Heading size="xs">{format(new Date(createdAt), "MMM dd, yy")}</Heading>
             </Flex>
           </Flex>
           <Flex align="center" gap={2}>
-            <Flex direction="row" gap={1}>
+            <Flex display={{ base: "none", md: "flex" }} direction="row" gap={1}>
               <Heading size="xs" fontWeight="500">
                 Check In
               </Heading>
               <Heading size="xs">{format(new Date(checkinDate), "MMM dd, yy")}</Heading>
             </Flex>
-            <Flex direction="row" gap={1}>
+            <Flex display={{ base: "none", md: "flex" }} direction="row" gap={1}>
               <Heading size="xs" fontWeight="500">
                 Check Out
               </Heading>
               <Heading size="xs">{format(new Date(checkoutDate), "MMM dd, yy")}</Heading>
             </Flex>
             <Tag
-              size={"lg"}
+              size={{ base: "sm", md: "lg" }}
               colorScheme={
                 status === "Waiting for payment"
                   ? "orange"
@@ -169,6 +168,17 @@ function OrderCard(props) {
             </Tag>
           </Flex>
         </Flex>
+        <Flex
+          mt={{ base: "5px", md: "0" }}
+          display={{ base: "flex", md: "none" }}
+          direction="row"
+          gap={1}
+        >
+          <Heading size="xs" fontWeight="500">
+            Order Date :
+          </Heading>
+          <Heading size="xs">{format(new Date(createdAt), "MMM dd, yy")}</Heading>
+        </Flex>
       </CardHeader>
       <Flex>
         <CardBody>
@@ -180,12 +190,12 @@ function OrderCard(props) {
           </Flex>
           <Flex gap={3}>
             <Image
-              boxSize="150px"
+              boxSize={{ base: "100px", md: "150px" }}
               src={process.env.REACT_APP_API_BASE_IMG_URL + image}
               fallbackSrc="https://via.placeholder.com/150"
             />
             <Flex direction="column">
-              <Heading size="md">{name}</Heading>
+              <Heading size={{ base: "sm", md: "md" }}>{name}</Heading>
 
               <Text py="2">{props.type.name}</Text>
               <Text py="2"># of guest: {totalGuest}</Text>
