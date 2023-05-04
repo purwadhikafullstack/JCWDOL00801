@@ -76,7 +76,7 @@ function RoomList(props) {
           reverseButtons: true
         }).then(res =>{
           if(res.isConfirmed){
-            navigate("/property/new/building", {replace: true, state:{data: propData}})
+            navigate("/property", {replace: true, state:{data: propData}})
             window.scrollTo(0,0);
           }
         })

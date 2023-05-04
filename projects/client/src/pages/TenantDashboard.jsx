@@ -49,14 +49,16 @@ const TenantDashboardPage = ({ isMobile }) => {
             "Authorization": `Bearer ${getLocalStorage}`
           }
         })
-        console.log(res.data.data)
+        console.log(res.data)
         const days = res.data.data.map(val =>{
-          return new Date(val.createdAt).getDay() === 0 ? 6 : new Date(val.createdAt).getDay() - 1;
+          return new Date(val.orderDate).getDay() === 0 ? 6 : new Date(val.orderDate).getDay() - 1;
         })
         const currentIncome = [0,0,0,0,0,0,0];
         const days2 = days.map((val, idx) =>{
           return currentIncome[val] = res.data.data[idx].price
         })
+        console.log("DAYS",days)
+        console.log(days2)
         const income = res.data.data.map(val =>{
           return val.price
         })
@@ -255,7 +257,6 @@ const TenantDashboardPage = ({ isMobile }) => {
                   <Th textAlign="center">BOOKING ID</Th>
                   <Th textAlign="center">GUEST NAME</Th>
                   <Th textAlign="center">TYPE</Th>
-                  <Th textAlign="center">PAYMENT PROOF</Th>
                   <Th textAlign="center">STATUS</Th>
                 </Thead>
                 <Tbody>
@@ -266,7 +267,6 @@ const TenantDashboardPage = ({ isMobile }) => {
                     </Td>
                     <Td textAlign="center">{val.guestName}</Td>
                     <Td textAlign="center">{val.name}</Td>
-                    <Td textAlign="center">{val.payProofImg ? "See now" : "No proof Yet"}</Td>
                     <Td textAlign="center">{val.status}</Td>
                   </Tr>
                   })}

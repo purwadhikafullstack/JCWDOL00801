@@ -21,8 +21,12 @@ const { log } = require("console");
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
-      let newStartDate = new Date(req.body.startDate);
-      let newEndDate = new Date(req.body.endDate);
+      const {
+        startDate,
+        endDate
+      } = req.body;
+      const newStartDate = startDate ? new Date(startDate) : new Date();
+      const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000);
       const data = await dbSequelize.query(
         `SELECT 
       MIN(t.price) AS price, 
@@ -34,7 +38,8 @@ module.exports = {
       t.typeImg,
       p.image,
       (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-        AND ${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AS nominal
+        AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+        (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) ) AS nominal
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -49,7 +54,8 @@ module.exports = {
           INNER JOIN types AS t ON r.typeId = t.typeId
           LEFT JOIN specialprices AS sp2 ON sp2.typeId = r.typeId AND (
             sp2.nominal IS NOT NULL 
-            AND ${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate
+            AND (${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate) AND
+                (${dbSequelize.escape(newEndDate)} BETWEEN sp2.startDate AND sp2.endDate) 
           )
         WHERE 
           r.roomId NOT IN (
@@ -84,8 +90,8 @@ module.exports = {
       p.propertyId, 
       p.name, 
       c.city
-    ORDER BY 
-      price
+      ORDER BY
+      CASE WHEN nominal IS NOT NULL THEN nominal ELSE price END ASC
       limit 7;`,
         {
           type: QueryTypes.SELECT,

@@ -700,6 +700,7 @@ function PropertyAndRoomList(props) {
                                     reverseButtons: true,
                                   }).then((response) => {
                                     if (response.isConfirmed) {
+                                      onClose();
                                       Axios.patch(
                                         process.env.REACT_APP_API_BASE_URL +
                                           "/room-availability/delete",
@@ -716,8 +717,8 @@ function PropertyAndRoomList(props) {
                                             confirmButtonText: "Confirm",
                                             timer: 5000,
                                           }).then((resp) => {
-                                            onOpen();
-                                            getContent(0, "avail");
+                                              getContent(0, "avail");
+                                            onOpen();  
                                           });
                                         })
                                         .catch((e) => {
@@ -734,7 +735,7 @@ function PropertyAndRoomList(props) {
                                           });
                                         });
                                     }
-                                    onOpen();
+                                    
                                   });
                                 }
                               };

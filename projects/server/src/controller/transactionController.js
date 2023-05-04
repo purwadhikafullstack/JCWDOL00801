@@ -38,6 +38,7 @@ module.exports = {
             INNER JOIN types as t on r.typeId = t.typeId INNER JOIN tenants as ten on p.tenantId = ten.tenantId INNER JOIN paymentmethods as pay on ten.bankId = pay.bankId where p.propertyId = ${req.query.id} and t.typeId = ${req.body.typeId}`, {
         type: QueryTypes.SELECT
       })
+      console.log("check",data)
       // const data1 = await specialPriceModel.findAll()
       return res.status(200).send({
         success: true,

@@ -49,7 +49,6 @@ function RoomCard(props) {
       window.scrollTo(0, 0);
     }
   };
-  console.log(props)
   return (
     <Card shadow="sm" direction={{ base: "column", sm: "row" }} overflow="hidden" variant="outline">
       <Image
@@ -78,7 +77,7 @@ function RoomCard(props) {
           style={{ filter: props.isAvailable ? "" : "grayscale(1)" }}
         >
           {props.data.nominal ? <Flex alignItems={"center"} justifyContent={"center"}> 
-            {props.data.nominal < props.data.price ?<Text color="blue.600" textDecoration={"line-through"}>
+            {parseInt(props.data.nominal) < parseInt(props.data.price) ?<Text color="blue.600" textDecoration={"line-through"}>
             {parseInt(props.data.price).toLocaleString("id", {
               style: "currency",
               currency: "IDR",

@@ -12,11 +12,17 @@ function PropertyGallery(props) {
       thumbnail: image,
     };
   });
+  const image = props.image.map(val =>{
+    return {
+      original: val,
+      thumbnail: val
+    }
+  })
   return (
     <>
       <Hide above="sm" below="md">
         <ImageGallery
-          items={images}
+          items={props.image ? image : images}
           thumbnailPosition="right"
           useBrowserFullscreen={false}
           showBullets={true}
@@ -25,7 +31,7 @@ function PropertyGallery(props) {
 
       <Show above="sm" below="md">
         <ImageGallery
-          items={images}
+          items={props.image ? image : images}
           showThumbnails={false}
           useBrowserFullscreen={false}
           showBullets={true}

@@ -491,14 +491,14 @@ module.exports = {
         },
       ];
       const data = await dbSequelize.query(`
-        SELECT o.createdAt, SUM(o.price) FROM orderlists as o
+        SELECT DATE(o.createdAt) as orderDate, SUM(o.price) as price FROM orderlists as o
         INNER JOIN transactions as tran ON o.transactionId = tran.transactionId
         INNER JOIN rooms as r ON r.roomId = o.roomId
         INNER JOIN properties as p ON r.propertyId = p.propertyId
         INNER JOIN tenants as ten ON ten.tenantId = p.tenantId
         INNER JOIN users as u ON u.userId = ten.userId
-        WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((${dbSequelize.escape(new Date(startDate))} BETWEEN tran.checkinDate AND tran.checkoutDate) OR (${dbSequelize.escape(new Date(endDate))} BETWEEN tran.checkinDate AND tran.checkoutDate))
-        group by o.createdAt ;  
+        WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((tran.checkinDate > ${dbSequelize.escape(new Date(startDate))}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        group by orderDate; 
       `, {type: QueryTypes.SELECT});
       //
       return res.status(200).send({

@@ -90,7 +90,8 @@ module.exports = {
       p.desc,
       p.image,
       (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-        AND ${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AS nominal
+        AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+        (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) ) AS nominal
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -105,7 +106,8 @@ module.exports = {
           INNER JOIN types AS t ON r.typeId = t.typeId
           LEFT JOIN specialprices AS sp2 ON sp2.typeId = r.typeId AND (
             sp2.nominal IS NOT NULL 
-            AND ${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate
+            AND (${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate) AND
+                (${dbSequelize.escape(newEndDate)} BETWEEN sp2.startDate AND sp2.endDate) 
           )
         WHERE 
           r.roomId NOT IN (
@@ -181,7 +183,6 @@ module.exports = {
                 WHERE 
                 (${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate 
                 OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate)
-                AND (r.isDeleted = 0 OR r.isDeleted = false)
                 )
             GROUP BY 
               r.propertyId

@@ -9,8 +9,8 @@ const utcDate = zonedTimeToUtc(date, timeZone);
 const indonesiaDate = utcToZonedTime(utcDate, timeZone);
 
 const INITIAL_STATE = {
-  startDate: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
-  endDate: format(addDays(new Date(), 1), "yyyy-MM-dd HH:mm:ss"),
+  startDate: new Date(format(new Date(), "MM/dd/yyyy")).getTime(),
+  endDate: new Date(format(addDays(new Date(), 1), "MM/dd/yyyy")).getTime(),
   dob: "",
   searchStartDate: "",
   searchEndDate: "",

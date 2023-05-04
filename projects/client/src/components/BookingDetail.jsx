@@ -79,7 +79,7 @@ const BookingDetail = ({ totalGuest, data, startDate, endDate, setNight }) => {
             </Text>
           </Flex>
           <Flex justifyContent={"flex-end"} mt={"20px"}>
-            {data.nominal && data.nominal < data.price ? (
+            {data.nominal && parseInt(data.nominal) < parseInt(data.price) ? (
               <Text textDecoration={"line-through"}>
                 {parseInt(data.price * diffDays).toLocaleString("ID", {
                   style: "currency",

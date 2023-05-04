@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 
 function PropertyCard({ data }) {
+  console.log(data)
   const navigate = useNavigate();
   const { email, startDate, endDate } = useSelector((state) => {
     return {
@@ -66,7 +67,7 @@ function PropertyCard({ data }) {
             {data.nominal ? (
               <>
                 <Flex direction={"column"} alignItems={"flex-end"}>
-                  {data.nominal < data.price ? (
+                  {parseInt(data.nominal) < parseInt(data.price) ? (
                     <Text
                       color="blue.600"
                       opacity="0.5"

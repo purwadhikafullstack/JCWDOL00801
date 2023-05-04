@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const SearchCard = ({ data }) => {
+  console.log(data)
   const navigate = useNavigate();
   const [discount, setDiscount] = useState(0);
   const { startDate, endDate } = useSelector((state) => {
@@ -71,7 +72,7 @@ const SearchCard = ({ data }) => {
             {data.nominal ? (
               <>
               <Flex direction={"column"}>
-                {data.nominal < data.price ? <Text color="blue.600" textDecoration={"line-through"}>
+                {parseInt(data.nominal) < parseInt(data.price) ? <Text color="blue.600" textDecoration={"line-through"}>
                   {parseInt(data.price).toLocaleString("ID", {
                     style: "currency",
                     currency: "IDR",
