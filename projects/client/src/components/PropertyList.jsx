@@ -156,7 +156,25 @@ function PropertyList(props) {
       }
     }
   };
-
+  const bankCheck = async () =>{
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1")
+      const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/payment/check", {
+        headers:{
+          "Authorization": `Bearer ${getLocalStorage}`
+        }
+      })
+      navigate("/property/new/building", {replace: true})
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+          title: error.response.data.message,
+          confirmButtonColor: "#38A169",
+          confirmButtonText: "OK",
+          timer: 5000
+      })
+    }
+  }
   const onBtnSearch = (e) => {
     e.preventDefault();
     setPage(0);
@@ -283,7 +301,7 @@ function PropertyList(props) {
             colorScheme="green"
             variant="outline"
             onClick={() => {
-              navigate("/property/new", { replace: true });
+              bankCheck();
             }}
           >
             <AddIcon boxSize={3} mr={2} />

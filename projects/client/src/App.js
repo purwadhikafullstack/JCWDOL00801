@@ -269,7 +269,7 @@ function App() {
               <Route path="/orderlist" element={<VerifyChecker loading={loading}><OrderHistory /></VerifyChecker>} />
               <Route path="/room" element={<VerifyChecker loading={loading}><RoomListPage /></VerifyChecker>} />
               <Route path="/room/edit" element={<VerifyChecker loading={loading}><RoomFormEdit /></VerifyChecker>} />
-              <Route path="/room/new" element={<VerifyChecker loading={loading}><RoomCreateMenu /></VerifyChecker>} />
+              {/* <Route path="/room/new" element={<VerifyChecker loading={loading}><RoomCreateMenu /></VerifyChecker>} /> */}
               <Route path="/room/new/type" element={<VerifyChecker loading={loading}><RoomForm /></VerifyChecker>} />
               <Route path="/room/photos" element={<VerifyChecker loading={loading}><RoomPhoto /></VerifyChecker>} />
               <Route path="/property-list" element={<VerifyChecker loading={loading}><PropertyAndRoom /></VerifyChecker>} />

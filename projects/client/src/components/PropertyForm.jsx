@@ -44,6 +44,27 @@ function PropertyForm(props) {
     }
   };
 
+  const bankCheck = async () =>{
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1")
+      const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/payment/check", {
+        headers:{
+          "Authorization": `Bearer ${getLocalStorage}`
+        }
+      })
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+          title: error.response.data.message,
+          confirmButtonColor: "#38A169",
+          confirmButtonText: "OK",
+          timer: 5000
+      }).then(resp =>{
+        navigate("/property", {replace:true})
+      })
+    }
+  }
+
   const onBtnCreate = async () => {
     //onBtnSubmit
     try {
@@ -98,6 +119,7 @@ function PropertyForm(props) {
 
   useEffect(() => {
     getCityData();
+    bankCheck();
   }, []);
 
   useEffect(() => {
