@@ -168,29 +168,28 @@ function OrderHistory(props) {
       if (response.isConfirmed) {
         Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/cancel", {
           transactionId: transId,
-        })
-          .then((res) => {
-            Swal.fire({
-              title: `${res.data.message}`,
-              icon: "success",
-              confirmButtonColor: "#38A169",
-              confirmButtonText: "Yes",
-            }).then((r) => {
-              onBtnReset();
-            });
+        }).then((res) => {
+          Swal.fire({
+            title: `${res.data.message}`,
+            icon: "success",
+            confirmButtonColor: "#38A169",
+            confirmButtonText: "Yes",
+          }).then(r =>{
+            getTableData()
+            setSelectedOption("");
           })
-          .catch((e) => {
-            Swal.fire({
-              title: `${e.response.data.message}`,
-              icon: "success",
-              confirmButtonColor: "#38A169",
-              confirmButtonText: "Yes",
-            }).then((r) => {
-              onBtnReset();
-            });
-          });
-      } else {
-        onBtnReset();
+        }).catch(e =>{
+          Swal.fire({
+            title: `${e.response.data.message}`,
+            icon: "success",
+            confirmButtonColor: "#38A169",
+            confirmButtonText: "Yes",
+          })
+        });
+      }
+      else{
+        getTableData()
+        setSelectedOption("");
       }
     });
   };
