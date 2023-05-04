@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Heading, Flex } from "@chakra-ui/react";
 import ReportCalendar from "../components/ReportCalendar";
+import LineChart from "../components/LineChart";
 
 function Report(props) {
   return (
@@ -8,6 +9,7 @@ function Report(props) {
       <Heading mb={6}>Report</Heading>
       <Flex gap={5}>
         <ReportCalendar />
+        <LineChart />
       </Flex>
     </Box>
   );
