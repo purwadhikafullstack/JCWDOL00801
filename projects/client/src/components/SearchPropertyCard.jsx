@@ -51,7 +51,7 @@ function SearchProperty({
   const getProvinceData = async () => {
     try {
       let response = await Axios.get(
-        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+        "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
       );
 
       const provinceOption = response.data.map((val, idx) => {
@@ -87,7 +87,7 @@ function SearchProperty({
     if (province.length !== 0 || defaultProvince) {
       try {
         let response = await Axios.get(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+          `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
         );
         const cityOption = response.data.map((val, idx) => {
           return { value: val.id, label: val.name };

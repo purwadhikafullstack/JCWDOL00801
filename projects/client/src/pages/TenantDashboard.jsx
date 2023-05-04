@@ -49,7 +49,6 @@ const TenantDashboardPage = ({ isMobile }) => {
             "Authorization": `Bearer ${getLocalStorage}`
           }
         })
-        console.log(res.data)
         const days = res.data.data.map(val =>{
           return new Date(val.orderDate).getDay() === 0 ? 6 : new Date(val.orderDate).getDay() - 1;
         })
@@ -57,8 +56,6 @@ const TenantDashboardPage = ({ isMobile }) => {
         const days2 = days.map((val, idx) =>{
           return currentIncome[val] = res.data.data[idx].price
         })
-        console.log("DAYS",days)
-        console.log(days2)
         const income = res.data.data.map(val =>{
           return val.price
         })

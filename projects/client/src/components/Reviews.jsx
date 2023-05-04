@@ -4,7 +4,6 @@ import { useState } from "react";
 
 const Reviews = ({data}) => {
   const [time, setTime] = useState("");
-  console.log(new Date(data.createdAt.substring(0, 19).replace("T", " ")))
   useEffect(() =>{
     setTime(new Date(data.createdAt.substring(0, 19).replace("T", " ")))
   },[])

@@ -16,7 +16,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const SearchCard = ({ data }) => {
-  console.log(data)
   const navigate = useNavigate();
   const [discount, setDiscount] = useState(0);
   const { startDate, endDate } = useSelector((state) => {

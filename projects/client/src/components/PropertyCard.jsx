@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 
 function PropertyCard({ data }) {
-  console.log(data)
   const navigate = useNavigate();
   const { email, startDate, endDate } = useSelector((state) => {
     return {

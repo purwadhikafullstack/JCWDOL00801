@@ -78,7 +78,7 @@ function ManageCategories(props) {
   const getProvinceData = async () => {
     try {
       let response = await Axios.get(
-        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+        "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
       );
       setProvince(response.data);
     } catch (error) {
@@ -90,7 +90,7 @@ function ManageCategories(props) {
     if (province.length !== 0) {
       try {
         let response = await Axios.get(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+          `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
         );
         setCity(response.data);
       } catch (error) {

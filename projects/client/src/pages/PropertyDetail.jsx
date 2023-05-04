@@ -53,7 +53,6 @@ function PropertyDetail(props) {
       let roomAvail = res.data.room.filter(val =>{
         return !roomNotAvail.includes(val)
       })
-      console.log("DATA",res.data)
       let images = [];
       images.push(process.env.REACT_APP_BASE_IMG_URL + res.data.property.image)
       res.data.type.map(val => {

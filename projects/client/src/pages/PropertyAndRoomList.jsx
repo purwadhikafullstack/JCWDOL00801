@@ -193,7 +193,6 @@ function PropertyAndRoomList(props) {
       }`;
       Axios.get(process.env.REACT_APP_API_BASE_URL + endpoint + query.join(""))
         .then((response) => {
-          console.log(response.data);
           setSpecialPriceData(response.data.necessaryData[0]);
           setModalDataPrice(response.data.data);
           setPageModal(response.data.page);
@@ -214,7 +213,6 @@ function PropertyAndRoomList(props) {
       const endpoint = `/room-availability/all?id=${selectedRoomData}&limit=${limitModal}&page=${
         selected || 0
       }`;
-      console.log(query.join(""))
       Axios.get(process.env.REACT_APP_API_BASE_URL + endpoint + query.join(""))
         .then((response) => {
           setModalDataAvail(response.data.data);
