@@ -467,13 +467,11 @@ module.exports = {
   },
   cancelOrder: async(req, res) =>{
     try {
-        console.log("CHEK" , req.decrypt)
         const user = await userModel.findAll({
             where: {
                 email: req.decrypt.email
             }
         })
-        console.log(user)
         if(user.length > 0){
             const cancel = await transactionModel.update({
                 status: "Cancelled"
