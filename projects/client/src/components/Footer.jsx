@@ -77,14 +77,6 @@ function Footer() {
             <Link>Profile</Link>
             <Link>Order List</Link>
           </Stack>
-
-          <Stack align={"flex-start"}>
-            <ListHeader>Contact</ListHeader>
-            <Link>Help Center</Link>
-            <Link>Terms of Service</Link>
-            <Link>Legal</Link>
-            <Link>Privacy Policy</Link>
-          </Stack>
         </SimpleGrid>
       </Container>
     </Box>

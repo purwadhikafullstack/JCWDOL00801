@@ -18,7 +18,7 @@ import {
   Container,
   Divider,
   Spinner,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo.png";
@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
 import { tenantLogout } from "../actions/tenantAction";
-import {clearAllDate} from "../actions/dateAction"
+import { clearAllDate } from "../actions/dateAction";
 
 const Links = ["Home", "My Profile", "My Orders"];
 
@@ -74,7 +74,7 @@ function Header(props) {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  clearAllDate()
+                  clearAllDate();
                   navigate("/", { replace: true });
                   navigate(0);
                   window.scrollTo(0, 0);
@@ -84,7 +84,7 @@ function Header(props) {
                 <Heading size="md">Renthaven</Heading>
               </HStack>
               <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-                <Link href="/">Home</Link>
+                <Button size={"md"}>Home</Button>
               </HStack>
             </HStack>
             {/* ini tampilan kalau sudah login */}
@@ -186,14 +186,17 @@ function Header(props) {
             <Box pb={4} display={{ md: "none" }}>
               <Stack as={"nav"} spacing={4}>
                 <Link
-                px={2}
-                py={1}
-                rounded={"md"}
-                _hover={{
-                  textDecoration: "none",
-                  bg: "gray.200",
-                }}
-                href="/">Home</Link>
+                  px={2}
+                  py={1}
+                  rounded={"md"}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: "gray.200",
+                  }}
+                  href="/"
+                >
+                  Home
+                </Link>
                 <Flex justify="space-between" gap={3}>
                   <Button
                     minW="50%"
@@ -233,7 +236,7 @@ function Header(props) {
                   }}
                 >
                   <Avatar
-                  bg="green.500"
+                    bg="green.500"
                     size={"lg"}
                     src={process.env.REACT_APP_BASE_IMG_URL + profileImg}
                   />
@@ -242,15 +245,27 @@ function Header(props) {
                   </Heading>
                 </HStack>
                 {Links.map((link) => (
-                  <Link 
-                  px={2}
-                  py={1}
-                  rounded={"md"}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "gray.200",
-                  }}
-                  href={link === "Home" ? "/" : link === "My Profile" ? "/profile" : link === "My Orders" ? "/my-orders" : "/"} key={link}>{link}</Link>
+                  <Link
+                    px={2}
+                    py={1}
+                    rounded={"md"}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "gray.200",
+                    }}
+                    href={
+                      link === "Home"
+                        ? "/"
+                        : link === "My Profile"
+                        ? "/profile"
+                        : link === "My Orders"
+                        ? "/my-orders"
+                        : "/"
+                    }
+                    key={link}
+                  >
+                    {link}
+                  </Link>
                 ))}
                 <Flex justify="space-between" gap={3}>
                   <Button minW="100%" variant="outline" colorScheme="green" onClick={logoutHandler}>
