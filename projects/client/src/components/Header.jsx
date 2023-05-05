@@ -30,20 +30,6 @@ import { clearAllDate } from "../actions/dateAction";
 
 const Links = ["Home", "My Profile", "My Orders"];
 
-const NavLink = ({ children }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: "gray.200",
-    }}
-  >
-    {children}
-  </Link>
-);
-
 function Header(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -84,7 +70,18 @@ function Header(props) {
                 <Heading size="md">Renthaven</Heading>
               </HStack>
               <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-                <Button size={"md"}>Home</Button>
+                <Link
+                  px={2}
+                  py={1}
+                  rounded={"md"}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: "gray.200",
+                  }}
+                  href="/"
+                >
+                  Home
+                </Link>
               </HStack>
             </HStack>
             {/* ini tampilan kalau sudah login */}
