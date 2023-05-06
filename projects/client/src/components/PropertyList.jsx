@@ -291,7 +291,7 @@ function PropertyList(props) {
 
   useEffect(() => {
     getPropertyData();
-  }, [page, filterAddress, filterCity, filterName, desc]);
+  }, [page, filterAddress, filterCity, filterName, desc, sortData]);
 
   return (
     <Flex direction="column">

@@ -38,7 +38,7 @@ const BookingDetail = ({ totalGuest, data, startDate, endDate, setNight }) => {
             <Image
               h="70px"
               w="70px"
-              src={process.env.REACT_APP_API_BASE_IMG_URL + data.typeImg}
+              src={process.env.REACT_APP_BASE_IMG_URL + data.typeImg}
               m="5px"
               rounded="md"
               objectFit="cover"

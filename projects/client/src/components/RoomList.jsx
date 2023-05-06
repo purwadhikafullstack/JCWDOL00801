@@ -298,7 +298,7 @@ function RoomList(props) {
 
   useEffect(() => {
     getRoomData();
-  }, [page, filterAddress, filterCity, filterName, desc]);
+  }, [page, filterAddress, filterCity, filterName, desc, sortData]);
 
   return (
     <Flex direction="column">
