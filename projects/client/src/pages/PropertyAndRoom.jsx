@@ -35,7 +35,7 @@ function PropertyAndRoom(props) {
   const [filterCity, setFilterCity] = React.useState("");
   const [filterAddress, setFilterAddress] = React.useState("");
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(true);
+  const [desc, setDesc] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -49,7 +49,7 @@ function PropertyAndRoom(props) {
   const getPropertyData = async () => {
     let url = `/property?tenant=${tenantId}&limit=${limit}&page=${page}`;
     let reqQuery = "";
-    if (sortData) {
+    if (sortData !== "") {
       if (desc) {
         reqQuery += `&sortby=${sortData}&order=desc`;
       } else {
@@ -186,7 +186,7 @@ function PropertyAndRoom(props) {
 
   useEffect(() => {
     getPropertyData();
-  }, [page, filterAddress, filterCity, filterName, desc]);
+  }, [page, filterAddress, filterCity, filterName, desc, sortData]);
 
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>

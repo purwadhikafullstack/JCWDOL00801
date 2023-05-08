@@ -39,7 +39,7 @@ function PropertyList(props) {
   const [filterCity, setFilterCity] = React.useState("");
   const [filterAddress, setFilterAddress] = React.useState("");
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(true);
+  const [desc, setDesc] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -52,7 +52,7 @@ function PropertyList(props) {
   const getPropertyData = async () => {
     let url = `/property?tenant=${tenantId}&limit=${limit}&page=${page}`;
     let reqQuery = "";
-    if (sortData) {
+    if (sortData !== "") {
       if (desc) {
         reqQuery += `&sortby=${sortData}&order=desc`;
       } else {
@@ -69,6 +69,7 @@ function PropertyList(props) {
       reqQuery += `&address=${filterAddress}`;
     }
     try {
+      console.log(url + reqQuery);
       let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + reqQuery);
       setPropertyData(response.data.data);
       setPage(response.data.page);
@@ -156,25 +157,25 @@ function PropertyList(props) {
       }
     }
   };
-  const bankCheck = async () =>{
+  const bankCheck = async () => {
     try {
-      const getLocalStorage = localStorage.getItem("renthaven1")
+      const getLocalStorage = localStorage.getItem("renthaven1");
       const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/payment/check", {
-        headers:{
-          "Authorization": `Bearer ${getLocalStorage}`
-        }
-      })
-      navigate("/property/new/building", {replace: true})
+        headers: {
+          Authorization: `Bearer ${getLocalStorage}`,
+        },
+      });
+      navigate("/property/new/building", { replace: true });
     } catch (error) {
       Swal.fire({
         icon: "error",
-          title: error.response.data.message,
-          confirmButtonColor: "#38A169",
-          confirmButtonText: "OK",
-          timer: 5000
-      })
+        title: error.response.data.message,
+        confirmButtonColor: "#38A169",
+        confirmButtonText: "OK",
+        timer: 5000,
+      });
     }
-  }
+  };
   const onBtnSearch = (e) => {
     e.preventDefault();
     setPage(0);
@@ -291,7 +292,7 @@ function PropertyList(props) {
 
   useEffect(() => {
     getPropertyData();
-  }, [page, filterAddress, filterCity, filterName, desc]);
+  }, [page, filterAddress, filterCity, filterName, desc, sortData]);
 
   return (
     <Flex direction="column">

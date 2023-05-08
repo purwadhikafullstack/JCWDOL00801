@@ -32,7 +32,7 @@ function ManageCategories(props) {
   const toast = useToast();
   const [categoryData, setCategoryData] = React.useState([]);
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(true);
+  const [desc, setDesc] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -356,7 +356,7 @@ function ManageCategories(props) {
 
   useEffect(() => {
     getCategoryData();
-  }, [page, queryData, desc]);
+  }, [page, queryData, desc, sortData]);
 
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>

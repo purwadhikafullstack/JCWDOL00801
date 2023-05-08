@@ -22,10 +22,7 @@ const { log } = require("console");
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
-      const {
-        startDate,
-        endDate
-      } = req.body;
+      const { startDate, endDate } = req.body;
       const newStartDate = startDate ? new Date(startDate) : new Date();
       const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000);
       const data = await dbSequelize.query(
@@ -340,8 +337,8 @@ module.exports = {
           },
         });
       }
-      if (sortby) {
-        sortData.push([sortby, order]);
+      if (sortby == "name" || sortby == "address") {
+        sortData.push([sortby, order.toUpperCase()]);
       } else {
         sortData.push(["propertyId", "DESC"]);
       }
