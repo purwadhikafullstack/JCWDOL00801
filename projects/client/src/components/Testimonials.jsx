@@ -1,4 +1,6 @@
+import React, { useEffect } from "react";
 import { Box, Flex, Heading, Text, Stack, Container, Avatar } from "@chakra-ui/react";
+import Axios from "axios";
 
 const Testimonial = ({ children }) => {
   return <Box>{children}</Box>;
@@ -35,14 +37,6 @@ const TestimonialContent = ({ children }) => {
   );
 };
 
-const TestimonialHeading = ({ children }) => {
-  return (
-    <Heading as={"h3"} fontSize={"xl"}>
-      {children}
-    </Heading>
-  );
-};
-
 const TestimonialText = ({ children }) => {
   return (
     <Text textAlign={"center"} color="gray.600" fontSize={"sm"}>
@@ -54,9 +48,11 @@ const TestimonialText = ({ children }) => {
 const TestimonialAvatar = ({ src, name, title }) => {
   return (
     <Flex align={"center"} mt={8} direction={"column"}>
-      <Avatar src={src} alt={name} mb={2} />
+      <Avatar bg="green.500" src={src} alt={name} mb={2} />
       <Stack spacing={-1} align={"center"}>
-        <Text fontWeight={600}>{name}</Text>
+        <Text textTransform={"capitalize"} fontWeight={600}>
+          {name}
+        </Text>
         <Text fontSize={"sm"} color="gray.600">
           {title}
         </Text>
@@ -66,6 +62,36 @@ const TestimonialAvatar = ({ src, name, title }) => {
 };
 
 function Testimonials(props) {
+  const [reviewData, setReviewData] = React.useState([]);
+
+  const getReview = async () => {
+    try {
+      let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/review/testi");
+      setReviewData(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const testimonialContent = () => {
+    return reviewData.map((val, idx) => {
+      const { desc } = val;
+      const { name, profileImg } = val.user;
+      return (
+        <Testimonial key={idx}>
+          <TestimonialContent>
+            <TestimonialText>{desc}</TestimonialText>
+          </TestimonialContent>
+          <TestimonialAvatar src={process.env.REACT_APP_BASE_IMG_URL + profileImg} name={name} />
+        </Testimonial>
+      );
+    });
+  };
+
+  useEffect(() => {
+    getReview();
+  }, []);
+
   return (
     <Box bg="white">
       <Container maxW={"7xl"} py={16} as={Stack} spacing={12}>
@@ -74,54 +100,7 @@ function Testimonials(props) {
           <Text>We have been working with clients around the world</Text>
         </Stack>
         <Stack direction={{ base: "column", md: "row" }} spacing={{ base: 10, md: 4, lg: 10 }}>
-          <Testimonial>
-            <TestimonialContent>
-              <TestimonialHeading>Efficient Collaborating</TestimonialHeading>
-              <TestimonialText>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor neque sed imperdiet
-                nibh lectus feugiat nunc sem.
-              </TestimonialText>
-            </TestimonialContent>
-            <TestimonialAvatar
-              src={
-                "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-              }
-              name={"Jane Cooper"}
-              title={"Stayed at A Hotel"}
-            />
-          </Testimonial>
-          <Testimonial>
-            <TestimonialContent>
-              <TestimonialHeading>Intuitive Design</TestimonialHeading>
-              <TestimonialText>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor neque sed imperdiet
-                nibh lectus feugiat nunc sem.
-              </TestimonialText>
-            </TestimonialContent>
-            <TestimonialAvatar
-              src={
-                "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-              }
-              name={"Jane Cooper"}
-              title={"Stayed at B Hotel"}
-            />
-          </Testimonial>
-          <Testimonial>
-            <TestimonialContent>
-              <TestimonialHeading>Mindblowing Service</TestimonialHeading>
-              <TestimonialText>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor neque sed imperdiet
-                nibh lectus feugiat nunc sem.
-              </TestimonialText>
-            </TestimonialContent>
-            <TestimonialAvatar
-              src={
-                "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-              }
-              name={"Jane Cooper"}
-              title={"Stayed at C Hotel"}
-            />
-          </Testimonial>
+          {testimonialContent()}
         </Stack>
       </Container>
     </Box>
