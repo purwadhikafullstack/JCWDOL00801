@@ -14,7 +14,7 @@ function Landing(props) {
         <LandingBanner />
       </Flex>
       <LandingSearchForm />
-      <Box mb="70">
+      <Box mb="50">
         <MainContent />
       </Box>
       <Divider />

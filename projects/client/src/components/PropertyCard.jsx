@@ -43,7 +43,14 @@ function PropertyCard({ data }) {
         transitionDuration: "0.15s",
       }}
     >
-      <Image src={process.env.REACT_APP_BASE_IMG_URL + data.image} borderTopRadius="lg" />
+      <Image
+        onClick={() => {
+          navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
+          window.scrollTo(0, 0);
+        }}
+        src={process.env.REACT_APP_BASE_IMG_URL + data.image}
+        borderTopRadius="lg"
+      />
       <CardBody>
         <Stack spacing="3">
           <Tooltip label={data.name}>
@@ -53,7 +60,7 @@ function PropertyCard({ data }) {
                 navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
                 window.scrollTo(0, 0);
               }}
-              _hover={{ cursor: "pointer" }}
+              _hover={{ cursor: "pointer", color: "green.600" }}
               noOfLines={1}
             >
               {data.name}
@@ -101,7 +108,7 @@ function PropertyCard({ data }) {
         </Stack>
       </CardBody>
       <CardFooter mt="-4" alignSelf="end">
-        <Button variant="solid" colorScheme="green" onClick={bookNowHandler}>
+        <Button zIndex={"popover"} variant="solid" colorScheme="green" onClick={bookNowHandler}>
           Book now
         </Button>
       </CardFooter>
