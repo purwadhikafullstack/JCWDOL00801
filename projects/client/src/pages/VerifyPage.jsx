@@ -131,7 +131,7 @@ const VerifyPage = (props) => {
           rounded={"md"}
         >
           <Box textAlign={"center"} mb={"8"}>
-            <Heading>Verify</Heading>
+            <Heading>Verify Your Account</Heading>
           </Box>
           <form onSubmit={handleSubmit}>
             <FormControl isRequired mb={"6"}>
