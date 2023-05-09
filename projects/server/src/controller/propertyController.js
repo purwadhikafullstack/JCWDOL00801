@@ -413,22 +413,6 @@ module.exports = {
     try {
       const { propertyId } = req.params;
       const { isDeleted } = req.body;
-      if (!isDeleted) {
-        const update = await propertyModel.update(
-          {
-            isDeleted,
-          },
-          {
-            where: { propertyId },
-          }
-        );
-        if (update) {
-          return res.status(200).send({
-            success: true,
-            message: `Data has been updated`,
-          });
-        }
-      }
       const checkTransaction = await orderListModel.findAll({
         include: [
           {
@@ -478,6 +462,25 @@ module.exports = {
           message: `Can not activate property because corresponding category is not active`,
         });
       } else {
+        if (!isDeleted) {
+          // kalo mau diaktifkan
+
+          const update = await propertyModel.update(
+            {
+              isDeleted,
+            },
+            {
+              where: { propertyId },
+            }
+          );
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: `Data has been updated`,
+            });
+          }
+        }
+
         const updateRoom = await roomModel.update(
           { isDeleted },
           {

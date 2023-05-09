@@ -69,7 +69,6 @@ function PropertyList(props) {
       reqQuery += `&address=${filterAddress}`;
     }
     try {
-      console.log(url + reqQuery);
       let response = await Axios.get(process.env.REACT_APP_API_BASE_URL + url + reqQuery);
       setPropertyData(response.data.data);
       setPage(response.data.page);
@@ -296,7 +295,13 @@ function PropertyList(props) {
 
   return (
     <Flex direction="column">
-      <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+      <Flex
+        height={{ md: "660px" }}
+        direction={{ base: "column", lg: "row" }}
+        gap={6}
+        mt="10"
+        mb={6}
+      >
         <Flex direction="column" gap={6}>
           <Button
             colorScheme="green"

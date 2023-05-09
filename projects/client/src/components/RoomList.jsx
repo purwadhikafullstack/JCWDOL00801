@@ -309,7 +309,13 @@ function RoomList(props) {
 
   return (
     <Flex direction="column">
-      <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+      <Flex
+        height={{ md: "70vh" }}
+        direction={{ base: "column", lg: "row" }}
+        gap={6}
+        mt="10"
+        mb={6}
+      >
         <Flex direction="column" gap={6}>
           <Button
             colorScheme="green"

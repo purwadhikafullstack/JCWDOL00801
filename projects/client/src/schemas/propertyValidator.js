@@ -13,7 +13,7 @@ export const propertySchema = yup.object().shape({
       "File extension is not supported",
       (value) => value && SUPPORTED_FORMATS.includes(value.type)
     ),
-  name: yup.string().required("Please input your name"),
+  name: yup.string().required("Please input property name"),
   address: yup.string().required("Please input an address"),
   phone: yup
     .string()

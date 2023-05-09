@@ -17,7 +17,6 @@ function Landing(props) {
       <Box mb="50">
         <MainContent />
       </Box>
-      <Divider />
       <LandingContent />
       <Testimonials />
     </Box>

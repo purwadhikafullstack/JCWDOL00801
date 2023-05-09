@@ -362,7 +362,13 @@ function ManageCategories(props) {
     <Box pb="5" px={{ base: "5", md: "20" }}>
       <Heading mb={6}>Manage Categories</Heading>
       <Flex direction="column">
-        <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+        <Flex
+          height={{ md: "660px" }}
+          direction={{ base: "column", lg: "row" }}
+          gap={6}
+          mt="10"
+          mb={6}
+        >
           <Flex direction="column" gap={6}>
             {!isOpen ? (
               <Button

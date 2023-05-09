@@ -11,10 +11,12 @@ const TestimonialContent = ({ children }) => {
     <Stack
       bg="green.200"
       boxShadow={"lg"}
-      p={8}
+      p={6}
       rounded={"xl"}
       align={"center"}
       pos={"relative"}
+      height={"75%"}
+      justifyContent={"center"}
       _after={{
         content: `""`,
         w: 0,
@@ -99,7 +101,11 @@ function Testimonials(props) {
           <Heading>Our Clients Speak</Heading>
           <Text>We have been working with clients around the world</Text>
         </Stack>
-        <Stack direction={{ base: "column", md: "row" }} spacing={{ base: 10, md: 4, lg: 10 }}>
+        <Stack
+          pb={16}
+          direction={{ base: "column", md: "row" }}
+          spacing={{ base: 10, md: 4, lg: 10 }}
+        >
           {testimonialContent()}
         </Stack>
       </Container>

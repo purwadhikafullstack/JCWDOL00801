@@ -149,22 +149,6 @@ module.exports = {
   delete: async (req, res) => {
     try {
       const { isDeleted, categoryId, tenantId } = req.body;
-      if (!isDeleted) {
-        const updateCategory = await categoryModel.update(
-          {
-            isDeleted,
-          },
-          {
-            where: { categoryId },
-          }
-        );
-        if (updateCategory) {
-          return res.status(200).send({
-            success: true,
-            message: `Category has been updated`,
-          });
-        }
-      }
       const checkStatus = await orderListModel.findAll({
         include: [
           {
@@ -195,6 +179,41 @@ module.exports = {
           message: `Can not deactivate this category because there are ongoing transaction(s)`,
         });
       } else {
+        if (!isDeleted) {
+          // kalo mau diaktifkan
+          const updateCategory = await categoryModel.update(
+            {
+              isDeleted,
+            },
+            {
+              where: { categoryId },
+            }
+          );
+          if (updateCategory) {
+            return res.status(200).send({
+              success: true,
+              message: `Category has been updated`,
+            });
+          }
+        }
+
+        const findProperty = await propertyModel.findAll({
+          where: { categoryId },
+        });
+
+        if (findProperty.length > 0) {
+          findProperty.forEach(async (property) => {
+            const updateRoom = await roomModel.update(
+              { isDeleted },
+              {
+                where: {
+                  propertyId: property.propertyId,
+                },
+              }
+            );
+          });
+        }
+
         const updateProperty = await propertyModel.update(
           {
             isDeleted,

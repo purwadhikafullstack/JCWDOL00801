@@ -259,7 +259,7 @@ function PropertyFormEdit(props) {
                 ? true
                 : false
             }
-            type="submit"
+            type="button"
             colorScheme="green"
             onClick={onBtnUpdate}
           >
