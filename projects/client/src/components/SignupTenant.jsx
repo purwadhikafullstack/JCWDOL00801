@@ -96,14 +96,12 @@ const SignupTenantPage = (props) => {
     setDone(false);
     setKtpValid(false);
     setKtpAlert("");
-    console.log(e)
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       recognizing(e.target.files[0]);
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
       handleChange(e)
       setFieldValue("images", e.target.files[0])
-      console.log(values.images)
     }
   };
   const onInputChange = e => {
