@@ -499,6 +499,7 @@ module.exports = {
         INNER JOIN tenants as ten ON ten.tenantId = p.tenantId
         INNER JOIN users as u ON u.userId = ten.userId
         WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((tran.checkinDate > ${dbSequelize.escape(new Date(startDate))}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        AND tran.status = "Confirmed"
         group by orderDate; 
       `, {type: QueryTypes.SELECT});
       //

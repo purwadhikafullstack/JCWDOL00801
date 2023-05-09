@@ -75,7 +75,7 @@ const SignupUserPage = (props) => {
               .catch((e) => {
                 onToggle();
                 setInfoIcon(false);
-                setAlert("The email had already been registered");
+                setAlert(e.response.data.message);
                 setGoogleLoading(false);
               });
             setGoogleLoading(false);
@@ -83,13 +83,13 @@ const SignupUserPage = (props) => {
           .catch((e) => {
             onToggle();
             setInfoIcon(false);
-            setAlert("The email had already been registered");
+            setAlert(e.response.data.message);
             setGoogleLoading(false);
           }).catch((e) => {
             if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
               setFacebookLoading(false);
             } else {
-              setAlert("The email had already been registered");
+              setAlert(e.response.data.message);
               setInfoIcon(false);
               setFacebookLoading(false);
             };
@@ -101,7 +101,7 @@ const SignupUserPage = (props) => {
         } else if (e.response.status == 409) {
           onToggle();
           setInfoIcon(false);
-          setAlert("The email had already been registered");
+          setAlert(e.response.data.message);
           setGoogleLoading(false);
         }
         setGoogleLoading(false);
@@ -146,7 +146,7 @@ const SignupUserPage = (props) => {
                   if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
                     setFacebookLoading(false);
                   } else {
-                    setAlert("The email had already been registered");
+                    setAlert(e.response.data.message);
                     setInfoIcon(false);
                     setFacebookLoading(false);
                   };
@@ -155,7 +155,7 @@ const SignupUserPage = (props) => {
             .catch((e) => {
               onToggle();
               setInfoIcon(false);
-              setAlert("The email had already been registered");
+              setAlert(e.response.data.message);
               setFacebookLoading(false);
             });
           setFacebookLoading(false);
@@ -163,7 +163,7 @@ const SignupUserPage = (props) => {
           if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
             setFacebookLoading(false);
           } else {
-            setAlert("The email had already been registered");
+            setAlert(e.response.data.message);
             setInfoIcon(false);
             setFacebookLoading(false);
           };
@@ -173,7 +173,7 @@ const SignupUserPage = (props) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setFacebookLoading(false);
         } else {
-          setAlert("The email had already been registered");
+          setAlert(e.response.data.message);
           setInfoIcon(false);
           setFacebookLoading(false);
         }
@@ -219,11 +219,12 @@ const SignupUserPage = (props) => {
         })
         .catch((e) => {
           if (e.response.status == 403) {
-            setAlert("The email had already been registered");
+            setAlert(e.response.data.message);
             onToggle();
-            setSignupLoading(false);
+            return setSignupLoading(false);
           }
           console.log(e);
+          setAlert(e.response.data.message);
           setSignupLoading(false);
         });
     }

@@ -60,7 +60,7 @@ function MainContent(props) {
         modules={[Pagination]}
       >
         {propertyData.map(val =>{
-          return <SwiperSlide><PropertyCard data={val}></PropertyCard></SwiperSlide>
+          return <SwiperSlide><PropertyCard data={val} isMobile={props.isMobile}></PropertyCard></SwiperSlide>
         })}
         {/* <SwiperSlide>
           <PropertyCard />
