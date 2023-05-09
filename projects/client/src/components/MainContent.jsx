@@ -60,17 +60,9 @@ function MainContent(props) {
       >
         {propertyData.map((val) => {
           return (
-            <>
-              <SwiperSlide>
-                <PropertyCard data={val}></PropertyCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <PropertyCard data={val}></PropertyCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <PropertyCard data={val}></PropertyCard>
-              </SwiperSlide>
-            </>
+            <SwiperSlide>
+              <PropertyCard data={val} isMobile={props.isMobile}></PropertyCard>
+            </SwiperSlide>
           );
         })}
       </Swiper>

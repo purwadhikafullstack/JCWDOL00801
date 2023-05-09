@@ -63,13 +63,13 @@ const SignupTenantPage = (props) => {
         data: { text },
       } = await worker.recognize(image);
       const arr = text.split("\n");
-      const convertNumber = arr[2].replace(/[^\d.]/g, "");
-      if (convertNumber === "" || convertNumber === null) {
+      const convertNumber = arr[2].replace(/[^\d]/g, "");
+      if (convertNumber === "" || convertNumber === null || convertNumber.length < 7) {
         setDone(false);
         setFile(null);
         setKtpValid(false);
         setKtpAlert("KTP is not recognized, please try again.");
-        setFieldValue("ktp", "");
+        return setFieldValue("ktp", "");
       }
       setFieldValue("ktp", convertNumber);
       setDone(true);
@@ -89,6 +89,7 @@ const SignupTenantPage = (props) => {
     setDone(false);
     setKtpValid(false);
     setFieldValue("ktp", "");
+    setFieldValue("images", null)
   };
   const onFileChange = (e) => {
     setFile();
@@ -99,6 +100,8 @@ const SignupTenantPage = (props) => {
       setFile(e.target.files[0]);
       recognizing(e.target.files[0]);
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
+      handleChange(e)
+      setFieldValue("images", e.target.files[0])
     }
   };
   const onInputChange = e => {
@@ -151,7 +154,8 @@ const SignupTenantPage = (props) => {
   };
   const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
   //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
-
+  const FILE_SIZE = 1000000;
+  const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
   const basicSchema = yup.object().shape({
     name: yup.string().required("Please input your name"),
     email: yup.string().email("Please enter the correct email").required("Required"),
@@ -172,6 +176,15 @@ const SignupTenantPage = (props) => {
       .string().min(10, "Invalid KTP / ID number").max(20, "Invalid KTP / ID number")
       .matches(/^[\d]+$/, { message: "Only number allowed" })
       .required("Please upload and input your ID number"),
+    images: yup
+    .mixed()
+    .required("A file is required")
+    .test("fileSize", "File size is too large", (value) => value && value.size < FILE_SIZE)
+    .test(
+      "fileFormat",
+      "File extension is not supported",
+      (value) => value && SUPPORTED_FORMATS.includes(value.type)
+    )
   });
 
   // const formName = useFormik({
@@ -192,6 +205,7 @@ const SignupTenantPage = (props) => {
         confirmPassword: "",
         phone: "",
         ktp: "",
+        images: undefined
       },
       validationSchema: basicSchema,
       onSubmit: registerHandler,
@@ -281,6 +295,7 @@ const SignupTenantPage = (props) => {
               <div>
                 <p>KTP:</p>
                 <Input
+                isInvalid={errors.images && touched.images ? true : false}
                   type="file"
                   _hover={{
                     cursor: "pointer",
@@ -299,14 +314,15 @@ const SignupTenantPage = (props) => {
                       color: "gray.700",
                     },
                   }}
-                  name="image"
+                  name="images"
                   w="50%"
                   onChange={onFileChange}
+                  onBlur={handleBlur}
                   mt={3.5}
                   mb={3.5}
-                  accept={"image/*"}
+                  accept=".png,.jpg,.jpeg"
                 />
-
+                
                 {selectedFile != null && done ? (
                   <Box>
                     <Flex direction="column">
@@ -330,6 +346,11 @@ const SignupTenantPage = (props) => {
                 ) : (
                   ""
                 )}
+                {errors.images && touched.images ? (
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.images}</p>
+                  ) : (
+                    ""
+                  )}
                 <FormControl isRequired>
                   <Input
                     id="ktp"
@@ -424,7 +445,7 @@ const SignupTenantPage = (props) => {
             >
               <p style={{ marginTop: "10px" }}>
                 Already have an account?{" "}
-                <Link to="/signin" style={{ fontWeight: "600" }}>
+                <Link className="link" to="/signin" style={{ fontWeight: "600" }}>
                   Sign in
                 </Link>
               </p>

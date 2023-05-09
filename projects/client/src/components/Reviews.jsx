@@ -2,7 +2,7 @@ import { Avatar, Box, Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/
 import { useEffect } from "react";
 import { useState } from "react";
 
-const Reviews = ({data}) => {
+const Reviews = ({data, handlePage}) => {
   const [time, setTime] = useState("");
   useEffect(() =>{
     setTime(new Date(data.createdAt.substring(0, 19).replace("T", " ")))

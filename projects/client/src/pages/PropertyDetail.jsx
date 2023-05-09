@@ -1,6 +1,16 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Container, Flex, Heading, Text, Icon, Avatar, Divider, FormLabel } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Heading,
+  Text,
+  Icon,
+  Avatar,
+  Divider,
+  FormLabel,
+  IconButton,
+} from "@chakra-ui/react";
 import { IoLocationSharp } from "react-icons/io5";
 import PropertyGallery from "../components/PropertyGallery";
 import RoomCard from "../components/RoomCard";
@@ -10,6 +20,8 @@ import CalendarDateRange from "../components/CalendarDateRange";
 import { useDispatch, useSelector } from "react-redux";
 import "../styles/imageGallery.css";
 import Reviews from "../components/Reviews";
+import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import ReactPaginate from "react-paginate";
 
 function PropertyDetail(props) {
   const location = useLocation();
@@ -25,8 +37,13 @@ function PropertyDetail(props) {
   const [reviewsData, setReviewsData] = useState([]);
   const [userTenant, setUserTenant] = useState("");
   const [image, setImage] = useState([]);
-  const { email, startDate, endDate } = useSelector((state) => {
-    return {
+  const [page, setPage] = useState(0);
+  const [pageMessage, setPageMessage] = useState("");
+  const [limit, setLimit] = useState(0);
+  const [pages, setPages] = useState(0);
+  const [rows, setRows] = useState(0);
+  const {  email, startDate, endDate  } = useSelector(((state)) => {
+    return  {
       email: state.userReducer.email,
       startDate: state.dateReducer.startDate,
       endDate: state.dateReducer.endDate,
@@ -174,6 +191,34 @@ function PropertyDetail(props) {
           <Text>No Review</Text>
         )}
       </Flex>
+      <nav key={rows}>
+        <ReactPaginate
+          previousLabel={
+            <IconButton
+              isDisabled={pages != 0 ? page === 0 : true}
+              variant="outline"
+              colorScheme="green"
+              icon={<ArrowLeftIcon />}
+            />
+          }
+          nextLabel={
+            <IconButton
+              isDisabled={pages != 0 ? page + 1 === pages : true}
+              variant="outline"
+              colorScheme="green"
+              icon={<ArrowRightIcon />}
+            />
+          }
+          pageCount={Math.min(10, pages)}
+          onPageChange={onPageChange}
+          containerClassName={"pagination-container"}
+          pageLinkClassName={"pagination-link"}
+          previousLinkClassName={"pagination-prev"}
+          nextLinkClassName={"pagination-next"}
+          activeLinkClassName={"pagination-link-active"}
+          disabledLinkClassName={"pagination-link-disabled"}
+        />
+      </nav>
     </Container>
   );
 }

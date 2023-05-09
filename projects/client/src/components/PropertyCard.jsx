@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 
-function PropertyCard({ data }) {
+function PropertyCard({ data, isMobile }) {
   const navigate = useNavigate();
   const { email, startDate, endDate } = useSelector((state) => {
     return {
@@ -51,7 +51,12 @@ function PropertyCard({ data }) {
         src={process.env.REACT_APP_BASE_IMG_URL + data.image}
         borderTopRadius="lg"
       />
-      <CardBody>
+      <CardBody
+        onClick={() => {
+          navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
+          window.scrollTo(0, 0);
+        }}
+      >
         <Stack spacing="3">
           <Tooltip label={data.name}>
             <Heading

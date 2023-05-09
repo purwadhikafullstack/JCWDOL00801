@@ -40,13 +40,13 @@ const VerifyChecker = (props) => {
         return <Navigate to="" />;
       } else if (role !== "tenant" && currentPath === "/property/edit") {
         return <Navigate to="" />;
-      }
+      } 
 
       return props.children;
     } else if (
       currentPath == "/profile" ||
       currentPath == "/verify" ||
-      currentPath == "/tenant-dashboard"
+      currentPath == "/tenant-dashboard" || currentPath == "/my-orders"
     ) {
       return <Navigate to="/" />;
     } else {
