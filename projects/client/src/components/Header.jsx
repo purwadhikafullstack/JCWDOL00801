@@ -64,7 +64,7 @@ function Header(props) {
     window.scrollTo(0, 0);
   };
   return (
-    <Box shadow="sm">
+    <Box shadow="sm" >
       <Container p={0} maxW={{ md: "container.xl" }}>
         <Box px={4}>
           <Flex h={16} alignItems={"center"} justifyContent="space-between">

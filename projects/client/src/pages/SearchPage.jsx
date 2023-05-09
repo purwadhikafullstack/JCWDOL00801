@@ -159,10 +159,8 @@ const SearchPage = (props) => {
             order={{ base: 1, md: 2 }}
             alignItems={"center"}
             shadow={"md"}
-            pos={"sticky"}
             top={"0px"}
             alignSelf={"flex-start"}
-            zIndex={9999}
             bg={"white"}
           >
             <Text ml={3}>Sort By:</Text>
