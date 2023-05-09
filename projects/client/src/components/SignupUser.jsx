@@ -155,7 +155,7 @@ const SignupUserPage = (props) => {
         }).then((res) => {
           Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
             login: data._tokenResponse.providerId,
-            email: data._tokenResponse.email,
+            email: data._tokenResponse.email || "-",
           })
             .then((result) => {
               localStorage.setItem("renthaven1", result.data.token);
@@ -506,7 +506,7 @@ const SignupUserPage = (props) => {
             >
               <p style={{ marginTop: "10px" }}>
                 Already have an account?{" "}
-                <Link to="/signin" style={{ fontWeight: "600" }}>
+                <Link className="link" to="/signin" style={{ fontWeight: "600" }}>
                   Sign in
                 </Link>
               </p>

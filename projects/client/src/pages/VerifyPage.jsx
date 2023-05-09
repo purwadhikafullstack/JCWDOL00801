@@ -131,7 +131,7 @@ const VerifyPage = (props) => {
               
               {provider !== "common" && provider !== "google.com" ? (
                 <div id="fb">
-                  {provider === "facebook.com" && email === "" ? <>
+                  {provider === "facebook.com" && email === "-" ? <>
                     <p>Email: </p>
                     <Input isInvalid={errors.emails && touched.emails ? true : false}
                     id="emails"
