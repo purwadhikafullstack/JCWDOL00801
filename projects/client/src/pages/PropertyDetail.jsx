@@ -42,8 +42,8 @@ function PropertyDetail(props) {
   const [limit, setLimit] = useState(0);
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
-  const {  email, startDate, endDate  } = useSelector(((state)) => {
-    return  {
+  const { email, startDate, endDate } = useSelector((state) => {
+    return {
       email: state.userReducer.email,
       startDate: state.dateReducer.startDate,
       endDate: state.dateReducer.endDate,
@@ -124,11 +124,13 @@ function PropertyDetail(props) {
   };
   const getReviewData = async () => {
     try {
-      const res = await Axios.get(
-        process.env.REACT_APP_API_BASE_URL + `/reviews/all?id=${searchQuery.get("id")}`
-      );
+      let url = `/reviews/all?id=${searchQuery.get("id")}&${limit}&page=${page}`;
+      const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + url);
       if (res.data.result.length > 0) {
         setReviewsData(res.data.result);
+        setPage(res.data.page);
+        setPages(res.data.totalPage);
+        setRows(res.data.totalRows);
       } else {
         setNoReview(true);
       }
@@ -137,12 +139,22 @@ function PropertyDetail(props) {
       setNoReview(true);
     }
   };
+  const onPageChange = ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setPageMessage(
+        `If you can't find the data you're looking for, please try using a more specific keyword`
+      );
+    } else {
+      setPageMessage("");
+    }
+  };
   useEffect(() => {
     getData();
   }, [startDate, endDate]);
   useEffect(() => {
     getReviewData();
-  }, []);
+  }, [page, pages]);
   return (
     <Container mt={"20px"} maxW={{ base: "container", md: "container.lg" }}>
       <Flex direction="column" mb={3}>
@@ -180,9 +192,9 @@ function PropertyDetail(props) {
         {notAvailableRoom.length > 0 ? renderNotAvailRoom() : ""}
       </Flex>
       <Flex direction={"column"} mb={"20px"}>
-        <Text fontWeight={"700"} fontSize="18px">
+        <Heading size="sm" mb={4}>
           Reviews
-        </Text>
+        </Heading>
         {!noReview ? (
           reviewsData.map((val, idx) => {
             return <Reviews data={val} key={idx} />;
@@ -191,34 +203,36 @@ function PropertyDetail(props) {
           <Text>No Review</Text>
         )}
       </Flex>
-      <nav key={rows}>
-        <ReactPaginate
-          previousLabel={
-            <IconButton
-              isDisabled={pages != 0 ? page === 0 : true}
-              variant="outline"
-              colorScheme="green"
-              icon={<ArrowLeftIcon />}
-            />
-          }
-          nextLabel={
-            <IconButton
-              isDisabled={pages != 0 ? page + 1 === pages : true}
-              variant="outline"
-              colorScheme="green"
-              icon={<ArrowRightIcon />}
-            />
-          }
-          pageCount={Math.min(10, pages)}
-          onPageChange={onPageChange}
-          containerClassName={"pagination-container"}
-          pageLinkClassName={"pagination-link"}
-          previousLinkClassName={"pagination-prev"}
-          nextLinkClassName={"pagination-next"}
-          activeLinkClassName={"pagination-link-active"}
-          disabledLinkClassName={"pagination-link-disabled"}
-        />
-      </nav>
+      <Flex mb={5} justify={"center"}>
+        <nav key={rows}>
+          <ReactPaginate
+            previousLabel={
+              <IconButton
+                isDisabled={pages != 0 ? page === 0 : true}
+                variant="outline"
+                colorScheme="green"
+                icon={<ArrowLeftIcon />}
+              />
+            }
+            nextLabel={
+              <IconButton
+                isDisabled={pages != 0 ? page + 1 === pages : true}
+                variant="outline"
+                colorScheme="green"
+                icon={<ArrowRightIcon />}
+              />
+            }
+            pageCount={Math.min(10, pages)}
+            onPageChange={onPageChange}
+            containerClassName={"pagination-container"}
+            pageLinkClassName={"pagination-link"}
+            previousLinkClassName={"pagination-prev"}
+            nextLinkClassName={"pagination-next"}
+            activeLinkClassName={"pagination-link-active"}
+            disabledLinkClassName={"pagination-link-disabled"}
+          />
+        </nav>
+      </Flex>
     </Container>
   );
 }
