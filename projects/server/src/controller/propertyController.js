@@ -394,7 +394,7 @@ module.exports = {
       if (checkData.length > 0) {
         return res.status(500).send({
           success: false,
-          message: `Product already exist`,
+          message: `Property already exist`,
         });
       } else {
         const data = await propertyModel.create(newBody);

@@ -92,6 +92,17 @@ function ReportCalendar(props) {
     setSelectedRoom(true);
   };
 
+  const setDisabledDates = selectedRoom
+    ? roomData.roomAvail.length > 0
+      ? roomData.roomAvail.flatMap((val) => {
+          return eachDayOfInterval({
+            start: new Date(val.startDate),
+            end: new Date(val.endDate),
+          });
+        })
+      : []
+    : [];
+
   useEffect(() => {
     getRoomData();
   }, [propId]);
@@ -206,18 +217,7 @@ function ReportCalendar(props) {
           <Flex direction={"column"} gap={1} align={"start"}>
             <Calendar
               date={new Date()}
-              disabledDates={
-                selectedRoom
-                  ? roomData.roomAvail.length > 0
-                    ? roomData.roomAvail.flatMap((val) => {
-                        return eachDayOfInterval({
-                          start: new Date(val.startDate),
-                          end: new Date(val.endDate),
-                        });
-                      })
-                    : []
-                  : []
-              }
+              disabledDates={setDisabledDates}
               minDate={selectedRoom ? new Date(roomData.createdAt) : new Date(createdAt)}
               dayContentRenderer={customDayContent}
               className="static-calendar"

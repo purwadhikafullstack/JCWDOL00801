@@ -57,7 +57,7 @@ schedule.scheduleJob("0 8 * * *", async () => {
         <div style="padding: 12px; padding-left: 22px">
             <table>
               <tr>
-                <td style="padding-bottom: 20px; padding-right: 76px">Date:</td>
+                <td style="padding-bottom: 20px; padding-right: 76px">Check in Date:</td>
                 <td style="padding-bottom: 20px; padding-right: 76px">
                 ${format(checkIn, "MMM dd, yyyy")}
                 </td>
@@ -348,7 +348,7 @@ module.exports = {
                 <div style="padding: 12px; padding-left: 22px">
                     <table>
                       <tr>
-                        <td style="padding-bottom: 20px; padding-right: 76px">Date:</td>
+                        <td style="padding-bottom: 20px; padding-right: 76px">Check in Date:</td>
                         <td style="padding-bottom: 20px; padding-right: 76px">
                         ${format(checkIn, "MMM dd, yyyy")}
                         </td>
@@ -462,8 +462,8 @@ module.exports = {
       });
     } catch (error) {
       return res.status(500).send({
-        success:  false,
-        message:  "Database error",
+        success: false,
+        message: "Database error",
       });
     }
   },
@@ -481,8 +481,7 @@ module.exports = {
       const filterData = [
         {
           startDate: {
-            [Op.and]: {[Op.gte]: startDate,
-            }
+            [Op.and]: { [Op.gte]: startDate },
           },
         },
         {
@@ -491,27 +490,34 @@ module.exports = {
           },
         },
       ];
-      const data = await dbSequelize.query(`
+      const data = await dbSequelize.query(
+        `
         SELECT DATE(o.createdAt) as orderDate, SUM(o.price) as price FROM orderlists as o
         INNER JOIN transactions as tran ON o.transactionId = tran.transactionId
         INNER JOIN rooms as r ON r.roomId = o.roomId
         INNER JOIN properties as p ON r.propertyId = p.propertyId
         INNER JOIN tenants as ten ON ten.tenantId = p.tenantId
         INNER JOIN users as u ON u.userId = ten.userId
-        WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((tran.checkinDate > ${dbSequelize.escape(new Date(startDate))}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        WHERE u.email = ${dbSequelize.escape(
+          req.decrypt.email
+        )} AND ((tran.checkinDate > ${dbSequelize.escape(
+          new Date(startDate)
+        )}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
         AND tran.status = "Confirmed"
         group by orderDate; 
-      `, {type: QueryTypes.SELECT});
+      `,
+        { type: QueryTypes.SELECT }
+      );
       //
       return res.status(200).send({
         success: true,
         data,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).send({
         success: false,
-        message: "Database Error."
+        message: "Database Error.",
       });
     }
   },
@@ -683,35 +689,38 @@ module.exports = {
       return res.status(500).send(error);
     }
   },
-  cancelOrder: async(req, res) =>{
+  cancelOrder: async (req, res) => {
     try {
-        const user = await userModel.findAll({
+      const user = await userModel.findAll({
+        where: {
+          email: req.decrypt.email,
+        },
+      });
+      if (user.length > 0) {
+        const cancel = await transactionModel.update(
+          {
+            status: "Cancelled",
+          },
+          {
             where: {
-                email: req.decrypt.email
-            }
-        })
-        if(user.length > 0){
-            const cancel = await transactionModel.update({
-                status: "Cancelled"
-            }, {
-                where: {
-                    transactionId: req.body.transactionId
-                }
-            })
-            return res.status(200).send({
-                success: true,
-                message: "Book cancelled!"
-            })
-        }
-        return res.status(401).send({
-            success: false,
-            message: "Unauthorized Action"
-        })
+              transactionId: req.body.transactionId,
+            },
+          }
+        );
+        return res.status(200).send({
+          success: true,
+          message: "Book cancelled!",
+        });
+      }
+      return res.status(401).send({
+        success: false,
+        message: "Unauthorized Action",
+      });
     } catch (error) {
-        return res.status(500).send({
-            success: false,
-            message: "Database error"
-        })
+      return res.status(500).send({
+        success: false,
+        message: "Database error",
+      });
     }
-},
+  },
 };

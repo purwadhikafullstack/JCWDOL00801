@@ -44,26 +44,26 @@ function PropertyForm(props) {
     }
   };
 
-  const bankCheck = async () =>{
+  const bankCheck = async () => {
     try {
-      const getLocalStorage = localStorage.getItem("renthaven1")
+      const getLocalStorage = localStorage.getItem("renthaven1");
       const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/payment/check", {
-        headers:{
-          "Authorization": `Bearer ${getLocalStorage}`
-        }
-      })
+        headers: {
+          Authorization: `Bearer ${getLocalStorage}`,
+        },
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
-          title: error.response.data.message,
-          confirmButtonColor: "#38A169",
-          confirmButtonText: "OK",
-          timer: 5000
-      }).then(resp =>{
-        navigate("/property", {replace:true})
-      })
+        title: error.response.data.message,
+        confirmButtonColor: "#38A169",
+        confirmButtonText: "OK",
+        timer: 5000,
+      }).then((resp) => {
+        navigate("/property", { replace: true });
+      });
     }
-  }
+  };
 
   const onBtnCreate = async () => {
     //onBtnSubmit
@@ -98,6 +98,21 @@ function PropertyForm(props) {
       }
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: error.response.data.message,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+      }).then(() => {
+        setFieldValue("city", "");
+        setFieldValue("name", "");
+        setFieldValue("phone", "");
+        setFieldValue("address", "");
+        setFieldValue("image", undefined);
+        setFieldValue("desc", "");
+        window.location.reload();
+        window.scrollTo(0, 0);
+      });
     }
   };
 

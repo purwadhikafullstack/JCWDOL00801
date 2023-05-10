@@ -14,7 +14,10 @@ export const propertySchema = yup.object().shape({
       (value) => value && SUPPORTED_FORMATS.includes(value.type)
     ),
   name: yup.string().required("Please input property name"),
-  address: yup.string().required("Please input an address"),
+  address: yup
+    .string()
+    .min(50, "Your address is too short, add more details.")
+    .required("Please input an address"),
   phone: yup
     .string()
     .matches(/^[\d +]+$/, { message: "Please input the valid phone number" })
