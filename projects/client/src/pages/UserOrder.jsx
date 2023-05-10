@@ -233,7 +233,7 @@ function UserOrder(props) {
 
   useEffect(() => {
     getUserData();
-  }, [selectedStatus, page, searchKeyword, desc, startDate, endDate]);
+  }, [selectedStatus, page, searchKeyword, desc, startDate, endDate, sortData]);
 
   return (
     <Container maxW={{ md: "container.lg" }} my="40px">

@@ -51,37 +51,42 @@ function RoomList(props) {
   const [searchName, setSearchName] = React.useState("");
   const [searchCity, setSearchCity] = React.useState("");
   const [searchAddress, setSearchAddress] = React.useState("");
-  const getPropData = async () =>{
+  const getPropData = async () => {
     try {
-      const getLocalStorage = localStorage.getItem("renthaven1")
-      if(getLocalStorage){
-        const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + "/rooms/prop-availability", {
-          headers: {
-            "Authorization": `Bearer ${getLocalStorage}`
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.get(
+          process.env.REACT_APP_API_BASE_URL + "/rooms/prop-availability",
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
           }
-        })
-        if(res.data.result.length >0){
+        );
+        if (res.data.result.length > 0) {
           setPropData(res.data.result);
-          navigate("/room/new/type", {replace: true, state:{data: res.data.result}})
-        }        
-      }}catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: `${error.response.data.message}`,
-          confirmButtonText: "OK",
-          confirmButtonColor: "#48BB78",
-          showDenyButton: true,
-          denyButtonColor: "red",
-          denyButtonText: "CANCEL",
-          reverseButtons: true
-        }).then(res =>{
-          if(res.isConfirmed){
-            navigate("/property", {replace: true, state:{data: propData}})
-            window.scrollTo(0,0);
-          }
-        })
-        console.log(error)    
-    }}
+          navigate("/room/new/type", { replace: true, state: { data: res.data.result } });
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: `${error.response.data.message}`,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        showDenyButton: true,
+        denyButtonColor: "red",
+        denyButtonText: "CANCEL",
+        reverseButtons: true,
+      }).then((res) => {
+        if (res.isConfirmed) {
+          navigate("/property", { replace: true, state: { data: propData } });
+          window.scrollTo(0, 0);
+        }
+      });
+      console.log(error);
+    }
+  };
   const getRoomData = async () => {
     let endpoint = [`/rooms/all?tenant=${tenantId}&limit=${limit}&page=${page}&`];
     let reqQuery = [];
@@ -102,6 +107,7 @@ function RoomList(props) {
       reqQuery.push(`price=${filterAddress}`);
     }
     try {
+      console.log(endpoint + reqQuery.join("&"));
       let response = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + endpoint + reqQuery.join("&")
       );
@@ -110,7 +116,6 @@ function RoomList(props) {
       setPages(response.data.totalPage);
       setRows(response.data.totalRows);
       setTypeOption(response.data.types);
-      
     } catch (error) {
       console.log(error);
     }
@@ -124,18 +129,13 @@ function RoomList(props) {
       console.log(error);
     }
   };
-  const renderOption = () =>{
-    if(typeOption.length > 0){
+  const renderOption = () => {
+    if (typeOption.length > 0) {
       return typeOption.map((val, idx) => {
-        return (
-          <option
-            value={val.typeId}
-            key={idx}
-          >{`${val.name}`}</option>
-        );
-      })
+        return <option value={val.typeId} key={idx}>{`${val.name}`}</option>;
+      });
     }
-  }
+  };
   const renderRoomData = () => {
     if (roomData.length === 0) {
       return (
@@ -149,8 +149,8 @@ function RoomList(props) {
       );
     }
     return roomData.map((room, idx) => {
-      const { name , price, typeImg} = room.type;
-      const {isDeleted} = room
+      const { name, price, typeImg } = room.type;
+      const { isDeleted } = room;
       return (
         <Tr key={idx}>
           <Td>
@@ -165,7 +165,9 @@ function RoomList(props) {
           </Td>
           <Td>{room.property.name}</Td>
           <Td whiteSpace={{ base: "nowrap", md: "normal" }}>
-            <Text noOfLines={1}>{parseInt(price).toLocaleString("ID", {style: "currency", currency: "IDR"})}</Text>
+            <Text noOfLines={1}>
+              {parseInt(price).toLocaleString("ID", { style: "currency", currency: "IDR" })}
+            </Text>
           </Td>
           <Td>
             <Switch
@@ -175,7 +177,12 @@ function RoomList(props) {
             />
           </Td>
           <Td>
-            <Button onClick={() => navigate(`/room/edit?${room.roomId}`, {state: {roomId: room.roomId}})} colorScheme="green">
+            <Button
+              onClick={() =>
+                navigate(`/room/edit?${room.roomId}`, { state: { roomId: room.roomId } })
+              }
+              colorScheme="green"
+            >
               Edit
             </Button>
           </Td>
@@ -215,7 +222,7 @@ function RoomList(props) {
               process.env.REACT_APP_API_BASE_URL + `/rooms/update/${id}`,
               {
                 isDeleted: changeStatus,
-                propertyId
+                propertyId,
               }
             );
             if (response.data.success) {
@@ -234,8 +241,8 @@ function RoomList(props) {
               icon: "error",
               confirmButtonColor: "#38A169",
               confirmButtonText: "Confirm",
-              time: 5000
-            })
+              time: 5000,
+            });
           }
         }
       });
@@ -245,7 +252,7 @@ function RoomList(props) {
           process.env.REACT_APP_API_BASE_URL + `/rooms/update/${id}`,
           {
             isDeleted: changeStatus,
-            propertyId
+            propertyId,
           }
         );
         if (response.data.success) {
@@ -264,8 +271,8 @@ function RoomList(props) {
           icon: "error",
           confirmButtonColor: "#38A169",
           confirmButtonText: "Confirm",
-          time: 5000
-        })
+          time: 5000,
+        });
       }
     }
   };
@@ -302,7 +309,13 @@ function RoomList(props) {
 
   return (
     <Flex direction="column">
-      <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+      <Flex
+        height={{ md: "70vh" }}
+        direction={{ base: "column", lg: "row" }}
+        gap={6}
+        mt="10"
+        mb={6}
+      >
         <Flex direction="column" gap={6}>
           <Button
             colorScheme="green"

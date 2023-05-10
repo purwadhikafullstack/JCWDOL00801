@@ -168,27 +168,28 @@ function OrderHistory(props) {
       if (response.isConfirmed) {
         Axios.patch(process.env.REACT_APP_API_BASE_URL + "/orderlist/cancel", {
           transactionId: transId,
-        }).then((res) => {
-          Swal.fire({
-            title: `${res.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          }).then(r =>{
-            onBtnReset();
-            getTableData()
-            setSelectedOption("");
+        })
+          .then((res) => {
+            Swal.fire({
+              title: `${res.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            }).then((r) => {
+              onBtnReset();
+              getTableData();
+              setSelectedOption("");
+            });
           })
-        }).catch(e =>{
-          Swal.fire({
-            title: `${e.response.data.message}`,
-            icon: "success",
-            confirmButtonColor: "#38A169",
-            confirmButtonText: "Yes",
-          })
-        });
-      }
-      else{
+          .catch((e) => {
+            Swal.fire({
+              title: `${e.response.data.message}`,
+              icon: "success",
+              confirmButtonColor: "#38A169",
+              confirmButtonText: "Yes",
+            });
+          });
+      } else {
         onBtnReset();
         getTableData();
         setSelectedOption("");
@@ -373,7 +374,13 @@ function OrderHistory(props) {
     <Box pb="5" px={{ base: "5", md: "20" }}>
       <Heading mb={6}>Order History</Heading>
       <Flex direction="column">
-        <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+        <Flex
+          height={{ md: "660px" }}
+          direction={{ base: "column", lg: "row" }}
+          gap={6}
+          mt="10"
+          mb={6}
+        >
           <Flex direction="column" gap={6}>
             <Heading size="md">Search by</Heading>
             <Flex direction="column" gap={3}>

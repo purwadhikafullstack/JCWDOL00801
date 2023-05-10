@@ -47,6 +47,7 @@ const ListHeader = ({ children }) => {
 };
 
 function Footer() {
+  const year = new Date().getFullYear();
   return (
     <Box bg={"gray.50"} color={"gray.700"}>
       <Container as={Stack} maxW={"6xl"} py={10}>
@@ -56,7 +57,7 @@ function Footer() {
               <Image boxSize="120px" src={logo} />
               <Heading size="xl">Renthaven</Heading>
             </HStack>
-            <Text fontSize={"sm"}>© 2022 All rights reserved</Text>
+            <Text fontSize={"sm"}>© {year} All rights reserved</Text>
             <Stack direction={"row"} spacing={6}>
               <SocialButton label={"Twitter"}>
                 <FaTwitter />
@@ -72,18 +73,9 @@ function Footer() {
 
           <Stack align={"flex-start"}>
             <ListHeader>Useful Links</ListHeader>
-            <Link>Home</Link>
-            <Link>Tenant</Link>
-            <Link>Profile</Link>
-            <Link>Order List</Link>
-          </Stack>
-
-          <Stack align={"flex-start"}>
-            <ListHeader>Contact</ListHeader>
-            <Link>Help Center</Link>
-            <Link>Terms of Service</Link>
-            <Link>Legal</Link>
-            <Link>Privacy Policy</Link>
+            <Link href="/">Home</Link>
+            <Link href="/profile">Profile</Link>
+            <Link href="/my-orders">Order List</Link>
           </Stack>
         </SimpleGrid>
       </Container>

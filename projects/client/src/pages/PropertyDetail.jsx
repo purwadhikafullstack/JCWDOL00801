@@ -157,7 +157,7 @@ function PropertyDetail(props) {
     getReviewData();
   }, [page, pages]);
   return (
-    <Container maxW={{ base: "container", md: "container.lg" }}>
+    <Container mt={"20px"} maxW={{ base: "container", md: "container.lg" }}>
       <Flex direction="column" mb={3}>
         <Heading>{property.name}</Heading>
         <Text>
@@ -188,14 +188,14 @@ function PropertyDetail(props) {
       </Flex>
       <Divider my={5} />
       <Flex direction="column" gap={4} mb="20px">
-        <Heading size="sm">Available Rooms at "Hotel Name"</Heading>
+        <Heading size="sm">Available Rooms at {property.name}</Heading>
         {renderRoom()}
         {notAvailableRoom.length > 0 ? renderNotAvailRoom() : ""}
       </Flex>
       <Flex direction={"column"} mb={"20px"}>
-        <Text fontWeight={"700"} fontSize="18px">
+        <Heading size="sm" mb={4}>
           Reviews
-        </Text>
+        </Heading>
         {!noReview ? (
           reviewsData.map((val, idx) => {
             return <Reviews data={val} key={idx} />;
@@ -204,34 +204,36 @@ function PropertyDetail(props) {
           <Text>No Review</Text>
         )}
       </Flex>
-      <nav key={rows}>
-        <ReactPaginate
-          previousLabel={
-            <IconButton
-              isDisabled={pages != 0 ? page === 0 : true}
-              variant="outline"
-              colorScheme="green"
-              icon={<ArrowLeftIcon />}
-            />
-          }
-          nextLabel={
-            <IconButton
-              isDisabled={pages != 0 ? page + 1 === pages : true}
-              variant="outline"
-              colorScheme="green"
-              icon={<ArrowRightIcon />}
-            />
-          }
-          pageCount={Math.min(10, pages)}
-          onPageChange={onPageChange}
-          containerClassName={"pagination-container"}
-          pageLinkClassName={"pagination-link"}
-          previousLinkClassName={"pagination-prev"}
-          nextLinkClassName={"pagination-next"}
-          activeLinkClassName={"pagination-link-active"}
-          disabledLinkClassName={"pagination-link-disabled"}
-        />
-      </nav>
+      <Flex mb={5} justify={"center"}>
+        <nav key={rows}>
+          <ReactPaginate
+            previousLabel={
+              <IconButton
+                isDisabled={pages != 0 ? page === 0 : true}
+                variant="outline"
+                colorScheme="green"
+                icon={<ArrowLeftIcon />}
+              />
+            }
+            nextLabel={
+              <IconButton
+                isDisabled={pages != 0 ? page + 1 === pages : true}
+                variant="outline"
+                colorScheme="green"
+                icon={<ArrowRightIcon />}
+              />
+            }
+            pageCount={Math.min(10, pages)}
+            onPageChange={onPageChange}
+            containerClassName={"pagination-container"}
+            pageLinkClassName={"pagination-link"}
+            previousLinkClassName={"pagination-prev"}
+            nextLinkClassName={"pagination-next"}
+            activeLinkClassName={"pagination-link-active"}
+            disabledLinkClassName={"pagination-link-disabled"}
+          />
+        </nav>
+      </Flex>
     </Container>
   );
 }

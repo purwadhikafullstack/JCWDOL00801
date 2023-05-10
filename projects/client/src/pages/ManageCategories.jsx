@@ -32,7 +32,7 @@ function ManageCategories(props) {
   const toast = useToast();
   const [categoryData, setCategoryData] = React.useState([]);
   const [sortData, setSortData] = React.useState("");
-  const [desc, setDesc] = React.useState(true);
+  const [desc, setDesc] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(0);
   const [pages, setPages] = React.useState(0);
@@ -356,13 +356,19 @@ function ManageCategories(props) {
 
   useEffect(() => {
     getCategoryData();
-  }, [page, queryData, desc]);
+  }, [page, queryData, desc, sortData]);
 
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>
       <Heading mb={6}>Manage Categories</Heading>
       <Flex direction="column">
-        <Flex direction={{ base: "column", lg: "row" }} gap={6} mt="10" mb={6}>
+        <Flex
+          height={{ md: "660px" }}
+          direction={{ base: "column", lg: "row" }}
+          gap={6}
+          mt="10"
+          mb={6}
+        >
           <Flex direction="column" gap={6}>
             {!isOpen ? (
               <Button

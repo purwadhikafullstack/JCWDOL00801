@@ -22,10 +22,7 @@ const { log } = require("console");
 module.exports = {
   getPropertyData: async (req, res) => {
     try {
-      const {
-        startDate,
-        endDate
-      } = req.body;
+      const { startDate, endDate } = req.body;
       const newStartDate = startDate ? new Date(startDate) : new Date();
       const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000);
       const data = await dbSequelize.query(
@@ -340,8 +337,8 @@ module.exports = {
           },
         });
       }
-      if (sortby) {
-        sortData.push([sortby, order]);
+      if (sortby == "name" || sortby == "address") {
+        sortData.push([sortby, order.toUpperCase()]);
       } else {
         sortData.push(["propertyId", "DESC"]);
       }
@@ -397,7 +394,7 @@ module.exports = {
       if (checkData.length > 0) {
         return res.status(500).send({
           success: false,
-          message: `Product already exist`,
+          message: `Property already exist`,
         });
       } else {
         const data = await propertyModel.create(newBody);
@@ -416,22 +413,6 @@ module.exports = {
     try {
       const { propertyId } = req.params;
       const { isDeleted } = req.body;
-      if (!isDeleted) {
-        const update = await propertyModel.update(
-          {
-            isDeleted,
-          },
-          {
-            where: { propertyId },
-          }
-        );
-        if (update) {
-          return res.status(200).send({
-            success: true,
-            message: `Data has been updated`,
-          });
-        }
-      }
       const checkTransaction = await orderListModel.findAll({
         include: [
           {
@@ -481,6 +462,25 @@ module.exports = {
           message: `Can not activate property because corresponding category is not active`,
         });
       } else {
+        if (!isDeleted) {
+          // kalo mau diaktifkan
+
+          const update = await propertyModel.update(
+            {
+              isDeleted,
+            },
+            {
+              where: { propertyId },
+            }
+          );
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: `Data has been updated`,
+            });
+          }
+        }
+
         const updateRoom = await roomModel.update(
           { isDeleted },
           {

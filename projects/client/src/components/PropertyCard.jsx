@@ -44,14 +44,20 @@ function PropertyCard({ data, isMobile }) {
         transitionDuration: "0.15s",
       }}
     >
-      <Image src={process.env.REACT_APP_BASE_IMG_URL + data.image} borderTopRadius="lg" onClick={() => {
-              navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
-              window.scrollTo(0, 0);      
-              }} />
-      <CardBody onClick={() => {
-              navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
-              window.scrollTo(0, 0);      
-              }}>
+      <Image
+        onClick={() => {
+          navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
+          window.scrollTo(0, 0);
+        }}
+        src={process.env.REACT_APP_BASE_IMG_URL + data.image}
+        borderTopRadius="lg"
+      />
+      <CardBody
+        onClick={() => {
+          navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
+          window.scrollTo(0, 0);
+        }}
+      >
         <Stack spacing="3">
           <Tooltip label={data.name}>
             <Heading
@@ -60,7 +66,7 @@ function PropertyCard({ data, isMobile }) {
                 navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
                 window.scrollTo(0, 0);
               }}
-              _hover={{ cursor: "pointer" }}
+              _hover={{ cursor: "pointer", color: "green.600" }}
               noOfLines={1}
             >
               {data.name}
@@ -108,7 +114,7 @@ function PropertyCard({ data, isMobile }) {
         </Stack>
       </CardBody>
       <CardFooter mt="-4" alignSelf="end">
-        <Button variant="solid" colorScheme="green" onClick={bookNowHandler}>
+        <Button zIndex={"popover"} variant="solid" colorScheme="green" onClick={bookNowHandler}>
           Book now
         </Button>
       </CardFooter>

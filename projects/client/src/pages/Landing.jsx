@@ -14,10 +14,9 @@ function Landing(props) {
         <LandingBanner />
       </Flex>
       <LandingSearchForm />
-      <Box mb="70">
-        <MainContent isMobile={props.isMobile}/>
+      <Box mb="50">
+        <MainContent isMobile={props.isMobile} />
       </Box>
-      <Divider />
       <LandingContent />
       <Testimonials />
     </Box>

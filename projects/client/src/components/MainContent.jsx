@@ -13,27 +13,26 @@ import { clearAllDate } from "../actions/dateAction";
 function MainContent(props) {
   const [propertyData, setPropertyData] = useState([]);
   const dispatch = useDispatch();
-  const {startDate, endDate} = useSelector(state =>{
-    return{
+  const { startDate, endDate } = useSelector((state) => {
+    return {
       startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate
-    }
-  })
-  const getPropertyData = async () =>{
+      endDate: state.dateReducer.endDate,
+    };
+  });
+  const getPropertyData = async () => {
     try {
-      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/property/all",{
+      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/property/all", {
         startDate,
-        endDate
-      })
-      setPropertyData(res.data.result)
+        endDate,
+      });
+      setPropertyData(res.data.result);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  useEffect(() =>{
-    getPropertyData()
-    
-  },[])
+  };
+  useEffect(() => {
+    getPropertyData();
+  }, []);
   return (
     <Container maxW={{ base: "container", md: "container.xl" }}>
       <Heading mb="6">Recommended places for you</Heading>
@@ -59,36 +58,13 @@ function MainContent(props) {
         pagination={{ clickable: true, horizontalClass: "pagination-kita" }}
         modules={[Pagination]}
       >
-        {propertyData.map(val =>{
-          return <SwiperSlide><PropertyCard data={val} isMobile={props.isMobile}></PropertyCard></SwiperSlide>
+        {propertyData.map((val) => {
+          return (
+            <SwiperSlide>
+              <PropertyCard data={val} isMobile={props.isMobile}></PropertyCard>
+            </SwiperSlide>
+          );
         })}
-        {/* <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide> */}
       </Swiper>
     </Container>
   );

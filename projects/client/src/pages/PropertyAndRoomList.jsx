@@ -175,8 +175,8 @@ function PropertyAndRoomList(props) {
   const getContent = (selected, modal) => {
     setIsLoading(true);
     let query = [];
-    const currentDesc = !desc
-    setDesc(currentDesc)
+    const currentDesc = !desc;
+    setDesc(currentDesc);
     if (sortData !== "") {
       if (currentDesc) {
         query.push(`&sort=${sortData}&order=desc`);
@@ -185,7 +185,9 @@ function PropertyAndRoomList(props) {
       }
     }
     if (filterDate) {
-      query.push(`&startDate=${new Date(startDate).getTime()}&endDate=${new Date(endDate).getTime()}`);
+      query.push(
+        `&startDate=${new Date(startDate).getTime()}&endDate=${new Date(endDate).getTime()}`
+      );
     }
     if (modal === "specialprice") {
       const endpoint = `/special-price/all?id=${selectedTypeData}&limit=${limitModal}&page=${
@@ -548,9 +550,13 @@ function PropertyAndRoomList(props) {
   return (
     <>
       <Box pb={5} px={{ base: "5", md: "20" }} overflow={"auto"}>
-        <Heading mb={5}>Room List</Heading>
-        {renderProperty()}
-        {renderRoom()}
+        <Flex height={{ md: "770px" }} direction={"column"}>
+          <Flex direction={"column"}>
+            <Heading mb={5}>Room List</Heading>
+            {renderProperty()}
+            {renderRoom()}
+          </Flex>
+        </Flex>
         <Flex justify="center" align="center" mt={5}>
           <Button
             colorScheme="gray"
@@ -636,13 +642,23 @@ function PropertyAndRoomList(props) {
                   </Button>
                   <HStack gap={2}>
                     <CalendarDateRange />
-                    <Button variant={"outline"} colorScheme="green" size="sm" onClick={resetHandler}>
+                    <Button
+                      variant={"outline"}
+                      colorScheme="green"
+                      size="sm"
+                      onClick={resetHandler}
+                    >
                       Reset
                     </Button>
-                    <Button variant={"solid"} colorScheme="green" size="sm" onClick={() => {
-                      setFilterDate(true)
-                      getContent(0, currentModal)
-                    }}>
+                    <Button
+                      variant={"solid"}
+                      colorScheme="green"
+                      size="sm"
+                      onClick={() => {
+                        setFilterDate(true);
+                        getContent(0, currentModal);
+                      }}
+                    >
                       Search
                     </Button>
                   </HStack>
@@ -652,9 +668,10 @@ function PropertyAndRoomList(props) {
                       variant={"link"}
                       colorScheme="blue"
                       size="sm"
-                      onClick={() => {setSortData("startDate")
-                      getContent(0, currentModal)
-                    }}
+                      onClick={() => {
+                        setSortData("startDate");
+                        getContent(0, currentModal);
+                      }}
                     >
                       Start Date
                     </Button>
@@ -715,8 +732,8 @@ function PropertyAndRoomList(props) {
                                             confirmButtonText: "Confirm",
                                             timer: 5000,
                                           }).then((resp) => {
-                                              getContent(0, "avail");
-                                            onOpen();  
+                                            getContent(0, "avail");
+                                            onOpen();
                                           });
                                         })
                                         .catch((e) => {
@@ -733,7 +750,6 @@ function PropertyAndRoomList(props) {
                                           });
                                         });
                                     }
-                                    
                                   });
                                 }
                               };
@@ -780,13 +796,23 @@ function PropertyAndRoomList(props) {
                   </Button>
                   <HStack gap={2}>
                     <CalendarDateRange />
-                    <Button variant={"outline"} colorScheme="green" size="sm" onClick={resetHandler}>
+                    <Button
+                      variant={"outline"}
+                      colorScheme="green"
+                      size="sm"
+                      onClick={resetHandler}
+                    >
                       Reset
                     </Button>
-                    <Button variant={"solid"} colorScheme="green" size="sm" onClick={() => {
-                      setFilterDate(true)
-                      getContent(0, currentModal)
-                    }}>
+                    <Button
+                      variant={"solid"}
+                      colorScheme="green"
+                      size="sm"
+                      onClick={() => {
+                        setFilterDate(true);
+                        getContent(0, currentModal);
+                      }}
+                    >
                       Search
                     </Button>
                   </HStack>
@@ -795,15 +821,21 @@ function PropertyAndRoomList(props) {
                     <Button
                       variant={"link"}
                       colorScheme="blue"
-                      onClick={() => {setSortData("startDate")
-                      getContent(0, currentModal)
-                    }}
+                      onClick={() => {
+                        setSortData("startDate");
+                        getContent(0, currentModal);
+                      }}
                     >
                       Start Date
                     </Button>
-                    <Button variant={"link"} colorScheme="blue" onClick={() => {setSortData("nominal")
-                      getContent(0, currentModal)
-                    }}>
+                    <Button
+                      variant={"link"}
+                      colorScheme="blue"
+                      onClick={() => {
+                        setSortData("nominal");
+                        getContent(0, currentModal);
+                      }}
+                    >
                       Nominal
                     </Button>
                   </HStack>
