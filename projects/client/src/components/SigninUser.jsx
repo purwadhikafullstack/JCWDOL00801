@@ -70,6 +70,9 @@ const SigninUserPage = (props) => {
       .catch((e) => {
         if(e.code === "auth/popup-closed-by-user"){
           setGoogleLoading(false)
+        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+          setAlert("You registered the account with different method.")
+          setGoogleLoading(false);
         }else if(e.response){
           setAlert(`${e.response.data.message}`)
           setGoogleLoading(false);
@@ -113,6 +116,9 @@ const SigninUserPage = (props) => {
       .catch((e) => {
         if(e.code === "auth/popup-closed-by-user"){
           setGoogleLoading(false)
+        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+          setAlert("You registered the account with different method.")
+          setFacebookLoading(false);
         }else if(e.response){
           setAlert(`${e.response.data.message}`)
           setGoogleLoading(false);
