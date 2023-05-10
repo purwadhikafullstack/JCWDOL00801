@@ -161,7 +161,7 @@ function SearchProperty({
   }, []);
 
   return (
-    <Container maxW="container.lg" pos="sticky" top="16px" alignSelf={"flex-start"}>
+    <Container maxW="container.lg" pos="sticky" top="16px" alignSelf={"flex-start"} zIndex={9999}>
       <Box my={4} shadow="md" p="5" rounded="md">
         <Heading mb={5} size="lg">
           Search

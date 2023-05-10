@@ -55,21 +55,45 @@ function CalendarSearchBook(props) {
   };
 
   const handleChange = (item) => {
-    setCalendar([item.selection]);
-    if (props.checkinHandler && props.checkoutHandler) {
+    console.log(new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime())
+    if(new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime()){
+      setCalendar([
+        {
+          startDate: item.selection.startDate,
+          endDate: new Date(new Date(format(addDays(item.selection.startDate, 1), "MM/dd/yyyy")).getTime()),
+          key: "selection",
+        }
+      ])
+    }
+    else{
+      setCalendar([item.selection]);
+    }
+    if (props.checkinHandler && props.checkoutHandler && new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime()) {
+      props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime());
+      props.checkoutHandler(new Date(format(addDays(item.selection.startDate, 1), "MM/dd/yyyy")).getTime());
+    }else if(props.checkinHandler && props.checkoutHandler){
       props.checkinHandler(new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime());
       props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime());
     }
-    dispatch(
-      setDateActionBook({
-        startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
-        endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
-      })
-    );
+    if(new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime()){
+      dispatch(
+        setDateActionBook({
+          startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
+          endDate: new Date(format(addDays(item.selection.startDate, 1), "MM/dd/yyyy")).getTime(),
+        })
+      );
+    }else{
+      dispatch(
+        setDateActionBook({
+          startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
+          endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
+        })
+      );
+    }
   };
 
   return (
-    <div className="calendarWrap">
+    <div className="calendarWrap" >
       <InputGroup order={props.direction ? 2 : 1}>
         <InputLeftElement pointerEvents="none" children={<CalendarIcon color="green.500" />} />
         <Input 
