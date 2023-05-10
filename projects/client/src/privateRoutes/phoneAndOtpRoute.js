@@ -46,7 +46,10 @@ const VerifyChecker = (props) => {
     } else if (
       currentPath == "/profile" ||
       currentPath == "/verify" ||
-      currentPath == "/tenant-dashboard" || currentPath == "/my-orders"
+      currentPath == "/tenant-dashboard" || 
+      currentPath == "/my-orders" ||
+      currentPath == "/payment" ||
+      currentPath == "/payment-proof"
     ) {
       return <Navigate to="/" />;
     } else {

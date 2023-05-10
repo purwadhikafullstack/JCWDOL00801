@@ -333,8 +333,8 @@ function App() {
             /> */}
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/detail" element={<PropertyDetail />} isMobile={isMobile} />
-            <Route path="/payment" element={<PaymentDetail />} isMobile={isMobile} />
-            <Route path="/payment-proof" element={<PaymentProofPage />} isMobile={isMobile} />
+            <Route path="/payment" element={<VerifyChecker loading={loading}><PaymentDetail /></VerifyChecker>} isMobile={isMobile} />
+            <Route path="/payment-proof" element={<VerifyChecker loading={loading}><PaymentProofPage /></VerifyChecker>} isMobile={isMobile} />
             <Route path="/my-orders" element={<VerifyChecker loading={loading}><UserOrder /></VerifyChecker>} isMobile={isMobile} />
             <Route path="/search" element={<SearchPage />} isMobile={isMobile} />
           </Routes>
