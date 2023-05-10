@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
 import { tenantLogout } from "../actions/tenantAction";
-import { clearAllDate } from "../actions/dateAction";
+import { clearAllDate, clearAllDateBook } from "../actions/dateAction";
 
 const Links = ["Home", "My Profile", "My Orders"];
 
@@ -61,6 +61,7 @@ function Header(props) {
                 }}
                 onClick={() => {
                   clearAllDate();
+                  clearAllDateBook();
                   navigate("/", { replace: true });
                   navigate(0);
                   window.scrollTo(0, 0);

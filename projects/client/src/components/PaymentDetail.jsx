@@ -60,8 +60,8 @@ const PaymentDetail = () => {
       gender: state.userReducer.gender,
       email: state.userReducer.email,
       phone: state.userReducer.phone,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const getData = async () => {

@@ -15,8 +15,8 @@ function MainContent(props) {
   const dispatch = useDispatch();
   const { startDate, endDate } = useSelector((state) => {
     return {
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const getPropertyData = async () => {

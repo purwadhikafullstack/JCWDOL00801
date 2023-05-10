@@ -46,8 +46,8 @@ function PropertyDetail(props) {
   const { email, startDate, endDate } = useSelector((state) => {
     return {
       email: state.userReducer.email,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const [checkinDate, setCheckinDate] = useState(null);

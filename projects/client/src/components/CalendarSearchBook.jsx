@@ -9,20 +9,20 @@ import "react-date-range/dist/theme/default.css";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { setDateAction } from "../actions/dateAction";
+import { setDateAction, setDateActionBook } from "../actions/dateAction";
 
 function CalendarSearchBook(props) {
   const { currentStartDate, currentEndDate } = useSelector((state) => {
     return {
-      currentStartDate: state.dateReducer.startDate,
-      currentEndDate: state.dateReducer.endDate,
+      currentStartDate: state.dateBook.startDate,
+      currentEndDate: state.dateBook.endDate,
     };
   });
   //state untuk menyimpan date
   const [calendar, setCalendar] = React.useState([
     {
-      startDate: new Date(new Date(format(addDays(new Date(), 1), "MM/dd/yyyy")).getTime()),
-      endDate: new Date(new Date(format(addDays(new Date(), 2), "MM/dd/yyyy")).getTime()),
+      startDate: new Date(currentStartDate),
+      endDate: new Date(currentEndDate),
       key: "selection",
     },
   ]);
@@ -61,7 +61,7 @@ function CalendarSearchBook(props) {
       props.checkoutHandler(new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime());
     }
     dispatch(
-      setDateAction({
+      setDateActionBook({
         startDate: new Date(format(item.selection.startDate, "MM/dd/yyyy")).getTime(),
         endDate: new Date(format(item.selection.endDate, "MM/dd/yyyy")).getTime(),
       })

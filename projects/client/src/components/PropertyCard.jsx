@@ -13,8 +13,8 @@ function PropertyCard({ data, isMobile }) {
   const { email, startDate, endDate } = useSelector((state) => {
     return {
       email: state.userReducer.email,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const bookNowHandler = () => {
@@ -30,7 +30,7 @@ function PropertyCard({ data, isMobile }) {
       });
     } else {
       navigate(`/payment?id=${data.id}`, {
-        state: { id: data.id, startDate: new Date(new Date(format(addDays(new Date(), 1), "MM/dd/yyyy")).getTime()), endDate: new Date(new Date(format(addDays(new Date(), 2), "MM/dd/yyyy")).getTime()), typeId: data.typeId },
+        state: { id: data.id, startDate: startDate, endDate: endDate, typeId: data.typeId },
       });
       window.scrollTo(0, 0);
     }
