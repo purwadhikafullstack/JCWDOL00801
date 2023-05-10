@@ -6,6 +6,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { addDays, format } from "date-fns";
 
 function PropertyCard({ data, isMobile }) {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function PropertyCard({ data, isMobile }) {
       });
     } else {
       navigate(`/payment?id=${data.id}`, {
-        state: { id: data.id, startDate: startDate, endDate: endDate, typeId: data.typeId },
+        state: { id: data.id, startDate: new Date(new Date(format(addDays(new Date(), 1), "MM/dd/yyyy")).getTime()), endDate: new Date(new Date(format(addDays(new Date(), 2), "MM/dd/yyyy")).getTime()), typeId: data.typeId },
       });
       window.scrollTo(0, 0);
     }

@@ -7,6 +7,7 @@ import Axios from "axios";
 import { Select as Select2 } from "chakra-react-select";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import CalendarSearchBook from "./CalendarSearchBook";
 
 function LandingSearchForm(props) {
   const dispatch = useDispatch();
@@ -116,7 +117,7 @@ function LandingSearchForm(props) {
           >
             <Box minW="100%">
               <FormLabel>Date</FormLabel>
-              <CalendarDateRange />
+              <CalendarSearchBook />
             </Box>
             <Box>
               <Button

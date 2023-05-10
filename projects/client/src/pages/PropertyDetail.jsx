@@ -22,6 +22,7 @@ import "../styles/imageGallery.css";
 import Reviews from "../components/Reviews";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import ReactPaginate from "react-paginate";
+import CalendarSearchBook from "../components/CalendarSearchBook";
 
 function PropertyDetail(props) {
   const location = useLocation();
@@ -180,7 +181,7 @@ function PropertyDetail(props) {
       <Divider my={5} />
       <Flex minW="100%" direction={"column"}>
         <FormLabel>Date</FormLabel>
-        <CalendarDateRange
+        <CalendarSearchBook
           checkinHandler={changeCheckinDate}
           checkoutHandler={changeCheckoutDate}
         />

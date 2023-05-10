@@ -237,6 +237,7 @@ const SigninUserPage = (props) => {
                     marginTop: "4px",
                     fontWeight: "600",
                   }}
+                  to="/user/reset-password"
                 >
                   Forgot password?
                 </Link>
