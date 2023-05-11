@@ -19,7 +19,6 @@ module.exports = {
                 })
             }
             req.decrypt = decrypt[0];
-            console.log("CHEK" , req.decrypt)
             next();
         })
     }

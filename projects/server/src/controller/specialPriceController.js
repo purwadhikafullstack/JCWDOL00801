@@ -61,7 +61,6 @@ module.exports = {
             LIMIT ${limit}
             OFFSET ${offset};
             `, {type: QueryTypes.SELECT});
-            console.log("SP",necessaryData)
             const totalPage = Math.ceil(sp.length / limit);
 
             if (sp.length > 0) {

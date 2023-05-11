@@ -446,6 +446,13 @@ module.exports = {
   },
   cancelTenant: async (req, res) => {
     try {
+      const transaction = await transactionModel.findAll({
+        where:{
+          transactionId: req.body.transactionId
+        }
+      })
+      const currentCreatedAt = new Date(transaction[0].checkinDate).setFullYear(new Date(transaction[0].checkinDate).getFullYear() - 1);
+      const currentYear = new Date(currentCreatedAt)
       const cancel = await transactionModel.update(
         {
           status: "Cancelled",
@@ -456,11 +463,29 @@ module.exports = {
           },
         }
       );
+      
+      const orderList = await orderListModel.findAll({
+        where: {
+          transactionId: req.body.transactionId
+        }
+      })
+      const roomAvail = await roomAvailModel.findAll({
+        where: {
+          [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
+        }
+      })
+      const updateRa = await roomAvailModel.update({
+        startDate: currentYear,
+        endDate: currentYear
+      }, {where: {
+        raId: roomAvail[0].raId
+      }})
       return res.status(200).send({
         success: true,
         message: "The transaction has been cancelled",
       });
     } catch (error) {
+      console.log(error)
       return res.status(500).send({
         success: false,
         message: "Database error",
@@ -697,6 +722,13 @@ module.exports = {
         },
       });
       if (user.length > 0) {
+        const transaction = await transactionModel.findAll({
+          where:{
+            transactionId: req.body.transactionId
+          }
+        })
+        const currentCreatedAt = new Date(transaction[0].checkinDate).setFullYear(new Date(transaction[0].checkinDate).getFullYear() - 1);
+        const currentYear = new Date(currentCreatedAt)
         const cancel = await transactionModel.update(
           {
             status: "Cancelled",
@@ -707,6 +739,22 @@ module.exports = {
             },
           }
         );
+        const orderList = await orderListModel.findAll({
+          where: {
+            transactionId: req.body.transactionId
+          }
+        })
+        const roomAvail = await roomAvailModel.findAll({
+          where: {
+            [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
+          }
+        })
+        const updateRa = await roomAvailModel.update({
+          startDate: currentYear,
+          endDate: currentYear
+        }, {where: {
+          raId: roomAvail[0].raId
+        }})
         return res.status(200).send({
           success: true,
           message: "Book cancelled!",

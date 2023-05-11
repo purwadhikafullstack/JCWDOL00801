@@ -91,9 +91,13 @@ module.exports = {
           type: QueryTypes.INSERT,
         }
       );
+      console.log(createTransactions)
       const trans = await transactionModel.findAll({
-        where: {
+        where: {[Op.and] : [{
           userId,
+          checkinDate: new Date(checkinDate),
+          checkoutDate: new Date(checkoutDate)
+        }]
         },
       });
       const transactionId = trans[trans.length - 1].transactionId;
@@ -101,6 +105,11 @@ module.exports = {
         transactionId,
         roomId: data[randomRoomId].roomId,
         price,
+      });
+      const data2 = await roomAvailModel.create({
+        roomId: data[randomRoomId].roomId,
+        startDate:  new Date(checkinDate),
+        endDate: new Date(checkoutDate),
       });
       res.status(200).send({
         success: true,
@@ -191,11 +200,6 @@ module.exports = {
             transactionId: req.body.transactionId,
           },
         });
-        const data2 = await roomAvailModel.create({
-          roomId: order[0].roomId,
-          startDate: transactions[0].checkinDate,
-          endDate: transactions[0].checkoutDate,
-        });
         res.status(200).send({
           success: true,
           message: "Proof Payment Image Uploaded",
@@ -217,22 +221,67 @@ module.exports = {
   changeStatus: () => {
     //create the job and filter which data to be updated
     const job = new cron.CronJob("*/5 * * * * *", async function () {
-      const transactions = await transactionModel.findAll({
+      const transactions = await dbSequelize.query(`
+      SELECT * from transactions where status = "Waiting for payment"
+      GROUP BY transactionId`, {type: QueryTypes.SELECT})
+      // const transactions = await transactionModel.findAll({
+      //   where: {
+      //     status: "Waiting for payment",
+      //   }, group: "transactionId", type: QueryTypes.SELECT
+      // });
+      const checkIn = transactions.map(val =>{
+        return `ra.startDate = ${dbSequelize.escape(new Date(val.checkinDate))}`
+      })
+      const checkout = transactions.map(val =>{
+        return `ra.endDate = ${dbSequelize.escape(new Date(val.checkoutDate))}`
+      })
+      
+      const orderLists = transactions.map(val =>{
+        return {transactionId: val.transactionId}
+      })
+      const getOrderLists = await orderListModel.findAll({
         where: {
-          status: "Waiting for payment",
-        },
+          [Op.or]: orderLists
+        }
+      })
+      const roomAvail = getOrderLists.map((val, idx) =>{
+        return `ra.roomId = ${dbSequelize.escape(val.roomId)}`
+      })
+      const filteredRoom = roomAvail.filter((val, index, self) => {
+        return index === self.findIndex((t) => t.typeId === val.typeId);
       });
+      const rooms = roomAvail.join(" OR ")
+      const times = checkIn.map((val, idx) =>{
+        return `(${checkIn[idx]} AND ${checkout[idx]})`
+      })
+      const getTimes = times.join(" OR ")
+      const getRoomAvail = await dbSequelize.query(`
+        SELECT * FROM roomavailabilities AS ra 
+        INNER JOIN orderlists as o ON ra.roomId = o.roomId
+        INNER JOIN transactions as t ON o.transactionId = t.transactionId
+        WHERE t.status = 'Waiting for payment' ${roomAvail.length > 0 ? `AND (${rooms}) AND ${getTimes}` : ""}
+        group by ra.raId
+      `, {type: QueryTypes.SELECT})
+      
       console.log("Current Database Time", new Date());
       // update the status
       transactions.map(async (val) => {
         const transactionExpired = moment(val.transactionExpired);
         const now = moment();
-        if (now.isAfter(transactionExpired)) {
+        const currentCreatedAt = new Date(val.checkinDate).setFullYear(new Date(val.checkinDate).getFullYear() - 1);
+        const currentYear = new Date(currentCreatedAt)
+        if (new Date().getTime() > new Date(val.transactionExpired).getTime()) {
           await val.update({
             status: "Cancelled",
           });
+          getRoomAvail.map(async (value) => {
+            console.log("VAL", value)
+            await dbSequelize.query(`UPDATE roomavailabilities SET startDate = ${dbSequelize.escape(currentYear)}, endDate = ${dbSequelize.escape(currentYear)}
+            WHERE raId = ${value.raId}`)
+          })
         }
       });
+      
     });
     job.start();
   },
