@@ -45,16 +45,18 @@ import ReactPaginate from "react-paginate";
 import CalendarDateRange from "../components/CalendarDateRange";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { clearAllDate } from "../actions/dateAction";
-
+import { clearAllDate, clearAllDateBook } from "../actions/dateAction";
+import CalendarSearchBook from "../components/CalendarSearchBook";
 function PropertyAndRoomList(props) {
   const { search } = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { startDate, endDate, email } = useSelector((state) => {
+  const { startDate, endDate, email, startDateBook, endDateBook } = useSelector((state) => {
     return {
       startDate: state.dateReducer.startDate,
       endDate: state.dateReducer.endDate,
+      startDateBook: state.dateBook.startDate,
+      endDateBook: state.dateBook.endDate,
       email: state.userReducer.email,
     };
   });
@@ -289,8 +291,8 @@ function PropertyAndRoomList(props) {
               percentage !== 0
             ) {
               Axios.post(process.env.REACT_APP_API_BASE_URL + "/special-price/add", {
-                startDate,
-                endDate,
+                startDate: startDateBook,
+                endDate: endDateBook,
                 nominal,
                 percentage,
                 roomId: selectedRoomData,
@@ -349,8 +351,8 @@ function PropertyAndRoomList(props) {
               parseInt(specialPriceData.price) !== parseInt(nominal)
             ) {
               Axios.post(process.env.REACT_APP_API_BASE_URL + "/special-price/add", {
-                startDate,
-                endDate,
+                startDate: startDateBook,
+                endDate: endDateBook,
                 nominal,
                 percentage: 0,
                 roomId: selectedRoomData,
@@ -510,6 +512,7 @@ function PropertyAndRoomList(props) {
                           setSortData("");
                           setDesc(false);
                           dispatch(clearAllDate());
+                          dispatch(clearAllDateBook());
                           getContent(0, "specialprice");
                           onOpen();
                         }}
@@ -618,6 +621,7 @@ function PropertyAndRoomList(props) {
             <ModalCloseButton
               onClick={() => {
                 dispatch(clearAllDate());
+                dispatch(clearAllDateBook());
                 setSelectedOption("");
                 setPercentage(0);
                 setRadioValue("nominal");
@@ -787,6 +791,7 @@ function PropertyAndRoomList(props) {
                       setNominal(0);
                       setPercentage(0);
                       dispatch(clearAllDate());
+                      dispatch(clearAllDateBook());
                       setCurrentModal("setSpecialPrice");
                       onOpen();
                     }}
@@ -795,7 +800,7 @@ function PropertyAndRoomList(props) {
                     Add New Special Price
                   </Button>
                   <HStack gap={2}>
-                    <CalendarDateRange />
+                    <CalendarSearchBook />
                     <Button
                       variant={"outline"}
                       colorScheme="green"
@@ -967,7 +972,7 @@ function PropertyAndRoomList(props) {
                     <span style={{ fontWeight: 600 }}>DESCLAIMER:</span> The special price will also
                     be added to other rooms that have the same type
                   </Text>
-                  <CalendarDateRange direction="vertical" />
+                  <CalendarSearchBook direction="vertical" />
                   <RadioGroup
                     colorScheme="green"
                     defaultValue="nominal"
@@ -1138,6 +1143,7 @@ function PropertyAndRoomList(props) {
                             setRadioValue("nominal");
                             getContent(0, "specialprice");
                             clearAllDate();
+                            clearAllDateBook();
                             setPercentage(0);
                             setNominal(0);
                           }

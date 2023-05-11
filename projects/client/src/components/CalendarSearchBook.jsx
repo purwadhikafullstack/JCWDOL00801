@@ -55,7 +55,6 @@ function CalendarSearchBook(props) {
   };
 
   const handleChange = (item) => {
-    console.log(new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime())
     if(new Date(item.selection.startDate).getTime() == new Date(item.selection.endDate).getTime()){
       setCalendar([
         {
