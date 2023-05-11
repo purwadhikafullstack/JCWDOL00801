@@ -2,7 +2,7 @@ const {Sequelize} = require('sequelize');
 const { dbSequelize } = require('../config/db');
 const {DataTypes} = Sequelize;
 
-const orderListModel = dbSequelize.define("orderLists", {
+const orderListModel = dbSequelize.define("orderlists", {
     orderId: {
         primaryKey: true,
         type: DataTypes.INTEGER,

@@ -2,7 +2,7 @@ const { Sequelize } = require("sequelize");
 const { dbSequelize } = require("../config/db");
 const { DataTypes } = Sequelize;
 
-const specialPriceModel = dbSequelize.define("specialPrices", {
+const specialPriceModel = dbSequelize.define("specialprices", {
   spId: {
     primaryKey: true,
     type: DataTypes.INTEGER,

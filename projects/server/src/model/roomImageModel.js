@@ -2,7 +2,7 @@ const {Sequelize} = require('sequelize');
 const { dbSequelize } = require('../config/db');
 const {DataTypes} = Sequelize;
 
-const roomImageModel = dbSequelize.define("roomImage", {
+const roomImageModel = dbSequelize.define("roomimages", {
     roomImgId: {
         primaryKey: true,
         type: DataTypes.INTEGER,

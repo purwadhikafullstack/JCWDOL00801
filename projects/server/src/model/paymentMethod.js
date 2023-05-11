@@ -3,7 +3,7 @@ const {dbSequelize} = require("../config/db");
 const userModel = require("./userModel");
 const {DataTypes} = Sequelize;
 
-const paymentMethodModel = dbSequelize.define("paymentMethods", {
+const paymentMethodModel = dbSequelize.define("paymentmethods", {
     bankId: {
         type: DataTypes.INTEGER,
         primaryKey: true,

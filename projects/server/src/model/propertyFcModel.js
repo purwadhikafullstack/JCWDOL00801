@@ -2,7 +2,7 @@ const {Sequelize} = require('sequelize');
 const { dbSequelize } = require('../config/db');
 const {DataTypes} = Sequelize;
 
-const propertyFcModel = dbSequelize.define("propertyFacilities", {
+const propertyFcModel = dbSequelize.define("propertyfacilities", {
     pfId: {
         primaryKey: true,
         type: DataTypes.INTEGER,
