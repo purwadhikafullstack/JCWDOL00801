@@ -29,3 +29,4 @@ const categoryModel = dbSequelize.define("categories", {
 });
 
 module.exports = { categoryModel };
+
