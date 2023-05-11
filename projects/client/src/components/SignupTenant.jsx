@@ -5,12 +5,14 @@ import {
   Button,
   Flex,
   FormControl,
+  FormHelperText,
   Input,
   InputGroup,
   InputRightElement,
   Progress,
   ScaleFade,
   Spinner,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
@@ -319,9 +321,12 @@ const SignupTenantPage = (props) => {
                   onChange={onFileChange}
                   onBlur={handleBlur}
                   mt={3.5}
-                  mb={3.5}
                   accept=".png,.jpg,.jpeg"
                 />
+                <Text fontSize={"14px"} mt={1} mb={3.5} color="gray">
+                  File Size: 1MB (Megabyte) maximum. File extension that are accepted: .JPG .JPEG
+                  .PNG
+                </Text>
                 
                 {selectedFile != null && done ? (
                   <Box>
