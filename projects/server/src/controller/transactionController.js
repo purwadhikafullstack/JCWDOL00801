@@ -57,12 +57,13 @@ module.exports = {
         bankId,
         bankAccountNum,
         propertyId,
+        typeId
       } = req.body;
       const { userId } = req.decrypt;
       //check available rooms with selected property
       const data = await dbSequelize.query(
         `
-        SELECT * from rooms as r WHERE r.propertyId = ${propertyId} AND 
+        SELECT * from rooms as r WHERE r.propertyId = ${propertyId} AND r.typeId = ${typeId} AND
         r.roomId NOT IN (
           SELECT ra.roomId 
           FROM roomavailabilities AS ra

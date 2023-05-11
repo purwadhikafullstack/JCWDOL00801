@@ -112,6 +112,7 @@ const PaymentDetail = () => {
                     ? ""
                     : specialRequest.specialReq.join(", ") + " and " + otherCheck,
                 totalGuest,
+                typeId : location.state.typeId,
                 checkinDate: location.state.checkinDate ? location.state.checkinDate : startDate,
                 checkoutDate: location.state.checkoutDate ? location.state.checkoutDate: endDate,
                 price: spPrice ? spPrice * night : price * night,
