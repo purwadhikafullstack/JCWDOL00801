@@ -166,14 +166,19 @@ module.exports = {
             type: QueryTypes.SELECT,
           }
         );
-        return res.status(200).send({
-          success: true,
-          result: data,
-        });
-      } else {
-        return res.status(401).send({
+          return res.status(200).send({
+            success: true,
+            result: data,
+          });
+      } else if(transaction.length > 0 && transaction[0].status == "Cancelled"){
+        return res.status(404).send({
           success: false,
           message: "Transaction Expired",
+        });
+      }else {
+        return res.status(401).send({
+          success: false,
+          message: "Not Authorized",
         });
       }
     } catch (error) {
