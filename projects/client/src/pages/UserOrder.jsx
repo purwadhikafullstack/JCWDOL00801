@@ -238,7 +238,14 @@ function UserOrder(props) {
   return (
     <Container maxW={{ md: "container.lg" }} my="40px">
       <Heading mb={5}>My Orders</Heading>
-      <Flex direction="column" p="4" border="1px" borderColor="#ccc" rounded="md">
+      <Flex
+        mb={userData.length === 0 ? "240px" : "0"}
+        direction="column"
+        p="4"
+        border="1px"
+        borderColor="#ccc"
+        rounded="md"
+      >
         <Flex direction={{ base: "column", md: "row" }} mb="5" gap={3} align="center">
           <Input
             placeholder="Search Booking Number"
