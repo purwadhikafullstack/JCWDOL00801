@@ -551,7 +551,7 @@ function LineChart(props) {
           ></Select2>
         ) : null}
       </Flex>
-      <Flex mb={1} mt={3} gap={3}>
+      <Flex mb={1} mt={3} gap={3} direction={{ base: "column", md: "row" }}>
         <CalendarChartStart />
         <CalendarChartEnd />
         <Button colorScheme="green" onClick={onBtnFilter}>

@@ -451,7 +451,7 @@ function PropertyAndRoomList(props) {
   const renderRoom = () => {
     if (roomList.length > 0) {
       return (
-        <Table mt={10} variant="simple">
+        <Table mt={6} variant="simple">
           <Thead>
             <Tr>
               <Th>Room Name</Th>
@@ -550,7 +550,7 @@ function PropertyAndRoomList(props) {
   return (
     <>
       <Box pb={5} px={{ base: "5", md: "20" }} overflow={"auto"}>
-        <Flex height={{ md: "770px" }} direction={"column"}>
+        <Flex height={{ md: roomList.length < 5 ? "770px" : "860px" }} direction={"column"}>
           <Flex direction={"column"}>
             <Heading mb={5}>Room List</Heading>
             {renderProperty()}

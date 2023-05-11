@@ -9,11 +9,74 @@ const {
   tenantModel,
 } = require("../model");
 const { Op, QueryTypes } = require("sequelize");
-const { format, differenceInDays, setDate, addDays, eachDayOfInterval } = require("date-fns");
+const { format, differenceInDays } = require("date-fns");
 const schedule = require("node-schedule");
 const { transport } = require("../config/nodemailer");
 const { dbSequelize } = require("../config/db");
 
+//ubah status setiap jam 2 pagi
+schedule.scheduleJob("0 2 * * *", async () => {
+  const today = new Date();
+  const checkStatus = await orderListModel.findAll({
+    include: [
+      {
+        model: transactionModel,
+        as: "transaction",
+        require: "true",
+        where: {
+          [Op.and]: [{ checkinDate: { [Op.lte]: today } }, { status: "Waiting for confirmation" }],
+        },
+      },
+      {
+        model: roomModel,
+        as: "room",
+        required: true,
+        include: {
+          model: propertyModel,
+          as: "property",
+          required: true,
+        },
+      },
+    ],
+  });
+
+  checkStatus.forEach(async (val) => {
+    const {
+      transaction: { checkinDate },
+      roomId,
+    } = val;
+    const tenantId = val.room.property.tenantId;
+    const tenant = await tenantModel.findOne({
+      where: {
+        tenantId,
+      },
+    });
+
+    const currentCreatedAt = new Date(tenant.createdAt).setFullYear(
+      new Date(tenant.createdAt).getFullYear() - 1
+    );
+    const currentYear = new Date(currentCreatedAt);
+    const updateRoomAvail = await roomAvailModel.update(
+      { startDate: currentYear, endDate: currentYear },
+      {
+        where: { [Op.and]: [{ roomId }, { startDate: { [Op.eq]: new Date(checkinDate) } }] },
+      }
+    );
+  });
+
+  const updateStatus = await transactionModel.update(
+    {
+      status: "Cancelled",
+    },
+    {
+      where: {
+        [Op.and]: [{ checkinDate: { [Op.lte]: today } }, { status: "Waiting for confirmation" }],
+      },
+    }
+  );
+});
+
+//untuk kirim email setiap jam 8 pagi
 schedule.scheduleJob("0 8 * * *", async () => {
   const today = new Date();
   const data = await orderListModel.findAll({
@@ -44,7 +107,6 @@ schedule.scheduleJob("0 8 * * *", async () => {
   data.forEach(async (val) => {
     const checkIn = new Date(val.transaction.checkinDate);
     if (differenceInDays(new Date(checkIn), today) === 1) {
-      console.log(`ada tanggal checkin besok`);
       const emailContent = `<div>
       <span style="font-family: Arial, Helvetica, sans-serif">
         <div style="display: flex; align-items: center">
@@ -550,6 +612,12 @@ module.exports = {
               as: "order",
               require: true,
               where: { [Op.and]: filterData },
+              include: {
+                model: transactionModel,
+                as: "transaction",
+                require: true,
+                where: { status: "Confirmed" },
+              },
             },
           },
           where: { [Op.and]: [{ tenantId: req.query.tenant }, { propertyId: req.query.property }] },
@@ -580,6 +648,7 @@ module.exports = {
               model: transactionModel,
               as: "transaction",
               required: true,
+              where: { status: "Confirmed" },
             },
             {
               model: roomModel,
@@ -623,7 +692,7 @@ module.exports = {
               model: transactionModel,
               as: "transaction",
               required: true,
-              where: { userId: req.query.user },
+              where: { [Op.and]: [{ userId: req.query.user }, { status: "Confirmed" }] },
             },
             {
               model: roomModel,

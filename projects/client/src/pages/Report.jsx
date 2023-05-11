@@ -7,7 +7,7 @@ function Report(props) {
   return (
     <Box pb="5" px={{ base: "5", md: "20" }}>
       <Heading mb={6}>Report</Heading>
-      <Flex gap={5}>
+      <Flex gap={5} direction={{ base: "column", md: "row" }}>
         <ReportCalendar />
         <LineChart />
       </Flex>

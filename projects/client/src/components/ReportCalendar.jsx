@@ -195,7 +195,7 @@ function ReportCalendar(props) {
         <Heading size={"sm"} mb={3}>
           Room Availability and Price
         </Heading>
-        <Flex direction={"column"} gap={"32px"}>
+        <Flex direction={"column"}>
           <Flex direction="column" gap={3}>
             <Select2
               isSearchable
@@ -214,7 +214,7 @@ function ReportCalendar(props) {
               ></Select2>
             ) : null}
           </Flex>
-          <Flex direction={"column"} gap={1} align={"start"}>
+          <Flex mt={5} direction={"column"} gap={1} align={"center"}>
             <Calendar
               date={new Date()}
               disabledDates={setDisabledDates}
@@ -223,6 +223,8 @@ function ReportCalendar(props) {
               className="static-calendar"
               color="#38A169"
             />
+          </Flex>
+          <Flex mt={1} direction={"column"}>
             <Text fontSize={"sm"} color={"blue.600"}>
               *Prices are in IDR x100
             </Text>

@@ -310,7 +310,7 @@ function RoomList(props) {
   return (
     <Flex direction="column">
       <Flex
-        height={{ md: "70vh" }}
+        height={{ md: "660px" }}
         direction={{ base: "column", lg: "row" }}
         gap={6}
         mt="10"
