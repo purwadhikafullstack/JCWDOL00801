@@ -482,7 +482,7 @@ module.exports = {
           typeId: rooms[0].typeId
         }
       })
-      const currentCreatedAt = new Date(types[0].checkinDate).setFullYear(new Date(types[0].checkinDate).getFullYear() - 1);
+      const currentCreatedAt = new Date(types[0].createdAt).setFullYear(new Date(types[0].createdAt).getFullYear() - 1);
       const currentYear = new Date(currentCreatedAt)
       const updateRa = await roomAvailModel.update({
         startDate: currentYear,
@@ -767,7 +767,7 @@ module.exports = {
             typeId: rooms[0].typeId
           }
         })
-        const currentCreatedAt = new Date(types[0].checkinDate).setFullYear(new Date(types[0].checkinDate).getFullYear() - 1);
+        const currentCreatedAt = new Date(types[0].createdAt).setFullYear(new Date(types[0].createdAt).getFullYear() - 1);
         const currentYear = new Date(currentCreatedAt)
         const updateRa = await roomAvailModel.update({
           startDate: currentYear,
@@ -785,6 +785,7 @@ module.exports = {
         message: "Unauthorized Action",
       });
     } catch (error) {
+      console.log(error)
       return res.status(500).send({
         success: false,
         message: "Database error",

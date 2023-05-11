@@ -100,6 +100,7 @@ function OrderCard(props) {
       cancelButtonColor: "red",
       confirmButtonText: "OK",
       confirmButtonColor: "#48BB78",
+      reverseButtons: true
     })
       .then((res) => {
         if (res.isConfirmed) {
