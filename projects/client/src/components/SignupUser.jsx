@@ -73,32 +73,61 @@ const SignupUserPage = (props) => {
                   });
               })
               .catch((e) => {
-                onToggle();
-                setInfoIcon(false);
-                setAlert(e.response.data.message);
-                setGoogleLoading(false);
+                if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+                  setGoogleLoading(false);
+                } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+                  onToggle();
+                  setInfoIcon(false);
+                  setAlert("Account has already been registered")
+                  setGoogleLoading(false);
+                }else{
+                  onToggle();
+                  setInfoIcon(false);
+                  setAlert(e.response.data.message);
+                  setGoogleLoading(false);
+                }
               });
             setGoogleLoading(false);
           })
           .catch((e) => {
-            onToggle();
-            setInfoIcon(false);
-            setAlert(e.response.data.message);
-            setGoogleLoading(false);
+            if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+              setGoogleLoading(false);
+            } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+              onToggle();
+              setInfoIcon(false);
+              setAlert("Account has already been registered")
+              setGoogleLoading(false);
+            }else{
+              onToggle();
+              setInfoIcon(false);
+              setAlert(e.response.data.message);
+              setGoogleLoading(false);
+            }
           }).catch((e) => {
             if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-              setFacebookLoading(false);
-            } else {
+              setGoogleLoading(false);
+            } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+              onToggle();
+              setInfoIcon(false);
+              setAlert("Account has already been registered")
+              setGoogleLoading(false);
+            }else {
               setAlert(e.response.data.message);
               setInfoIcon(false);
-              setFacebookLoading(false);
+              setGoogleLoading(false);
             };
           })
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setGoogleLoading(false);
-        } else if (e.response.status == 409) {
+        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+          onToggle();
+          setInfoIcon(false);
+          setAlert("Account has already been registered")
+          setGoogleLoading(false);
+        } 
+        else if (e.response.status == 409) {
           onToggle();
           setInfoIcon(false);
           setAlert(e.response.data.message);
@@ -126,7 +155,7 @@ const SignupUserPage = (props) => {
         }).then((res) => {
           Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
             login: data._tokenResponse.providerId,
-            email: data._tokenResponse.email,
+            email: data._tokenResponse.email || "-",
           })
             .then((result) => {
               localStorage.setItem("renthaven1", result.data.token);
@@ -145,7 +174,14 @@ const SignupUserPage = (props) => {
                 .catch((e) => {
                   if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
                     setFacebookLoading(false);
-                  } else {
+                  } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+                    onToggle();
+                    setInfoIcon(false);
+                    setAlert("Account has already been registered")
+                    setFacebookLoading(false);
+                  } else{
+                    onToggle();
+                    setInfoIcon(false);
                     setAlert(e.response.data.message);
                     setInfoIcon(false);
                     setFacebookLoading(false);
@@ -153,16 +189,32 @@ const SignupUserPage = (props) => {
                 });
             })
             .catch((e) => {
-              onToggle();
-              setInfoIcon(false);
-              setAlert(e.response.data.message);
-              setFacebookLoading(false);
+              if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+                setFacebookLoading(false);
+              } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+                onToggle();
+                setInfoIcon(false);
+                setAlert("Account has already been registered")
+                setFacebookLoading(false);
+              }else{
+                onToggle();
+                setInfoIcon(false);
+                setAlert(e.response.data.message);
+                setFacebookLoading(false);
+              }
             });
           setFacebookLoading(false);
         }).catch((e) => {
+          console.log(e)
           if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
             setFacebookLoading(false);
+          }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+            onToggle();
+            setInfoIcon(false);
+            setAlert("Account has already been registered")
+            setFacebookLoading(false);
           } else {
+            console.log(e)
             setAlert(e.response.data.message);
             setInfoIcon(false);
             setFacebookLoading(false);
@@ -172,7 +224,13 @@ const SignupUserPage = (props) => {
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setFacebookLoading(false);
+        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+          onToggle();
+          setInfoIcon(false);
+          setAlert("Account has already been registered")
+          setFacebookLoading(false);
         } else {
+          console.log(e)
           setAlert(e.response.data.message);
           setInfoIcon(false);
           setFacebookLoading(false);
@@ -448,7 +506,7 @@ const SignupUserPage = (props) => {
             >
               <p style={{ marginTop: "10px" }}>
                 Already have an account?{" "}
-                <Link to="/signin" style={{ fontWeight: "600" }}>
+                <Link className="link" to="/signin" style={{ fontWeight: "600" }}>
                   Sign in
                 </Link>
               </p>

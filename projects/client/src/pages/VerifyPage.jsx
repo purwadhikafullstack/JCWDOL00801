@@ -82,9 +82,10 @@ const VerifyPage = (props) => {
     }
   };
 
-  const { provider } = useSelector((state) => {
+  const { provider, email } = useSelector((state) => {
     return {
       provider: state.userReducer.provider,
+      email: state.userReducer.email,
     };
   });
 
@@ -98,45 +99,46 @@ const VerifyPage = (props) => {
               message: "Please input the valid phone number",
             })
             .required("Please input your phone number"),
-    otp:
-      provider === "google.com"
-        ? yup.string()
-        : yup.string().required("Please input your OTP"),
+    otp: provider === "google.com" ? yup.string() : yup.string().required("Please input your OTP"),
+    emails:
+      email === "" && provider === "facebook.com"
+        ? yup
+            .string()
+            .email("Please input the correct email")
+            .required("Please input your email here")
+        : yup.string(),
   });
 
-  const {
-    values,
-    errors,
-    touched,
-    handleBlur,
-    handleChange,
-    setFieldValue,
-    handleSubmit,
-  } = useFormik({
-    initialValues: {
-      phone: "",
-      otp: "",
-    },
-    validationSchema: phoneRule,
-    onSubmit: validationHandler,
-  });
+  const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
+    useFormik({
+      initialValues: {
+        phone: "",
+        otp: "",
+        emails: ""
+      },
+      validationSchema: phoneRule,
+      onSubmit: validationHandler,
+    });
   return (
     <Box>
       <Flex justifyContent="center" alignItems="center" minW={"30%"}>
-        <Box
-          border={"1px"}
-          p={"6"}
-          my={"50"}
-          borderColor={"#ccc"}
-          rounded={"md"}
-        >
+        <Box border={"1px"} p={"6"} my={"50"} borderColor={"#ccc"} rounded={"md"}>
           <Box textAlign={"center"} mb={"8"}>
             <Heading>Verify Your Account</Heading>
           </Box>
           <form onSubmit={handleSubmit}>
             <FormControl isRequired mb={"6"}>
+              
               {provider !== "common" && provider !== "google.com" ? (
                 <div id="fb">
+                  {provider === "facebook.com" && email === "-" ? <>
+                    <p>Email: </p>
+                    <Input isInvalid={errors.emails && touched.emails ? true : false}
+                    id="emails"
+                    value={values.emails}
+                    onChange={handleChange}
+                    onBlur={handleBlur}/>
+                  </>:""}
                   <p>Phone:</p>
                   <Input
                     isInvalid={errors.phone && touched.phone ? true : false}
@@ -146,9 +148,7 @@ const VerifyPage = (props) => {
                     onBlur={handleBlur}
                   />
                   {errors.phone && touched.phone ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.phone}
-                    </p>
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.phone}</p>
                   ) : (
                     ""
                   )}
@@ -173,9 +173,7 @@ const VerifyPage = (props) => {
                     onBlur={handleBlur}
                   />
                   {errors.phone && touched.phone ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.phone}
-                    </p>
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.phone}</p>
                   ) : (
                     ""
                   )}
@@ -243,11 +241,7 @@ const VerifyPage = (props) => {
             ) : (
               <Flex justifyContent={"end"}>
                 <ButtonGroup>
-                  <Button
-                    colorScheme={"green"}
-                    type="submit"
-                    onSubmit={handleSubmit}
-                  >
+                  <Button colorScheme={"green"} type="submit" onSubmit={handleSubmit}>
                     Verify
                   </Button>
                 </ButtonGroup>
