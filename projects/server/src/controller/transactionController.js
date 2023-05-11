@@ -271,11 +271,8 @@ module.exports = {
         const currentCreatedAt = new Date(val.checkinDate).setFullYear(new Date(val.checkinDate).getFullYear() - 1);
         const currentYear = new Date(currentCreatedAt)
         if (new Date().getTime() > new Date(val.transactionExpired).getTime()) {
-          await val.update({
-            status: "Cancelled",
-          });
+          await dbSequelize.query(`UPDATE transactions SET status = "Cancelled" WHERE transactionId = ${val.transactionId}`);
           getRoomAvail.map(async (value) => {
-            console.log("VAL", value)
             await dbSequelize.query(`UPDATE roomavailabilities SET startDate = ${dbSequelize.escape(currentYear)}, endDate = ${dbSequelize.escape(currentYear)}
             WHERE raId = ${value.raId}`)
           })
