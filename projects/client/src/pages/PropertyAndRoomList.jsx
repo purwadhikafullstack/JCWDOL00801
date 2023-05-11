@@ -187,13 +187,21 @@ function PropertyAndRoomList(props) {
       }
     }
     if (filterDate) {
-      query.push(
-        `&startDate=${new Date(startDate).getTime()}&endDate=${new Date(endDate).getTime()}`
-      );
+      if(modal == "specialprice" || currentModal == "specialprice"){
+        query.push(
+          `&startDate=${new Date(startDateBook).getTime()}&endDate=${new Date(endDateBook).getTime()}`
+        );
+      }
+      else if(modal == "avail" || currentModal == "avail"){
+        query.push(
+          `&startDate=${new Date(startDate).getTime()}&endDate=${new Date(endDate).getTime()}`
+        );
+      }
+      
     }
     if (modal === "specialprice") {
       const endpoint = `/special-price/all?id=${selectedTypeData}&limit=${limitModal}&page=${
-        selected || pageModal || 0
+        selected  || 0
       }`;
       Axios.get(process.env.REACT_APP_API_BASE_URL + endpoint + query.join(""))
         .then((response) => {
@@ -238,6 +246,7 @@ function PropertyAndRoomList(props) {
   };
   const onPageChangeModal = ({ selected }) => {
     setPageModal(selected);
+    console.log(selected)
     if (selected === 9) {
       setPageMessage(
         `If you can't find the data you're looking for, please try using a more specific keyword`
