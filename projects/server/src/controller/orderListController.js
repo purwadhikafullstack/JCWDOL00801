@@ -451,8 +451,6 @@ module.exports = {
           transactionId: req.body.transactionId
         }
       })
-      const currentCreatedAt = new Date(transaction[0].checkinDate).setFullYear(new Date(transaction[0].checkinDate).getFullYear() - 1);
-      const currentYear = new Date(currentCreatedAt)
       const cancel = await transactionModel.update(
         {
           status: "Cancelled",
@@ -474,6 +472,18 @@ module.exports = {
           [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
         }
       })
+      const rooms = await roomModel.findAll({
+        where: {
+          roomId: orderList[0].roomId
+        }
+      })
+      const types = await typeModel.findAll({
+        where: {
+          typeId: rooms[0].typeId
+        }
+      })
+      const currentCreatedAt = new Date(types[0].checkinDate).setFullYear(new Date(types[0].checkinDate).getFullYear() - 1);
+      const currentYear = new Date(currentCreatedAt)
       const updateRa = await roomAvailModel.update({
         startDate: currentYear,
         endDate: currentYear
@@ -727,8 +737,6 @@ module.exports = {
             transactionId: req.body.transactionId
           }
         })
-        const currentCreatedAt = new Date(transaction[0].checkinDate).setFullYear(new Date(transaction[0].checkinDate).getFullYear() - 1);
-        const currentYear = new Date(currentCreatedAt)
         const cancel = await transactionModel.update(
           {
             status: "Cancelled",
@@ -749,6 +757,18 @@ module.exports = {
             [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
           }
         })
+        const rooms = await roomModel.findAll({
+          where: {
+            roomId: orderList[0].roomId
+          }
+        })
+        const types = await typeModel.findAll({
+          where: {
+            typeId: rooms[0].typeId
+          }
+        })
+        const currentCreatedAt = new Date(types[0].checkinDate).setFullYear(new Date(types[0].checkinDate).getFullYear() - 1);
+        const currentYear = new Date(currentCreatedAt)
         const updateRa = await roomAvailModel.update({
           startDate: currentYear,
           endDate: currentYear
