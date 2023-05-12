@@ -30,7 +30,7 @@ const SearchPage = (props) => {
   const [searchCity, setSearchCity] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
   const { startDate, endDate } = useSelector((state) => {
-    return { startDate: state.dateReducer.startDate, endDate: state.dateReducer.endDate };
+    return { startDate: state.dateBook.startDate, endDate: state.dateBook.endDate };
   });
   const getPropertyData = async (name, province, city, capacity, paging) => {
     let url = `/search?limit=${limit}&page=${page}`;

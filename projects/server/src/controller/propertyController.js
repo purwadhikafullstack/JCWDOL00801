@@ -23,8 +23,8 @@ module.exports = {
   getPropertyData: async (req, res) => {
     try {
       const { startDate, endDate } = req.body;
-      const newStartDate = startDate ? new Date(startDate) : new Date();
-      const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000);
+      const newStartDate = startDate ? new Date(startDate) : new Date(new Date().getTime() + 86400000);
+      const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000 * 2);
       const data = await dbSequelize.query(
         `SELECT 
       MIN(t.price) AS price, 
@@ -37,7 +37,7 @@ module.exports = {
       p.image,
       (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
         AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
-        (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) ) AS nominal
+        (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate)) AS nominal
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -71,12 +71,13 @@ module.exports = {
         (min_prices.min_nominal IS NOT NULL AND 
           (
             min_prices.min_nominal < min_prices.min_price AND
-            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)
+            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+            (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) )
           )
         ) OR (
           min_prices.min_nominal IS NOT NULL AND 
           (
-            min_prices.min_nominal > min_prices.min_price AND
+            min_prices.min_nominal >= min_prices.min_price AND
             min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId)
           )
         ) OR 

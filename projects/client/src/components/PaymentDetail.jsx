@@ -60,8 +60,8 @@ const PaymentDetail = () => {
       gender: state.userReducer.gender,
       email: state.userReducer.email,
       phone: state.userReducer.phone,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const getData = async () => {
@@ -112,6 +112,7 @@ const PaymentDetail = () => {
                     ? ""
                     : specialRequest.specialReq.join(", ") + " and " + otherCheck,
                 totalGuest,
+                typeId : location.state.typeId,
                 checkinDate: location.state.checkinDate ? location.state.checkinDate : startDate,
                 checkoutDate: location.state.checkoutDate ? location.state.checkoutDate: endDate,
                 price: spPrice ? spPrice * night : price * night,

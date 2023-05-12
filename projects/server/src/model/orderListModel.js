@@ -29,5 +29,4 @@ const orderListModel = dbSequelize.define("orderlists", {
     allowNull: false,
   },
 });
-
 module.exports = { orderListModel };

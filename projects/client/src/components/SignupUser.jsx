@@ -75,12 +75,14 @@ const SignupUserPage = (props) => {
               .catch((e) => {
                 if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
                   setGoogleLoading(false);
-                } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+                } else if (
+                  e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+                ) {
                   onToggle();
                   setInfoIcon(false);
-                  setAlert("Account has already been registered")
+                  setAlert("Account has already been registered");
                   setGoogleLoading(false);
-                }else{
+                } else {
                   onToggle();
                   setInfoIcon(false);
                   setAlert(e.response.data.message);
@@ -92,42 +94,48 @@ const SignupUserPage = (props) => {
           .catch((e) => {
             if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
               setGoogleLoading(false);
-            } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+            } else if (
+              e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+            ) {
               onToggle();
               setInfoIcon(false);
-              setAlert("Account has already been registered")
+              setAlert("Account has already been registered");
               setGoogleLoading(false);
-            }else{
+            } else {
               onToggle();
               setInfoIcon(false);
               setAlert(e.response.data.message);
               setGoogleLoading(false);
             }
-          }).catch((e) => {
+          })
+          .catch((e) => {
             if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
               setGoogleLoading(false);
-            } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+            } else if (
+              e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+            ) {
               onToggle();
               setInfoIcon(false);
-              setAlert("Account has already been registered")
+              setAlert("Account has already been registered");
               setGoogleLoading(false);
-            }else {
+            } else {
               setAlert(e.response.data.message);
               setInfoIcon(false);
               setGoogleLoading(false);
-            };
-          })
+            }
+          });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setGoogleLoading(false);
-        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+        } else if (
+          e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+        ) {
           onToggle();
           setInfoIcon(false);
-          setAlert("Account has already been registered")
+          setAlert("Account has already been registered");
           setGoogleLoading(false);
-        } 
-        else if (e.response.status == 409) {
+        } else if (e.response.status == 409) {
           onToggle();
           setInfoIcon(false);
           setAlert(e.response.data.message);
@@ -136,13 +144,10 @@ const SignupUserPage = (props) => {
         setGoogleLoading(false);
       });
   };
-  const onInputChange = e => {
+  const onInputChange = (e) => {
     const { value } = e.target;
-    const re = /^[A-Za-z]+$/;
-    if (value === "" || re.test(value)) {
-      handleChange(e)
-    }
-  }
+    handleChange(e);
+  };
   const handleSignupFacebook = () => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
@@ -152,85 +157,96 @@ const SignupUserPage = (props) => {
           email: data._tokenResponse.email,
           phone: "-",
           provider: data._tokenResponse.providerId,
-        }).then((res) => {
-          Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-            login: data._tokenResponse.providerId,
-            email: data._tokenResponse.email || "-",
-          })
-            .then((result) => {
-              localStorage.setItem("renthaven1", result.data.token);
-              loginAction(result.data.result);
-              Swal.fire({
-                title: "Registration Success!",
-                icon: "success",
-                confirmButtonText: "Confirm",
-                confirmButtonColor: "#48BB78",
-              })
-                .then((res) => {
-                  localStorage.setItem("renthaven1", result.data.token);
-                  window.location.reload();
-                  navigate("/verify", { replace: true });
-                })
-                .catch((e) => {
-                  if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-                    setFacebookLoading(false);
-                  } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
-                    onToggle();
-                    setInfoIcon(false);
-                    setAlert("Account has already been registered")
-                    setFacebookLoading(false);
-                  } else{
-                    onToggle();
-                    setInfoIcon(false);
-                    setAlert(e.response.data.message);
-                    setInfoIcon(false);
-                    setFacebookLoading(false);
-                  };
-                });
-            })
-            .catch((e) => {
-              if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-                setFacebookLoading(false);
-              } else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
-                onToggle();
-                setInfoIcon(false);
-                setAlert("Account has already been registered")
-                setFacebookLoading(false);
-              }else{
-                onToggle();
-                setInfoIcon(false);
-                setAlert(e.response.data.message);
-                setFacebookLoading(false);
-              }
-            });
-          setFacebookLoading(false);
-        }).catch((e) => {
-          console.log(e)
-          if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-            setFacebookLoading(false);
-          }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
-            onToggle();
-            setInfoIcon(false);
-            setAlert("Account has already been registered")
-            setFacebookLoading(false);
-          } else {
-            console.log(e)
-            setAlert(e.response.data.message);
-            setInfoIcon(false);
-            setFacebookLoading(false);
-          };
         })
+          .then((res) => {
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+              login: data._tokenResponse.providerId,
+              email: data._tokenResponse.email || "-",
+            })
+              .then((result) => {
+                localStorage.setItem("renthaven1", result.data.token);
+                loginAction(result.data.result);
+                Swal.fire({
+                  title: "Registration Success!",
+                  icon: "success",
+                  confirmButtonText: "Confirm",
+                  confirmButtonColor: "#48BB78",
+                })
+                  .then((res) => {
+                    localStorage.setItem("renthaven1", result.data.token);
+                    window.location.reload();
+                    navigate("/verify", { replace: true });
+                  })
+                  .catch((e) => {
+                    if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+                      setFacebookLoading(false);
+                    } else if (
+                      e.message ==
+                      "Firebase: Error (auth/account-exists-with-different-credential)."
+                    ) {
+                      onToggle();
+                      setInfoIcon(false);
+                      setAlert("Account has already been registered");
+                      setFacebookLoading(false);
+                    } else {
+                      onToggle();
+                      setInfoIcon(false);
+                      setAlert(e.response.data.message);
+                      setInfoIcon(false);
+                      setFacebookLoading(false);
+                    }
+                  });
+              })
+              .catch((e) => {
+                if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+                  setFacebookLoading(false);
+                } else if (
+                  e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+                ) {
+                  onToggle();
+                  setInfoIcon(false);
+                  setAlert("Account has already been registered");
+                  setFacebookLoading(false);
+                } else {
+                  onToggle();
+                  setInfoIcon(false);
+                  setAlert(e.response.data.message);
+                  setFacebookLoading(false);
+                }
+              });
+            setFacebookLoading(false);
+          })
+          .catch((e) => {
+            console.log(e);
+            if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
+              setFacebookLoading(false);
+            } else if (
+              e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+            ) {
+              onToggle();
+              setInfoIcon(false);
+              setAlert("Account has already been registered");
+              setFacebookLoading(false);
+            } else {
+              console.log(e);
+              setAlert(e.response.data.message);
+              setInfoIcon(false);
+              setFacebookLoading(false);
+            }
+          });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setFacebookLoading(false);
-        }else if (e.message =="Firebase: Error (auth/account-exists-with-different-credential)."){
+        } else if (
+          e.message == "Firebase: Error (auth/account-exists-with-different-credential)."
+        ) {
           onToggle();
           setInfoIcon(false);
-          setAlert("Account has already been registered")
+          setAlert("Account has already been registered");
           setFacebookLoading(false);
         } else {
-          console.log(e)
+          console.log(e);
           setAlert(e.response.data.message);
           setInfoIcon(false);
           setFacebookLoading(false);

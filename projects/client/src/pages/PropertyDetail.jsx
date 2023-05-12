@@ -22,6 +22,7 @@ import "../styles/imageGallery.css";
 import Reviews from "../components/Reviews";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import ReactPaginate from "react-paginate";
+import CalendarSearchBook from "../components/CalendarSearchBook";
 
 function PropertyDetail(props) {
   const location = useLocation();
@@ -45,8 +46,8 @@ function PropertyDetail(props) {
   const { email, startDate, endDate } = useSelector((state) => {
     return {
       email: state.userReducer.email,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const [checkinDate, setCheckinDate] = useState(null);
@@ -180,7 +181,7 @@ function PropertyDetail(props) {
       <Divider my={5} />
       <Flex minW="100%" direction={"column"}>
         <FormLabel>Date</FormLabel>
-        <CalendarDateRange
+        <CalendarSearchBook
           checkinHandler={changeCheckinDate}
           checkoutHandler={changeCheckoutDate}
         />

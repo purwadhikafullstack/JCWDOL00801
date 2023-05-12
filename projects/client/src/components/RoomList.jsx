@@ -402,7 +402,7 @@ function RoomList(props) {
       </Flex>
       <Flex justify="center">
         <Text>{pageMessage}</Text>
-        <nav key={rows}>
+        <nav key={rows} >
           <ReactPaginate
             previousLabel={
               <IconButton

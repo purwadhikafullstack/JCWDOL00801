@@ -5,12 +5,14 @@ import {
   Button,
   Flex,
   FormControl,
+  FormHelperText,
   Input,
   InputGroup,
   InputRightElement,
   Progress,
   ScaleFade,
   Spinner,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
@@ -89,7 +91,7 @@ const SignupTenantPage = (props) => {
     setDone(false);
     setKtpValid(false);
     setFieldValue("ktp", "");
-    setFieldValue("images", null)
+    setFieldValue("images", null);
   };
   const onFileChange = (e) => {
     setFile();
@@ -100,57 +102,54 @@ const SignupTenantPage = (props) => {
       setFile(e.target.files[0]);
       recognizing(e.target.files[0]);
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
-      handleChange(e)
-      setFieldValue("images", e.target.files[0])
+      handleChange(e);
+      setFieldValue("images", e.target.files[0]);
     }
   };
-  const onInputChange = e => {
+  const onInputChange = (e) => {
     const { value } = e.target;
-    const re = /^[A-Za-z]+$/;
-    if (value === "" || re.test(value)) {
-      handleChange(e)
-    }
-  }
+    handleChange(e);
+  };
   const registerHandler = () => {
     setSignupLoading(true);
     let data = new FormData();
-    data.append("name", values.name)
-    data.append("email", values.email)
-    data.append("password", values.password)
-    data.append("phone", values.phone)
-    data.append("noKtp", values.ktp)
-    data.append("images", selectedFile)
-      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-tenant", data)
-        .then((res) => {
-          if (res.data.success === true)
-            Swal.fire({
-              title: "Registration Success!",
-              icon: "success",
-              confirmButtonText: "Confirm",
-              confirmButtonColor: "#48BB78",
-            }).then((r) => {
-              Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin/tenant", {
-                login: normalReg,
-                email: values.email,
-                password: values.password,
-              }).then((res) => {
-                window.location.reload();
-                  localStorage.setItem("renthaven1", res.data.token);
-                  loginAction(res.data.result);
-                  navigate("/verify", { replace: true });
-              });
+    data.append("name", values.name);
+    data.append("email", values.email);
+    data.append("password", values.password);
+    data.append("phone", values.phone);
+    data.append("noKtp", values.ktp);
+    data.append("images", selectedFile);
+    Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-tenant", data)
+      .then((res) => {
+        if (res.data.success === true)
+          Swal.fire({
+            title: "Registration Success!",
+            icon: "success",
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#48BB78",
+          }).then((r) => {
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin/tenant", {
+              login: normalReg,
+              email: values.email,
+              password: values.password,
+            }).then((res) => {
+              window.location.reload();
+              localStorage.setItem("renthaven1", res.data.token);
+              loginAction(res.data.result);
+              navigate("/verify", { replace: true });
             });
-          else if (res.data.success === false) {
-            setAlert("The email had already been registered");
-            onToggle();
-            setSignupLoading(false);
-          }
+          });
+        else if (res.data.success === false) {
+          setAlert("The email had already been registered");
+          onToggle();
           setSignupLoading(false);
-        })
-        .catch((e) => {
-          setAlert(`${e.response.data.message}`)
-          setSignupLoading(false);
-        });
+        }
+        setSignupLoading(false);
+      })
+      .catch((e) => {
+        setAlert(`${e.response.data.message}`);
+        setSignupLoading(false);
+      });
   };
   const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
   //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
@@ -173,18 +172,20 @@ const SignupTenantPage = (props) => {
       .required("Required"),
     confirmPassword: yup.string().oneOf([yup.ref("password"), null], "Password must match!"),
     ktp: yup
-      .string().min(10, "Invalid KTP / ID number").max(20, "Invalid KTP / ID number")
+      .string()
+      .min(10, "Invalid KTP / ID number")
+      .max(20, "Invalid KTP / ID number")
       .matches(/^[\d]+$/, { message: "Only number allowed" })
       .required("Please upload and input your ID number"),
     images: yup
-    .mixed()
-    .required("A file is required")
-    .test("fileSize", "File size is too large", (value) => value && value.size < FILE_SIZE)
-    .test(
-      "fileFormat",
-      "File extension is not supported",
-      (value) => value && SUPPORTED_FORMATS.includes(value.type)
-    )
+      .mixed()
+      .required("A file is required")
+      .test("fileSize", "File size is too large", (value) => value && value.size < FILE_SIZE)
+      .test(
+        "fileFormat",
+        "File extension is not supported",
+        (value) => value && SUPPORTED_FORMATS.includes(value.type)
+      ),
   });
 
   // const formName = useFormik({
@@ -192,7 +193,7 @@ const SignupTenantPage = (props) => {
   //     name: '' || props.name,
   //   },
   // });
-  
+
   // const { values, setFieldValue, onSubmit } = formName;
 
   //Formik configuration
@@ -205,7 +206,7 @@ const SignupTenantPage = (props) => {
         confirmPassword: "",
         phone: "",
         ktp: "",
-        images: undefined
+        images: undefined,
       },
       validationSchema: basicSchema,
       onSubmit: registerHandler,
@@ -295,7 +296,7 @@ const SignupTenantPage = (props) => {
               <div>
                 <p>KTP:</p>
                 <Input
-                isInvalid={errors.images && touched.images ? true : false}
+                  isInvalid={errors.images && touched.images ? true : false}
                   type="file"
                   _hover={{
                     cursor: "pointer",
@@ -319,15 +320,20 @@ const SignupTenantPage = (props) => {
                   onChange={onFileChange}
                   onBlur={handleBlur}
                   mt={3.5}
-                  mb={3.5}
                   accept=".png,.jpg,.jpeg"
                 />
-                
+                <Text fontSize={"14px"} mt={1} mb={3.5} color="gray">
+                  File Size: 1MB (Megabyte) maximum. File extension that are accepted: .JPG .JPEG
+                  .PNG
+                </Text>
+
                 {selectedFile != null && done ? (
                   <Box>
                     <Flex direction="column">
                       <Flex justifyContent="flex-end">
-                        <p onClick={removeSelectedImage} style={{cursor: "pointer"}}>❌</p>
+                        <p onClick={removeSelectedImage} style={{ cursor: "pointer" }}>
+                          ❌
+                        </p>
                       </Flex>
                       <Flex direction="column" justifyContent="center" alignItems="center">
                         <img src={selectedImage} alt="Thumb" width="300px" height="200px" />
@@ -347,16 +353,20 @@ const SignupTenantPage = (props) => {
                   ""
                 )}
                 {errors.images && touched.images ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.images}</p>
-                  ) : (
-                    ""
-                  )}
+                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.images}</p>
+                ) : (
+                  ""
+                )}
                 <FormControl isRequired>
                   <Input
                     id="ktp"
                     disabled={values.ktp == "" && !selectedFile ? true : false}
                     isInvalid={errors.ktp && touched.ktp ? true : false}
-                    placeholder={!selectedFile ? "Please upload your KTP/ID image" : "Please input your KTP / ID number"}
+                    placeholder={
+                      !selectedFile
+                        ? "Please upload your KTP/ID image"
+                        : "Please input your KTP / ID number"
+                    }
                     value={values.ktp}
                     onChange={handleChange}
                     onBlur={handleBlur}

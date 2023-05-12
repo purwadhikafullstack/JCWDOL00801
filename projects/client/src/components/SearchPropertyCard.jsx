@@ -22,6 +22,7 @@ import Axios from "axios";
 import { Select as Select2, components } from "chakra-react-select";
 import { useState } from "react";
 import { useRef } from "react";
+import CalendarSearchBook from "./CalendarSearchBook";
 
 function SearchProperty({
   searchData,
@@ -160,7 +161,7 @@ function SearchProperty({
   }, []);
 
   return (
-    <Container maxW="container.lg" pos="sticky" top="16px" alignSelf={"flex-start"}>
+    <Container maxW="container.lg" pos="sticky" top="16px" alignSelf={"flex-start"} zIndex={9999}>
       <Box my={4} shadow="md" p="5" rounded="md">
         <Heading mb={5} size="lg">
           Search
@@ -170,7 +171,7 @@ function SearchProperty({
             <FormControl>
             <Box minW="100%">
               <FormLabel>Date</FormLabel>
-              <CalendarDateRange />
+              <CalendarSearchBook />
             </Box>
               <FormLabel mt={4}>Name</FormLabel>
               <Box ref={wrapperRef}>

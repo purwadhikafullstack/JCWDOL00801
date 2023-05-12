@@ -6,14 +6,15 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { addDays, format } from "date-fns";
 
 function PropertyCard({ data, isMobile }) {
   const navigate = useNavigate();
   const { email, startDate, endDate } = useSelector((state) => {
     return {
       email: state.userReducer.email,
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   const bookNowHandler = () => {

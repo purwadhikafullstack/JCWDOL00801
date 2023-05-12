@@ -21,5 +21,16 @@ route.patch(
 route.patch("/user", userController.update);
 route.post("/user/change-email", userController.sendOtpOldEmail);
 route.post("/user/verify-email", userController.verifyOtpOldEmail);
+route.post(
+  "/user/reset-password",
+  checkUser,
+  userController.verifyResetPassword
+);
+route.patch(
+  "/user/reset-password",
+  checkUser,
+  tokenVerify,
+  userController.resetPassword
+);
 
 module.exports = route;

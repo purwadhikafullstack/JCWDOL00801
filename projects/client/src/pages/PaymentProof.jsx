@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { format, addHours } from "date-fns";
 import { MdCancel } from "react-icons/md";
-import { useFormik } from "formik";
+import { replace, useFormik } from "formik";
 import { ktpAndProofVal } from "../schemas/ktpAndProofVal";
 import moment from "moment-timezone";
 
@@ -78,8 +78,20 @@ const PaymentProofPage = (props) => {
       }
     } catch (error) {
       if (error.response.status == 401) {
+        if(error.response.data.message = "Not Authorized"){
+          Swal.fire({
+          title: "You are not authorized to see this transaction!",
+          icon: "error",
+          confirmButtonText: "Confirm",
+          confirmButtonColor: "#48BB78",
+          timer: 3000,
+          }).then(resp =>{
+            navigate("/", {replace: true})
+          })
+        }
         setIsExpired(true);
       }
+      setIsExpired(true);
       console.log(error);
     }
   };

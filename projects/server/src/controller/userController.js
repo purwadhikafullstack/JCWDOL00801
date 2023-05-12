@@ -2,6 +2,7 @@ const { encryptPassword, createToken } = require("../config/encrypt");
 const { userModel, tenantModel, paymentMethodModel } = require("../model");
 const bcrypt = require("bcrypt");
 const { transport } = require("../config/nodemailer");
+const url = process.env.CLIENT_URL || "http://localhost:3000"
 
 function generateOTP() {
   let length = 4,
@@ -552,6 +553,79 @@ module.exports = {
       return res.status(500).send({
         success: false,
         message: "An error occurred while sending OTP.",
+      });
+    }
+  },
+  verifyResetPassword: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await userModel.findAll({ where: { email } });
+
+      if (!user[0]) {
+        return res.status(404).send({
+          success: false,
+          message: "Email not found.",
+        });
+      }
+
+      if (user[0].provider !== "common") {
+        return res.status(403).send({
+          success: false,
+          message: `You are registering with ${user[0].provider}, you cannot change your password.`,
+        });
+      }
+
+      let token = createToken({ ...user });
+      let resetUrl = `${url}/user/reset-password/new?t=${token}`;
+      transport.sendMail(
+        {
+          from: "Renthaven Admin",
+          to: email,
+          subject: "Reset Password",
+          html: `Click <a href="${resetUrl}">here</a> to reset your password.`,
+        },
+        (error, info) => {
+          if (error) {
+            return res.status(401).send(error);
+          }
+        }
+      );
+
+      return res.status(200).send({
+        success: true,
+        message: "Reset password email sent",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "An error occurred while resetting password.",
+        error,
+      });
+    }
+  },
+  resetPassword: async (req, res) => {
+    const { password, confirmPassword } = req.body;
+    const { email } = req.decrypt;
+    try {
+      if (password !== confirmPassword) {
+        return res.status(401).send({
+          success: false,
+          message: "Your password does not match",
+        });
+      }
+
+      const pass = encryptPassword(password);
+      let user = userModel.update({ password: pass }, { where: { email } });
+      return res.status(200).send({
+        success: true,
+        message: "Password has been successfully changed. ",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "An error occurred while changing password.",
       });
     }
   },

@@ -182,6 +182,7 @@ function PropertyAndRoomList(props) {
                   const endpoint = `/special-price/all?id=${val.typeId}&limit=${limitModal}&page=${
                     selected || pageModal || 0
                   }`;
+                  console.log(selected)
                   Axios.get(process.env.REACT_APP_API_BASE_URL + endpoint)
                     .then((response) => {
                       setSpecialPriceData(response.data.necessaryData[0]);
@@ -225,6 +226,7 @@ function PropertyAndRoomList(props) {
               };
               const onPageChangeModal = ({ selected }) => {
                 setPageModal(selected);
+                console.log(selected)
                 if (selected === 9) {
                   setPageMessage(
                     `If you can't find the data you're looking for, please try using a more specific keyword`

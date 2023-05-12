@@ -20,8 +20,8 @@ const SearchCard = ({ data }) => {
   const [discount, setDiscount] = useState(0);
   const { startDate, endDate } = useSelector((state) => {
     return {
-      startDate: state.dateReducer.startDate,
-      endDate: state.dateReducer.endDate,
+      startDate: state.dateBook.startDate,
+      endDate: state.dateBook.endDate,
     };
   });
   useState(() =>{

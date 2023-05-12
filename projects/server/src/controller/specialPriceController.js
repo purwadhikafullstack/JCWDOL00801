@@ -8,6 +8,7 @@ module.exports = {
             const page = parseInt(req.query.page) || 0;
             const limit = parseInt(req.query.limit) || 3;
             const offset = limit * page;
+            console.log(page)
             let filter = "";
             let sortBy = "";
             if(req.query.startDate && req.query.endDate){
@@ -61,9 +62,7 @@ module.exports = {
             LIMIT ${limit}
             OFFSET ${offset};
             `, {type: QueryTypes.SELECT});
-            console.log("SP",necessaryData)
-            const totalPage = Math.ceil(sp.length / limit);
-
+            const totalPage = Math.ceil(spAll.length / limit);          
             if (sp.length > 0) {
                 return res.status(200).send({
                     success: true,

@@ -126,7 +126,9 @@ module.exports = {
         (min_prices.min_nominal IS NOT NULL AND 
           (
             min_prices.min_nominal < min_prices.min_price AND
-            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)
+            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId
+            AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+                (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate))
           )
         ) OR (
           min_prices.min_nominal IS NOT NULL AND 
@@ -193,7 +195,9 @@ module.exports = {
             (min_prices.min_nominal IS NOT NULL AND 
               (
                 min_prices.min_nominal < min_prices.min_price AND
-                min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId)
+                min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId
+                AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+                (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate))
               )
             ) OR (
               min_prices.min_nominal IS NOT NULL AND 
