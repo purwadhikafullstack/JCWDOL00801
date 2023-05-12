@@ -49,6 +49,7 @@ function PropertyCard({ data, isMobile }) {
           navigate(`/detail?id=${data.id}`, { state: { id: data.id } });
           window.scrollTo(0, 0);
         }}
+        fallbackSrc="https://via.placeholder.com/500"
         src={process.env.REACT_APP_BASE_IMG_URL + data.image}
         borderTopRadius="lg"
       />
