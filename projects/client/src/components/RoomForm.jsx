@@ -514,7 +514,7 @@ function RoomForm(props) {
           <Button
             colorScheme="gray"
             variant="ghost"
-            onClick={() => navigate("/room/new", { replace: true })}
+            onClick={() => navigate("/room", { replace: true })}
             leftIcon={<ArrowLeftIcon boxSize={3} />}
           >
             Back
