@@ -159,7 +159,7 @@ module.exports = {
           `SELECT o.price, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
         FROM orderlists AS o
         INNER JOIN transactions AS t ON o.transactionId = t.transactionId
-        INNER JOIN paymentMethods as pay ON t.bankId = pay.bankId
+        INNER JOIN paymentmethods as pay ON t.bankId = pay.bankId
         WHERE t.transactionId = ${req.query.id}
         `,
           {

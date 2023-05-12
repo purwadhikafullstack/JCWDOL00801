@@ -11,7 +11,7 @@ const Reviews = ({ data, handlePage }) => {
     <Card>
       <CardHeader>
         <Flex alignItems={"center"}>
-          <Avatar size="lg" />
+          <Avatar size="lg" src={process.env.REACT_APP_BASE_IMG_URL + data.profileImg} bg="green.500"/>
           <Text ml="20px" fontWeight={"600"} fontSize={"24px"}>
             {data.name}
           </Text>
