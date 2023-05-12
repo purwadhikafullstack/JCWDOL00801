@@ -57,7 +57,7 @@ module.exports = {
         bankId,
         bankAccountNum,
         propertyId,
-        typeId
+        typeId,
       } = req.body;
       const { userId } = req.decrypt;
       //check available rooms with selected property
@@ -159,23 +159,23 @@ module.exports = {
           `SELECT o.price, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
         FROM orderlists AS o
         INNER JOIN transactions AS t ON o.transactionId = t.transactionId
-        INNER JOIN paymentMethods as pay ON t.bankId = pay.bankId
+        INNER JOIN paymentmethods as pay ON t.bankId = pay.bankId
         WHERE t.transactionId = ${req.query.id}
         `,
           {
             type: QueryTypes.SELECT,
           }
         );
-          return res.status(200).send({
-            success: true,
-            result: data,
-          });
-      } else if(transaction.length > 0 && transaction[0].status == "Cancelled"){
+        return res.status(200).send({
+          success: true,
+          result: data,
+        });
+      } else if (transaction.length > 0 && transaction[0].status == "Cancelled") {
         return res.status(404).send({
           success: false,
           message: "Transaction Expired",
         });
-      }else {
+      } else {
         return res.status(401).send({
           success: false,
           message: "Not Authorized",
@@ -297,7 +297,7 @@ module.exports = {
           : [];
       const getTypes = type != null ? type.join(" OR ") : null;
       const getType =
-        type.length > 0 
+        type.length > 0
           ? await dbSequelize.query(
               `
           SELECT * FROM types ${type.length > 0 || type != null ? "WHERE" : ""} ${getTypes}
@@ -318,17 +318,18 @@ module.exports = {
       `,
         { type: QueryTypes.SELECT }
       );
-      const getTime = getType.length > 0  ? 
-        getType.map(val =>{
-          const currentCreatedAt = new Date(val.createdAt).setFullYear(
-            new Date(val.createdAt).getFullYear() - 1
-          );
-          const currentYear = new Date(currentCreatedAt);
-          return `SET startDate = ${dbSequelize.escape(
-            currentYear
-          )}, endDate = ${dbSequelize.escape(currentYear)}`
-        })
-      : null;
+      const getTime =
+        getType.length > 0
+          ? getType.map((val) => {
+              const currentCreatedAt = new Date(val.createdAt).setFullYear(
+                new Date(val.createdAt).getFullYear() - 1
+              );
+              const currentYear = new Date(currentCreatedAt);
+              return `SET startDate = ${dbSequelize.escape(
+                currentYear
+              )}, endDate = ${dbSequelize.escape(currentYear)}`;
+            })
+          : null;
       console.log("Current Database Time", new Date());
       // update the status
       transactions.map(async (val) => {
@@ -342,7 +343,7 @@ module.exports = {
           await dbSequelize.query(
             `UPDATE transactions SET status = "Cancelled" WHERE transactionId = ${val.transactionId}`
           );
-          if(getRoomAvail.length > 0){
+          if (getRoomAvail.length > 0) {
             getRoomAvail.map(async (value, idx) => {
               await dbSequelize.query(`UPDATE roomavailabilities ${getTime[idx]}
               WHERE raId = ${value.raId}`);
