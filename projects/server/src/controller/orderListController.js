@@ -396,7 +396,7 @@ module.exports = {
             }
           );
 
-          if (differenceInDays(new Date(checkIn), today) === 1) {
+          if (differenceInDays(new Date(checkIn), today) <= 1) {
             const emailh1 = `
             <div>
               <span style="font-family: Arial, Helvetica, sans-serif">
@@ -509,10 +509,10 @@ module.exports = {
   cancelTenant: async (req, res) => {
     try {
       const transaction = await transactionModel.findAll({
-        where:{
-          transactionId: req.body.transactionId
-        }
-      })
+        where: {
+          transactionId: req.body.transactionId,
+        },
+      });
       const cancel = await transactionModel.update(
         {
           status: "Cancelled",
@@ -523,41 +523,48 @@ module.exports = {
           },
         }
       );
-      
+
       const orderList = await orderListModel.findAll({
         where: {
-          transactionId: req.body.transactionId
-        }
-      })
+          transactionId: req.body.transactionId,
+        },
+      });
       const roomAvail = await roomAvailModel.findAll({
         where: {
-          [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
-        }
-      })
+          [Op.and]: [{ roomId: orderList[0].roomId, startDate: transaction[0].checkinDate }],
+        },
+      });
       const rooms = await roomModel.findAll({
         where: {
-          roomId: orderList[0].roomId
-        }
-      })
+          roomId: orderList[0].roomId,
+        },
+      });
       const types = await typeModel.findAll({
         where: {
-          typeId: rooms[0].typeId
+          typeId: rooms[0].typeId,
+        },
+      });
+      const currentCreatedAt = new Date(types[0].createdAt).setFullYear(
+        new Date(types[0].createdAt).getFullYear() - 1
+      );
+      const currentYear = new Date(currentCreatedAt);
+      const updateRa = await roomAvailModel.update(
+        {
+          startDate: currentYear,
+          endDate: currentYear,
+        },
+        {
+          where: {
+            raId: roomAvail[0].raId,
+          },
         }
-      })
-      const currentCreatedAt = new Date(types[0].createdAt).setFullYear(new Date(types[0].createdAt).getFullYear() - 1);
-      const currentYear = new Date(currentCreatedAt)
-      const updateRa = await roomAvailModel.update({
-        startDate: currentYear,
-        endDate: currentYear
-      }, {where: {
-        raId: roomAvail[0].raId
-      }})
+      );
       return res.status(200).send({
         success: true,
         message: "The transaction has been cancelled",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).send({
         success: false,
         message: "Database error",
@@ -802,10 +809,10 @@ module.exports = {
       });
       if (user.length > 0) {
         const transaction = await transactionModel.findAll({
-          where:{
-            transactionId: req.body.transactionId
-          }
-        })
+          where: {
+            transactionId: req.body.transactionId,
+          },
+        });
         const cancel = await transactionModel.update(
           {
             status: "Cancelled",
@@ -818,32 +825,39 @@ module.exports = {
         );
         const orderList = await orderListModel.findAll({
           where: {
-            transactionId: req.body.transactionId
-          }
-        })
+            transactionId: req.body.transactionId,
+          },
+        });
         const roomAvail = await roomAvailModel.findAll({
           where: {
-            [Op.and]: [{roomId: orderList[0].roomId, startDate: transaction[0].checkinDate}]
-          }
-        })
+            [Op.and]: [{ roomId: orderList[0].roomId, startDate: transaction[0].checkinDate }],
+          },
+        });
         const rooms = await roomModel.findAll({
           where: {
-            roomId: orderList[0].roomId
-          }
-        })
+            roomId: orderList[0].roomId,
+          },
+        });
         const types = await typeModel.findAll({
           where: {
-            typeId: rooms[0].typeId
+            typeId: rooms[0].typeId,
+          },
+        });
+        const currentCreatedAt = new Date(types[0].createdAt).setFullYear(
+          new Date(types[0].createdAt).getFullYear() - 1
+        );
+        const currentYear = new Date(currentCreatedAt);
+        const updateRa = await roomAvailModel.update(
+          {
+            startDate: currentYear,
+            endDate: currentYear,
+          },
+          {
+            where: {
+              raId: roomAvail[0].raId,
+            },
           }
-        })
-        const currentCreatedAt = new Date(types[0].createdAt).setFullYear(new Date(types[0].createdAt).getFullYear() - 1);
-        const currentYear = new Date(currentCreatedAt)
-        const updateRa = await roomAvailModel.update({
-          startDate: currentYear,
-          endDate: currentYear
-        }, {where: {
-          raId: roomAvail[0].raId
-        }})
+        );
         return res.status(200).send({
           success: true,
           message: "Book cancelled!",
@@ -854,7 +868,7 @@ module.exports = {
         message: "Unauthorized Action",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).send({
         success: false,
         message: "Database error",
