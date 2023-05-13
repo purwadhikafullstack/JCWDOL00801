@@ -88,6 +88,14 @@ function PropertyFormEdit(props) {
       }
     } catch (error) {
       console.log(error);
+      if (!error.response.data.success) {
+        Swal.fire({
+          icon: "error",
+          title: error.response.data.message,
+          confirmButtonColor: "#38A169",
+          confirmButtonText: "OK",
+        });
+      }
     }
   };
 

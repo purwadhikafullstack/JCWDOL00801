@@ -23,8 +23,12 @@ module.exports = {
   getPropertyData: async (req, res) => {
     try {
       const { startDate, endDate } = req.body;
-      const newStartDate = startDate ? new Date(startDate) : new Date(new Date().getTime() + 86400000);
-      const newEndDate = endDate ? new Date(endDate) : new Date(new Date().getTime() + 86400000 * 2);
+      const newStartDate = startDate
+        ? new Date(startDate)
+        : new Date(new Date().getTime() + 86400000);
+      const newEndDate = endDate
+        ? new Date(endDate)
+        : new Date(new Date().getTime() + 86400000 * 2);
       const data = await dbSequelize.query(
         `SELECT 
       MIN(t.price) AS price, 
@@ -71,7 +75,9 @@ module.exports = {
         (min_prices.min_nominal IS NOT NULL AND 
           (
             min_prices.min_nominal < min_prices.min_price AND
-            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+            min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId AND (${dbSequelize.escape(
+              newStartDate
+            )} BETWEEN sp.startDate AND sp.endDate) AND
             (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) )
           )
         ) OR (
@@ -551,7 +557,18 @@ module.exports = {
           ? `${req.body.filename}`
           : `/propertyImg/RH${req.files[0].filename}`;
 
-      let update = await propertyModel.update(
+      const checkData = await propertyModel.findAll({
+        where: {
+          name: req.body.name,
+        },
+      });
+      if (checkData.length > 0) {
+        return res.status(500).send({
+          success: false,
+          message: `Property already exist`,
+        });
+      }
+      const update = await propertyModel.update(
         {
           propertyId,
           categoryId,

@@ -126,6 +126,15 @@ module.exports = {
   editData: async (req, res) => {
     try {
       const { province, city, categoryId } = req.body;
+      const checkData = await categoryModel.findAll({
+        where: { city },
+      });
+      if (checkData.length > 0) {
+        return res.status(500).send({
+          success: false,
+          message: "City already exists",
+        });
+      }
       const update = await categoryModel.update(
         {
           province,

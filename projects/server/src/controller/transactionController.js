@@ -57,7 +57,7 @@ module.exports = {
         bankId,
         bankAccountNum,
         propertyId,
-        typeId
+        typeId,
       } = req.body;
       const { userId } = req.decrypt;
       //check available rooms with selected property
@@ -166,16 +166,16 @@ module.exports = {
             type: QueryTypes.SELECT,
           }
         );
-          return res.status(200).send({
-            success: true,
-            result: data,
-          });
-      } else if(transaction.length > 0 && transaction[0].status == "Cancelled"){
+        return res.status(200).send({
+          success: true,
+          result: data,
+        });
+      } else if (transaction.length > 0 && transaction[0].status == "Cancelled") {
         return res.status(404).send({
           success: false,
           message: "Transaction Expired",
         });
-      }else {
+      } else {
         return res.status(401).send({
           success: false,
           message: "Not Authorized",
@@ -298,7 +298,7 @@ module.exports = {
           : [];
       const getTypes = type != null ? type.join(" OR ") : null;
       const getType =
-        type.length > 0 
+        type.length > 0
           ? await dbSequelize.query(
               `
           SELECT * FROM types ${type.length > 0 || type != null ? "WHERE" : ""} ${getTypes}
@@ -319,17 +319,18 @@ module.exports = {
       `,
         { type: QueryTypes.SELECT }
       );
-      const getTime = getType.length > 0  ? 
-        getType.map(val =>{
-          const currentCreatedAt = new Date(val.createdAt).setFullYear(
-            new Date(val.createdAt).getFullYear() - 1
-          );
-          const currentYear = new Date(currentCreatedAt);
-          return `SET startDate = ${dbSequelize.escape(
-            currentYear
-          )}, endDate = ${dbSequelize.escape(currentYear)}`
-        })
-      : null;
+      const getTime =
+        getType.length > 0
+          ? getType.map((val) => {
+              const currentCreatedAt = new Date(val.createdAt).setFullYear(
+                new Date(val.createdAt).getFullYear() - 1
+              );
+              const currentYear = new Date(currentCreatedAt);
+              return `SET startDate = ${dbSequelize.escape(
+                currentYear
+              )}, endDate = ${dbSequelize.escape(currentYear)}`;
+            })
+          : null;
       console.log("Current Database Time", new Date());
       // update the status
       transactions.map(async (val, index) => {
