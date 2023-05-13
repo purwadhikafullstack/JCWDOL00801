@@ -256,14 +256,25 @@ function RoomFormEdit(props) {
             "File extension is not supported",
             (value) => value && SUPPORTED_FORMATS.includes(value.type)
           )
-      : yup.string(),
-    name: addType || isTypeUpdate ? yup.string().required("Please input your type name") : yup.string(),
-    price: addType || isTypeUpdate
+      : isTypeUpdate
       ? yup
-          .string()
-          .matches(/^[\d +]+$/, { message: "Please input the valid price" })
-          .required("Please input the type price")
+          .mixed()
+          .test("fileSize", "File size is too large", (value) => value && value.size < FILE_SIZE)
+          .test(
+            "fileFormat",
+            "File extension is not supported",
+            (value) => value && SUPPORTED_FORMATS.includes(value.type)
+          )
       : yup.string(),
+    name:
+      addType || isTypeUpdate ? yup.string().required("Please input your type name") : yup.string(),
+    price:
+      addType || isTypeUpdate
+        ? yup
+            .string()
+            .matches(/^[\d +]+$/, { message: "Please input the valid price" })
+            .required("Please input the type price")
+        : yup.string(),
     description: yup.string(),
   });
 
@@ -299,19 +310,19 @@ function RoomFormEdit(props) {
       setPreview(process.env.REACT_APP_BASE_IMG_URL + `${values.image}`);
     }
   }, [values.image, addType]);
-  useEffect(() =>{
-    if(!location.state){
+  useEffect(() => {
+    if (!location.state) {
       Swal.fire({
         icon: "error",
         title: `Something went wrong.`,
         confirmButtonText: "OK",
         confirmButtonColor: "#48BB78",
         timer: 3000,
-      }).then(resp =>{
-        navigate("/room", {replace: true})
-      })
+      }).then((resp) => {
+        navigate("/room", { replace: true });
+      });
     }
-  }, [])
+  }, []);
   return (
     <Box px={{ base: "0", md: "20" }} pb={5} m={{ base: "15px", md: "" }}>
       <Heading mb={{ base: "30px", md: "5" }} textAlign={{ base: "center", md: "left" }}>
@@ -597,13 +608,14 @@ function RoomFormEdit(props) {
                   onChange={handleChange}
                   value={values.price}
                 /> */}
-                <NumberInput 
-                min={0}
+                <NumberInput
+                  min={0}
                   focusBorderColor="#48BB78"
                   name="price"
                   onBlur={handleBlur}
                   onChange={(e) => setFieldValue("price", e)}
-                  value={values.price}>
+                  defaultValue={parseInt(values.price)}
+                >
                   <NumberInputField />
                 </NumberInput>
                 <FormErrorMessage>{errors.price}</FormErrorMessage>
@@ -687,10 +699,10 @@ function RoomFormEdit(props) {
                 ? true
                 : !chosenType && !addType
                 ? true
-                : isTypeUpdate && (values.name === "" ||
-                errors.name ||
-                values.price === "" ||
-                errors.price) ? true : false
+                : isTypeUpdate &&
+                  (values.name === "" || errors.name || values.price === "" || errors.price)
+                ? true
+                : false
             }
             colorScheme="green"
             onClick={onBtnUpdate}
