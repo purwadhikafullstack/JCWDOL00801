@@ -257,8 +257,8 @@ function RoomFormEdit(props) {
             (value) => value && SUPPORTED_FORMATS.includes(value.type)
           )
       : yup.string(),
-    name: addType ? yup.string().required("Please input your type name") : yup.string(),
-    price: addType
+    name: addType || isTypeUpdate ? yup.string().required("Please input your type name") : yup.string(),
+    price: addType || isTypeUpdate
       ? yup
           .string()
           .matches(/^[\d +]+$/, { message: "Please input the valid price" })
