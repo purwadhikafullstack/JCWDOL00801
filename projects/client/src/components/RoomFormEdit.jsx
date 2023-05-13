@@ -591,12 +591,21 @@ function RoomFormEdit(props) {
               </FormControl>
               <FormControl isRequired isInvalid={errors.price && touched.price ? true : false}>
                 <FormLabel>Price</FormLabel>
-                <Input
+                {/* <Input
                   name="price"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={parseInt(values.price)}
-                />
+                  value={values.price}
+                /> */}
+                <NumberInput 
+                min={0}
+                  focusBorderColor="#48BB78"
+                  name="price"
+                  onBlur={handleBlur}
+                  onChange={(e) => setFieldValue("price", e)}
+                  value={values.price}>
+                  <NumberInputField />
+                </NumberInput>
                 <FormErrorMessage>{errors.price}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.description && touched.description ? true : false}>
@@ -678,7 +687,10 @@ function RoomFormEdit(props) {
                 ? true
                 : !chosenType && !addType
                 ? true
-                : false
+                : isTypeUpdate && (values.name === "" ||
+                errors.name ||
+                values.price === "" ||
+                errors.price) ? true : false
             }
             colorScheme="green"
             onClick={onBtnUpdate}
