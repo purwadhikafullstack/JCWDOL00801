@@ -277,9 +277,10 @@ module.exports = {
       const getRoom = room.join(" OR ");
       const rooms = roomAvail.join(" OR ");
       const times = checkIn.map((val, idx) => {
-        return `(${checkIn[idx]} AND ${checkout[idx]})`;
+        return `(${checkIn[idx]})`;
       });
       const getTimes = times.join(" OR ");
+      
       const getRooms =
         getRoom.length > 0
           ? await dbSequelize.query(
@@ -312,7 +313,7 @@ module.exports = {
         INNER JOIN orderlists as o ON ra.roomId = o.roomId
         INNER JOIN transactions as t ON o.transactionId = t.transactionId
         WHERE t.status = 'Waiting for payment' ${
-          roomAvail.length > 0 ? `AND (${rooms}) AND ${getTimes}` : ""
+          rooms.length > 0 ? `AND (${rooms}) AND ${getTimes}` : ""
         }
         group by ra.raId
       `,
@@ -331,7 +332,7 @@ module.exports = {
       : null;
       console.log("Current Database Time", new Date());
       // update the status
-      transactions.map(async (val) => {
+      transactions.map(async (val, index) => {
         const transactionExpired = moment(val.transactionExpired);
         const now = moment();
         const currentCreatedAt = new Date(val.checkinDate).setFullYear(
@@ -342,12 +343,9 @@ module.exports = {
           await dbSequelize.query(
             `UPDATE transactions SET status = "Cancelled" WHERE transactionId = ${val.transactionId}`
           );
-          if(getRoomAvail.length > 0){
-            getRoomAvail.map(async (value, idx) => {
-              await dbSequelize.query(`UPDATE roomavailabilities ${getTime[idx]}
-              WHERE raId = ${value.raId}`);
-            });
-          }
+          if(getRoomAvail.length > 0)
+              await dbSequelize.query(`UPDATE roomavailabilities ${getTime[index]}
+              WHERE raId = ${getRoomAvail[index].raId}`);
         }
       });
     });
