@@ -156,7 +156,7 @@ module.exports = {
       //get data if the status cancelled or less than transactionExpired
       if (transaction.length > 0 && transaction[0].status !== "Cancelled") {
         const data = await dbSequelize.query(
-          `SELECT o.price, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
+          `SELECT o.price, t.status, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
         FROM orderlists AS o
         INNER JOIN transactions AS t ON o.transactionId = t.transactionId
         INNER JOIN paymentmethods as pay ON t.bankId = pay.bankId
