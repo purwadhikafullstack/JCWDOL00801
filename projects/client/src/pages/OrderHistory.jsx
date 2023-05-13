@@ -124,6 +124,7 @@ function OrderHistory(props) {
             }).then(() => {
               getTableData();
               setSelectedOption("");
+              window.location.reload();
             });
           }
         } catch (error) {
