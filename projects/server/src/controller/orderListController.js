@@ -614,7 +614,6 @@ module.exports = {
       `,
         { type: QueryTypes.SELECT }
       );
-      //
       return res.status(200).send({
         success: true,
         data,
