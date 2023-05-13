@@ -12,10 +12,9 @@ module.exports = {
     tokenVerify: (req, res,next) =>{
         jwt.verify(req.token, "!@renthaven33@!", (err, decrypt) =>{
             if(err){
-                console.log("Error")
                 return res.status(401).send({
                     success: false,
-                    message: "Authenticate token failed!"
+                    message: "Authentication token failed!"
                 })
             }
             req.decrypt = decrypt[0];

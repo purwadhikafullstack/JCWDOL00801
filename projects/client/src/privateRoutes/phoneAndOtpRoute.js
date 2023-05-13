@@ -31,15 +31,15 @@ const VerifyChecker = (props) => {
       if (role == "tenant" && currentPath == "/") {
         return <Navigate to="/tenant-dashboard" />;
       } else if (role !== "tenant" && currentPath === "/property") {
-        return <Navigate to="" />;
+        return <Navigate to="/" />;
       } else if (role !== "tenant" && currentPath === "/property/new") {
-        return <Navigate to="" />;
+        return <Navigate to="/" />;
       } else if (role !== "tenant" && currentPath === "/property/new/building") {
-        return <Navigate to="" />;
+        return <Navigate to="/" />;
       } else if (role !== "tenant" && currentPath === "/property/new/building-room") {
-        return <Navigate to="" />;
+        return <Navigate to="/" />;
       } else if (role !== "tenant" && currentPath === "/property/edit") {
-        return <Navigate to="" />;
+        return <Navigate to="/" />;
       } 
 
       return props.children;
