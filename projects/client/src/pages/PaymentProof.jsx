@@ -187,7 +187,7 @@ const PaymentProofPage = (props) => {
           </Text>
 
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" : data.payProofImg != null && data.status == "Waiting for payment" ? <Box textAlign={"center"}><Text>Please kindly reupload your payment proof"</Text>
+            {isExpired ? "" : data.payProofImg != null && data.status == "Waiting for payment" ? <Box textAlign={"center"}><Text>Please kindly reupload your payment proof</Text>
             <Text>{data.bankAccountNum}</Text>
             </Box> : data.payProofImg != null && data.status != "Waiting for payment" ? "Please kindly wait for the hotel to confirm your transaction" : data.bankAccountNum}
           </Text>
