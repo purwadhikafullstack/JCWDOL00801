@@ -574,7 +574,6 @@ module.exports = {
   getTenantLineChart: async (req, res) => {
     try {
       const today = new Date().getDay();
-      console.log("today", today)
       const startDateDiff = today == 0 ? 0 : 1 - today;
       const endDateDiff = 7 - today;
       const startDate = new Date(
@@ -595,7 +594,6 @@ module.exports = {
           },
         },
       ];
-      console.log(new Date(startDate), new Date(endDate))
       const data = await dbSequelize.query(
         `
         SELECT DATE(o.createdAt) as orderDate, SUM(o.price) as price FROM orderlists as o
