@@ -574,6 +574,7 @@ module.exports = {
   getTenantLineChart: async (req, res) => {
     try {
       const today = new Date().getDay();
+      console.log("today", today)
       const startDateDiff = today == 0 ? 0 : 1 - today;
       const endDateDiff = 7 - today;
       const startDate = new Date(
@@ -594,6 +595,7 @@ module.exports = {
           },
         },
       ];
+      console.log(new Date(startDate), new Date(endDate))
       const data = await dbSequelize.query(
         `
         SELECT DATE(o.createdAt) as orderDate, SUM(o.price) as price FROM orderlists as o
@@ -604,9 +606,9 @@ module.exports = {
         INNER JOIN users as u ON u.userId = ten.userId
         WHERE u.email = ${dbSequelize.escape(
           req.decrypt.email
-        )} AND ((tran.checkinDate > ${dbSequelize.escape(
+        )} AND ((tran.createdAt >= ${dbSequelize.escape(
           new Date(startDate)
-        )}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        )}) AND (tran.createdAt <= ${dbSequelize.escape(new Date(endDate))}))
         AND tran.status = "Confirmed"
         group by orderDate; 
       `,
