@@ -178,24 +178,24 @@ const PaymentProofPage = (props) => {
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "Sorry, it seems that you have exceeded payment time limit"
-              : data.payProofImg != null && data.status == "Waiting for payment" ? "Uh-oh!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Thank you!":"Thank you for booking our room"}
+              : data.payProofImg != null && data.status == "Waiting for payment" ? "Uh-oh!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Thank you!": data.status == "Confirmed" ? "Congratulation!" : "Thank you for booking our room"}
           </Text>
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "or the hotel has cancelled your booking ID"
-              : data.payProofImg != null && data.status == "Waiting for payment" ? "It seems that the tenant rejected your payment proof" : data.payProofImg != null && data.status != "Waiting for payment" ? "You have uploaded the payment proof" : "Please kindly finish your payment to the following bank account"}
+              : data.payProofImg != null && data.status == "Waiting for payment" ? "It seems that the tenant rejected your payment proof" : data.status == "Confirmed" ? "Your book has been confirmed" : data.payProofImg != null && data.status != "Waiting for payment" ? "You have uploaded the payment proof" : "Please kindly finish your payment to the following bank account"}
           </Text>
 
           <Text fontSize="20px" fontWeight={"600"}>
             {isExpired ? "" : data.payProofImg != null && data.status == "Waiting for payment" ? <Box textAlign={"center"}><Text>Please kindly reupload your payment proof</Text>
             <Text>{data.bankAccountNum}</Text>
-            </Box> : data.payProofImg != null && data.status != "Waiting for payment" ? "Please kindly wait for the hotel to confirm your transaction" : data.bankAccountNum}
+            </Box> : data.status === "Confirmed" ? "Enjoy your stay!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Please kindly wait for the hotel to confirm your transaction" :  data.bankAccountNum}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" :  data.payProofImg != null && data.status != "Waiting for payment" ? "" : data.bankName}
+            {isExpired || data.status == "Confirmed" ? "" :  data.payProofImg != null && data.status != "Waiting for payment" ? "" : data.bankName}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired
+            {isExpired || data.status == "Confirmed"
               ? ""
               : data.payProofImg != null && data.status != "Waiting for payment" ? "" : parseInt(data.price).toLocaleString("id", { style: "currency", currency: "IDR" })}
           </Text>
@@ -216,7 +216,7 @@ const PaymentProofPage = (props) => {
           <ModalBody mt={7} mb={5}>
             <Image src={`${process.env.REACT_APP_BASE_IMG_URL}${data.payProofImg}`}/>
           </ModalBody> </ModalContent> </Modal> : ""}
-          {isExpired ? (
+          {isExpired || data.status == "Confirmed" ? (
             ""
           ) : (
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
