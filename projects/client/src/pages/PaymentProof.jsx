@@ -178,7 +178,7 @@ const PaymentProofPage = (props) => {
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "Sorry, it seems that you have exceeded payment time limit"
-              : data.payProofImg != null && data.status == "Waiting for payment" ? "Uh-oh!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Thank you!": data.status == "Confirmed" ? "Congratulation!" : "Thank you for booking our room"}
+              : data.payProofImg != null && data.status == "Waiting for payment" ? "Uh-oh!" : data.status == "Confirmed" ? "Congratulation!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Thank you!":  "Thank you for booking our room"}
           </Text>
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
