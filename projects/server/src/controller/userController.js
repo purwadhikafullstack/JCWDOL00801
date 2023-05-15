@@ -2,7 +2,7 @@ const { encryptPassword, createToken } = require("../config/encrypt");
 const { userModel, tenantModel, paymentMethodModel } = require("../model");
 const bcrypt = require("bcrypt");
 const { transport } = require("../config/nodemailer");
-const url = process.env.CLIENT_URL || "http://localhost:3000"
+const url = process.env.CLIENT_URL || "http://localhost:3000";
 
 function generateOTP() {
   let length = 4,
@@ -203,12 +203,12 @@ module.exports = {
       let token = createToken({
         ...data,
       });
-      if(tenantData.length > 0){
+      if (tenantData.length > 0) {
         const bank = await paymentMethodModel.findAll({
           where: {
-            bankId : tenantData[0].bankId
-          }
-        })
+            bankId: tenantData[0].bankId,
+          },
+        });
         return res.status(200).send({
           success: true,
           user: data[0],
@@ -378,6 +378,13 @@ module.exports = {
       const check = bcrypt.compareSync(oldPass, data[0].password);
 
       if (check != false) {
+        const samePass = bcrypt.compareSync(password, data[0].password);
+        if (samePass) {
+          return res.status(403).send({
+            success: false,
+            message: `Password can not be the same as the old one`,
+          });
+        }
         const pass = encryptPassword(password);
         const update = await userModel.update(
           {

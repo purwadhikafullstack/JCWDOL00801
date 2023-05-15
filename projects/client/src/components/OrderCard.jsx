@@ -100,12 +100,12 @@ function OrderCard(props) {
       cancelButtonColor: "red",
       confirmButtonText: "OK",
       confirmButtonColor: "#48BB78",
-      reverseButtons: true
+      reverseButtons: true,
     })
       .then((res) => {
         if (res.isConfirmed) {
           const getLocalStorage = localStorage.getItem("renthaven1");
-          if(getLocalStorage){
+          if (getLocalStorage) {
             Axios.patch(
               process.env.REACT_APP_API_BASE_URL + "/orderlist-user/cancel",
               {
@@ -113,7 +113,7 @@ function OrderCard(props) {
               },
               {
                 headers: {
-                  "Authorization": `Bearer ${getLocalStorage}`,
+                  Authorization: `Bearer ${getLocalStorage}`,
                 },
               }
             )
@@ -124,16 +124,15 @@ function OrderCard(props) {
                   confirmButtonText: "OK",
                   confirmButtonColor: "#48BB78",
                   timer: 3000,
-                }).then(resp => {
+                }).then((resp) => {
                   props.getData();
-                  setSelectedOption("")
+                  setSelectedOption("");
                 });
               })
               .catch((e) => {
                 console.log(e);
                 setSelectedOption("");
               });
-
           }
         }
         setSelectedOption("");
@@ -270,7 +269,7 @@ function OrderCard(props) {
                 Proceed to payment
               </option>
               <option value="Cancel" onClick={cancelHandler}>
-                Cancel
+                Cancel Order
               </option>
             </Select>
           ) : status === "Confirmed" && new Date() > new Date(checkoutDate) ? (

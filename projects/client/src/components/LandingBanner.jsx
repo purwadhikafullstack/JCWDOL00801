@@ -32,7 +32,6 @@ function LandingBanner(props) {
                   height={{ base: "200px", md: "500px" }}
                   width="100%"
                   src={banner}
-                  fallbackSrc="https://via.placeholder.com/500"
                   alt="Landing Banner"
                   onLoad={() => setLoading(true)}
                 />
