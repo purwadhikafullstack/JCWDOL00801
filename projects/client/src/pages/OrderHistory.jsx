@@ -74,7 +74,6 @@ function OrderHistory(props) {
       setRows(response.data.totalRows);
     } catch (error) {
       console.log(error);
-      setTableData(error.response.data.data);
     }
   };
 
