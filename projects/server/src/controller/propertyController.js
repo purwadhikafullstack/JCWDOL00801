@@ -39,9 +39,22 @@ module.exports = {
       t.typeId,
       t.typeImg,
       p.image,
-      (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-        AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
-        (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate)) AS nominal
+      CASE
+        WHEN r.roomId IN (
+                SELECT ra.roomId
+                FROM roomavailabilities AS ra INNER JOIN rooms as r2 on r.roomId = ra.roomId
+                INNER JOIN specialprices as sp2 ON sp2.typeId = r2.typeId
+                WHERE
+                    (${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate
+                    OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate)
+            ) THEN NULL
+        ELSE
+            (SELECT sp.nominal
+            FROM specialprices AS sp
+            WHERE sp.typeId = r.typeId
+                AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate)
+                AND (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate))
+    END AS nominal
     FROM 
       properties AS p 
       INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -78,7 +91,13 @@ module.exports = {
             min_prices.min_nominal = (SELECT MIN(sp.nominal) FROM specialprices AS sp WHERE r.typeId = sp.typeId AND (${dbSequelize.escape(
               newStartDate
             )} BETWEEN sp.startDate AND sp.endDate) AND
-            (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) )
+            (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) AND r.roomId NOT IN (
+              SELECT ra.roomId
+              FROM roomavailabilities AS ra
+             WHERE
+             (${dbSequelize.escape(newStartDate)} BETWEEN ra.startDate AND ra.endDate
+              OR ${dbSequelize.escape(newEndDate)} BETWEEN ra.startDate AND ra.endDate) 
+              ) )
           )
         ) OR (
           min_prices.min_nominal IS NOT NULL AND 
