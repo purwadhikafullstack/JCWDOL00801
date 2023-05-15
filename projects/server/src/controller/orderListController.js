@@ -574,7 +574,7 @@ module.exports = {
   getTenantLineChart: async (req, res) => {
     try {
       const today = new Date().getDay();
-      const startDateDiff = today == 0 ? 0 : 1 - today;
+      const startDateDiff = today == 0 || today == 1 ? today : 1 - today;
       const endDateDiff = 7 - today;
       const startDate = new Date(
         new Date(new Date().setHours(0, 0, 0, 0)).getTime() + 86400000 * startDateDiff
