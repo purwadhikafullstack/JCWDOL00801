@@ -557,17 +557,17 @@ module.exports = {
           ? `${req.body.filename}`
           : `/propertyImg/RH${req.files[0].filename}`;
 
-      const checkData = await propertyModel.findAll({
-        where: {
-          name: req.body.name,
-        },
-      });
-      if (checkData.length > 0) {
-        return res.status(500).send({
-          success: false,
-          message: `Property already exist`,
-        });
-      }
+      // const checkData = await propertyModel.findAll({
+      //   where: {
+      //     name: req.body.name,
+      //   },
+      // });
+      // if (checkData.length > 0) {
+      //   return res.status(500).send({
+      //     success: false,
+      //     message: `Property already exist`,
+      //   });
+      // }
       const update = await propertyModel.update(
         {
           propertyId,

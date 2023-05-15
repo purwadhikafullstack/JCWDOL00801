@@ -126,14 +126,8 @@ module.exports = {
   editData: async (req, res) => {
     try {
       const { province, city, categoryId, tenantId } = req.body;
-      const checkData = await propertyModel.findAll({
-        include: {
-          model: categoryModel,
-          as: "category",
-          required: true,
-          where: { city },
-        },
-        where: { tenantId },
+      const checkData = await categoryModel.findAll({
+        where: { tenantId, city },
       });
       if (checkData.length > 0) {
         return res.status(500).send({

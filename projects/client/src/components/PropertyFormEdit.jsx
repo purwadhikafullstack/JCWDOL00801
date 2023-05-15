@@ -188,7 +188,13 @@ function PropertyFormEdit(props) {
           </FormControl>
           <FormControl isRequired isInvalid={errors.name && touched.name ? true : false}>
             <FormLabel>Property Name</FormLabel>
-            <Input name="name" value={values.name} onBlur={handleBlur} onChange={handleChange} />
+            <Input
+              disabled={true}
+              name="name"
+              value={values.name}
+              onBlur={handleBlur}
+              onChange={handleChange}
+            />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
           <FormControl isRequired isInvalid={errors.address && touched.address ? true : false}>
