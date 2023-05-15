@@ -1,3 +1,4 @@
+const { addDays } = require("date-fns");
 const {
   orderListModel,
   transactionModel,
@@ -37,14 +38,14 @@ module.exports = {
       if (startDate) {
         filterData.push({
           createdAt: {
-            [Op.gte]: startDate,
+            [Op.gte]: new Date(startDate),
           },
         });
       }
       if (endDate) {
         filterData.push({
           createdAt: {
-            [Op.lte]: endDate,
+            [Op.lte]: addDays(new Date(endDate), 1),
           },
         });
       }
