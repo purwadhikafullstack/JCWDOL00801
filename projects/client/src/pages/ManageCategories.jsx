@@ -166,6 +166,7 @@ function ManageCategories(props) {
               province: provinceName[0].name,
               city: editCity,
               categoryId: editId,
+              tenantId: tenantId,
             }
           );
           if (response.data.success) {
