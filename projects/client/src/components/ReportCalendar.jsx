@@ -123,13 +123,13 @@ function ReportCalendar(props) {
         const specialPrice = roomData.type.specialPrice;
         if (specialPrice.length > 0) {
           const disabledRanges = specialPrice.map((val) => {
-            return [subDays(new Date(val.startDate), 1), new Date(val.endDate)];
+            return [new Date(val.startDate), new Date(val.endDate)];
           });
 
           if (isWithinRanges(day, disabledRanges)) {
             const price = specialPrice.filter((val) => {
               return isWithinInterval(day, {
-                start: subDays(new Date(val.startDate), 1),
+                start: new Date(val.startDate),
                 end: new Date(val.endDate),
               });
             });
