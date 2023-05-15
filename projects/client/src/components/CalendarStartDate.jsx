@@ -54,7 +54,7 @@ function CalendarStartDate(props) {
     document.addEventListener("keydown", hideOnEscape, true);
     document.addEventListener("click", hideOnClickOutside, true);
     const date = new Date();
-    setMaxDate(date);
+    setMaxDate(addYears(new Date(date), 1));
     setMinDate(new Date(createdAt));
   }, []);
 
