@@ -156,7 +156,7 @@ module.exports = {
       //get data if the status cancelled or less than transactionExpired
       if (transaction.length > 0 && transaction[0].status !== "Cancelled") {
         const data = await dbSequelize.query(
-          `SELECT o.price, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
+          `SELECT o.price, t.status, t.payProofImg, t.bankId, t.transactionExpired, t.checkinDate, pay.bankName, t.bankAccountNum
         FROM orderlists AS o
         INNER JOIN transactions AS t ON o.transactionId = t.transactionId
         INNER JOIN paymentmethods as pay ON t.bankId = pay.bankId
@@ -277,9 +277,10 @@ module.exports = {
       const getRoom = room.join(" OR ");
       const rooms = roomAvail.join(" OR ");
       const times = checkIn.map((val, idx) => {
-        return `(${checkIn[idx]} AND ${checkout[idx]})`;
+        return `(${checkIn[idx]})`;
       });
       const getTimes = times.join(" OR ");
+
       const getRooms =
         getRoom.length > 0
           ? await dbSequelize.query(
@@ -312,7 +313,7 @@ module.exports = {
         INNER JOIN orderlists as o ON ra.roomId = o.roomId
         INNER JOIN transactions as t ON o.transactionId = t.transactionId
         WHERE t.status = 'Waiting for payment' ${
-          roomAvail.length > 0 ? `AND (${rooms}) AND ${getTimes}` : ""
+          rooms.length > 0 ? `AND (${rooms}) AND ${getTimes}` : ""
         }
         group by ra.raId
       `,
@@ -332,7 +333,7 @@ module.exports = {
           : null;
       console.log("Current Database Time", new Date());
       // update the status
-      transactions.map(async (val) => {
+      transactions.map(async (val, index) => {
         const transactionExpired = moment(val.transactionExpired);
         const now = moment();
         const currentCreatedAt = new Date(val.checkinDate).setFullYear(

@@ -166,7 +166,7 @@ const PaymentProofPage = (props) => {
           pl="10px"
           pr="10px"
         >
-          {isExpired ? (
+          {isExpired || (data.payProofImg != null && data.status == "Waiting for payment")? (
             <MdCancel color="red" size={70} style={{ marginTop: "20px", marginBottom: "20px" }} />
           ) : (
             <FaCheckCircle
@@ -178,29 +178,35 @@ const PaymentProofPage = (props) => {
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "Sorry, it seems that you have exceeded payment time limit"
-              : data.payProofImg != null ? "Thank you!":"Thank you for booking our room"}
+              : data.payProofImg != null && data.status == "Waiting for payment" ? "Uh-oh!" : data.status == "Confirmed" ? "Congratulation!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Thank you!":  "Thank you for booking our room"}
           </Text>
           <Text textAlign={"center"} fontSize="24px" fontWeight={"600"}>
             {isExpired
               ? "or the hotel has cancelled your booking ID"
-              : data.payProofImg != null ? "You have uploaded the payment proof" : "Please kindly finish your payment to the following bank account"}
+              : data.payProofImg != null && data.status == "Waiting for payment" ? "It seems that the tenant rejected your payment proof" : data.status == "Confirmed" ? "Your book has been confirmed" : data.payProofImg != null && data.status != "Waiting for payment" ? "You have uploaded the payment proof" : "Please kindly finish your payment to the following bank account"}
           </Text>
 
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" : data.payProofImg != null ? "Please kindly wait for the hotel to confirm your transaction" : data.bankAccountNum}
+            {isExpired ? "" : data.payProofImg != null && data.status == "Waiting for payment" ? <Box textAlign={"center"}><Text>Please kindly reupload your payment proof</Text>
+            <Text>{data.bankAccountNum}</Text>
+            </Box> : data.status === "Confirmed" ? "Enjoy your stay!" : data.payProofImg != null && data.status != "Waiting for payment" ? "Please kindly wait for the hotel to confirm your transaction" :  data.bankAccountNum}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired ? "" : data.payProofImg != null ? "" : data.bankName}
+            {isExpired || data.status == "Confirmed" ? "" :  data.payProofImg != null && data.status != "Waiting for payment" ? "" : data.bankName}
           </Text>
           <Text fontSize="20px" fontWeight={"600"}>
-            {isExpired
+            {isExpired || data.status == "Confirmed"
               ? ""
-              : data.payProofImg != null ? "" : parseInt(data.price).toLocaleString("id", { style: "currency", currency: "IDR" })}
+              : data.payProofImg != null && data.status != "Waiting for payment" ? "" : parseInt(data.price).toLocaleString("id", { style: "currency", currency: "IDR" })}
           </Text>
           <Text mb={isExpired ? "20px" : ""}>
             {isExpired
               ? ""
-              : data.payProofImg != null ? <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> : `Please upload the payment before ${
+              : data.status == "Cancelled" ? "" : data.payProofImg != null && data.status != "Waiting for payment" ? <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> : data.payProofImg != null ? <Box textAlign={"center"}> 
+              <Button variant={"ghost"} colorScheme="green" onClick={onOpen}>See your payment proof here</Button> 
+              <Text>Please upload the payment before {
+                  new Date(data.transactionExpired).toLocaleTimeString("EN")}</Text>
+              </Box>: `Please upload the payment before ${
                   new Date(data.transactionExpired).toLocaleTimeString("EN")}`}
           </Text>
           {data.payProofImg != null ? <Modal isOpen={isOpen} onClose={onClose}>
@@ -210,7 +216,7 @@ const PaymentProofPage = (props) => {
           <ModalBody mt={7} mb={5}>
             <Image src={`${process.env.REACT_APP_BASE_IMG_URL}${data.payProofImg}`}/>
           </ModalBody> </ModalContent> </Modal> : ""}
-          {isExpired ? (
+          {isExpired || data.status == "Confirmed" ? (
             ""
           ) : (
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>

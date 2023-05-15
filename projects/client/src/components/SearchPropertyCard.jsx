@@ -68,6 +68,7 @@ function SearchProperty({
       setCity([]);
       cityHandler("")
       setCityLabel("")
+      setSelectedCity("")
       setProvinceLabel("");
       provinceHandler("");
       return setSelectedProvince("");

@@ -264,7 +264,7 @@ const TenantDashboardPage = ({ isMobile }) => {
                   {transactionData.map((val, idx)=>{
                     return <Tr key={idx}>
                     <Td textAlign="center">
-                      <Link _hover={{ color: "blue", textDecoration: "none" }}>{val.transactionId}</Link>
+                      <Text>{val.orderId}</Text>
                     </Td>
                     <Td textAlign="center">{val.guestName}</Td>
                     <Td textAlign="center">{val.name}</Td>

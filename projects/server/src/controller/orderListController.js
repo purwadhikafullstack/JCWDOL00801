@@ -604,15 +604,14 @@ module.exports = {
         INNER JOIN users as u ON u.userId = ten.userId
         WHERE u.email = ${dbSequelize.escape(
           req.decrypt.email
-        )} AND ((tran.checkinDate > ${dbSequelize.escape(
+        )} AND ((tran.createdAt >= ${dbSequelize.escape(
           new Date(startDate)
-        )}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        )}) AND (tran.createdAt <= ${dbSequelize.escape(new Date(endDate))}))
         AND tran.status = "Confirmed"
         group by orderDate; 
       `,
         { type: QueryTypes.SELECT }
       );
-      //
       return res.status(200).send({
         success: true,
         data,
